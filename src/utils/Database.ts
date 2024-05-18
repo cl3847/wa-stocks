@@ -5,7 +5,8 @@ class Database {
 
     /**
      * Gets a row from the user table corresponding to a specific user
-     * @param uid   The ID of the user from which to fetch the corresponding row
+     * @param {string} uid The ID of the user from which to fetch the corresponding row
+     * @returns {Promise<User | null>} A promise resolving to a User if a user with the uid exists, otherwise null
      */
     static async getUser(uid: string): Promise<User | null> {
         return new Promise((resolve, reject) => {
