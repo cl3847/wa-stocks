@@ -2,9 +2,9 @@
   "name": "the-wolf-of-ayup",
   "version": "1.0.0",
   "description": "Gamified stock market simulation on Discord",
-  "main": "index.ts",
+  "main": "src/index.ts",
   "scripts": {
-    "start": "tsx index.ts",
+    "start": "tsx src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "createDatabase": "tsx scripts/createDatabase.ts"
   },
