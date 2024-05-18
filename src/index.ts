@@ -1,12 +1,10 @@
-import Database from "src/utils/Database"
+import DatabaseHandler from "src/handlers/DatabaseHandler"
 
 async function test() {
-    console.log(await Database.getUser("297798128340566016"));
-    let d: User = {
-        uid: "219567389761601536",
-        balance: 0
-    };
-    await Database.createUser(d);
+    let db = DatabaseHandler.getInstance();
+    console.log(await db.user.getUser("160780013317128193"));
+    console.log(await db.user.deleteUser("160780013317128193"));
+    console.log(await db.user.getUser("160780013317128193"));
 }
 
 test();
