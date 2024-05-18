@@ -5,13 +5,13 @@ interface User {
 
 interface Stock {
     ticker: string,
+    name: string,
     stock_ticker: string,
     multiplier: number,
-    stock_price: number,
-    name: string
+    stock_price: number
 }
 
-interface User_Stock {
+interface UserStock {
     uid: string,
     ticker: string,
     quantity: number

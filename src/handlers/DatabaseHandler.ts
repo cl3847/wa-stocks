@@ -1,15 +1,18 @@
 import * as sqlite3 from "sqlite3";
 import UserHandler from "./UserHandler";
+import StockHandler from "./StockHandler";
 
 class DatabaseHandler {
     private static instance: DatabaseHandler;
 
     private readonly db: sqlite3.Database;
-    public user: UserHandler;
+    public users: UserHandler;
+    public stocks: StockHandler;
 
     private constructor() {
         this.db = new sqlite3.Database('db/data.db', sqlite3.OPEN_READWRITE);
-        this.user = new UserHandler(this.db);
+        this.users = new UserHandler(this.db);
+        this.stocks = new StockHandler(this.db);
     }
 
     /**
