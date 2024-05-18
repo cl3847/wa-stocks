@@ -3,14 +3,16 @@ const db = new sqlite3.Database('db/data.db', sqlite3.OPEN_READWRITE | sqlite3.O
 
 db.serialize(() => {
     db.run("CREATE TABLE user (" +
-        "uid TEXT PRIMARY KEY NOT NULL," +
+        "uid TEXT PRIMARY KEY," +
         "balance INT NOT NULL DEFAULT 0" +
         ")"
     );
 
     db.run("CREATE TABLE stock (" +
-        "ticker TEXT PRIMARY KEY NOT NULL," +
-        "multiplier INT NOT NULL DEFAULT 1" +
+        "ticker TEXT PRIMARY KEY," +
+        "stock_ticker TEXT NOT NULL," +
+        "multiplier INT NOT NULL DEFAULT 1," +
+        "stock_price INT NOT NULL" +
         ")"
     );
 
