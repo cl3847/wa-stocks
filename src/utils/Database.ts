@@ -10,11 +10,24 @@ class Database {
      */
     static async getUser(uid: string): Promise<User | null> {
         return new Promise((resolve, reject) => {
-            Database.db.get("SELECT * FROM user WHERE uid = ?", uid, (err, row: User) => {
+            const query = "SELECT * FROM user WHERE uid = $uid";
+            const params = {$uid: uid};
+            Database.db.get(query, params, (err, row: User) => {
                 if (err) { reject(err) }
-                else { resolve(row || null) }
+                else { resolve(row || null); }
             });
         });
+    }
+
+    static async createUser(user: User): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const query = "INSERT INTO user (uid, balance) VALUES ($uid, $balance)";
+            const params = {$uid: user.uid, $balance: user.balance};
+            Database.db.run(query, params, (err) => {
+                if (err) { reject(err) }
+                else { resolve(); }
+            })
+        })
     }
 }
 
