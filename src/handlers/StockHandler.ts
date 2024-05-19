@@ -74,6 +74,20 @@ class StockHandler {
             })
         })
     }
+
+    /**
+     * Gets a list of all stocks in the database
+     * @returns {Promise<Stock[] | null>} A promise resolving to a list of all stocks
+     */
+    public async getAllStocks(): Promise<Stock[] | null> {
+        return new Promise((resolve, reject) => {
+            const query = "SELECT * FROM stocks";
+            this.db.all(query, (err, rows: Stock[]) => {
+                if (err) reject(err);
+                else resolve(rows || null);
+            });
+        });
+    }
 }
 
 export default StockHandler;
