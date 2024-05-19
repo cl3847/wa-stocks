@@ -16,7 +16,7 @@ class UserPortfolio implements User {
      * @returns {number} The user's net worth
      */
     public netWorth(): number {
-        return this.balance + this.portfolio.reduce((acc, stock) => stock.quantity * stock.stock_price + acc, 0);
+        return this.balance + this.portfolio.reduce((acc, stock) => stock.quantity * stock.price + acc, 0);
     }
 }
 

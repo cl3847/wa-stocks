@@ -10,10 +10,11 @@ db.serialize(() => {
 
     db.run("CREATE TABLE stocks (" +
         "ticker TEXT PRIMARY KEY," +
-        "stock_ticker TEXT NOT NULL," +
+        "price INT NOT NULL," +
         "multiplier INT DEFAULT 1," +
-        "stock_price INT NOT NULL," +
         "name TEXT NOT NULL," +
+        "stock_ticker TEXT NOT NULL," +
+        "stock_price INT NOT NULL," +
         "last_price_update INT DEFAULT 0" +
         ")"
     );

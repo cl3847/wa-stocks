@@ -5,10 +5,12 @@ interface User {
 
 interface Stock {
     ticker: string;
+    price: number;
+    multiplier: number;
     name: string;
     stock_ticker: string;
-    multiplier: number;
     stock_price: number;
+    last_price_update: number;
 }
 
 interface UserStock {
