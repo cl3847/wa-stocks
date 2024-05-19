@@ -1,4 +1,5 @@
 import * as sqlite3 from "sqlite3";
+import UserPortfolio from "../models/UserPortfolio";
 
 class UserHandler {
     private db: sqlite3.Database;
@@ -73,6 +74,28 @@ class UserHandler {
                 else resolve();
             })
         })
+    }
+
+    /**
+     * Gets a user with portfolio information corresponding to a specific UID
+     * @param {string} uid The UID of the user for which to get
+     * @returns {Promise<UserPortfolio | null>} A promise resolving to a UserPortfolio if a user with the UID exists, otherwise null
+     */
+    public async getUserPortfolio(uid: string): Promise<UserPortfolio | null> {
+        return new Promise((resolve, reject) => {
+            const query = "SELECT * FROM users AS u " +
+                "LEFT JOIN users_stocks AS us ON u.uid = us.uid " +
+                "LEFT JOIN stocks AS s ON us.ticker = s.ticker " +
+                "WHERE u.uid = $uid";
+            const params = {$uid: uid};
+            this.db.all(query, params, (err, rows: (User & UserStock & Stock)[]) => {
+                if (err) reject(err);
+                else {
+                    const portfolio = rows.map((row) => row as StockHolding);
+                    resolve(new UserPortfolio(rows[0] as User, portfolio) || null)
+                }
+            });
+        });
     }
 }
 
