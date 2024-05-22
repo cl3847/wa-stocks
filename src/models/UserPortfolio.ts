@@ -1,3 +1,5 @@
+import {StockHolding} from "./interfaces";
+
 /**
  * A class containing all the information in a User and a listing of all the stock holdings they have
  */

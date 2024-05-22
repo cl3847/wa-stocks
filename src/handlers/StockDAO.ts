@@ -1,6 +1,6 @@
 import * as sqlite3 from "sqlite3";
 
-class StockHandler {
+class StockDAO {
     private db: sqlite3.Database;
 
     constructor(db: sqlite3.Database) {
@@ -90,4 +90,4 @@ class StockHandler {
     }
 }
 
-export default StockHandler;
+export default StockDAO;

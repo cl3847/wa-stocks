@@ -1,9 +1,28 @@
-import DatabaseHandler from "src/handlers/DatabaseHandler"
+import * as fs from "fs";
+import {initDb} from "./utils/createDatabase";
+import * as sqlite3 from "sqlite3";
+import UserDAO from "./handlers/UserDAO";
+import StockDAO from "./handlers/StockDAO";
+import {DAOs, Services} from "./models/interfaces"
+import UserService from "./services/UserService";
 
-async function test() {
-    let db = DatabaseHandler.getInstance();
-    console.log((await db.users.getUserPortfolio("297798128340566016"))?.netWorth());
-    console.log(await db.stocks.getAllStocks())
+function main() {
+    if(!fs.existsSync("db/data.db")) {
+        initDb();
+    }
+
+    const db = new sqlite3.Database('db/data.db', sqlite3.OPEN_READWRITE);
+
+    const daos: DAOs = {
+        users: new UserDAO(db),
+        stocks: new StockDAO(db),
+    }
+
+    const service: Services = {
+        users: new UserService(daos)
+    }
+
+    service; // placeholder
 }
 
-test();
+main();

@@ -6,19 +6,20 @@
   "scripts": {
     "start": "tsx src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "createDatabase": "tsx scripts/createDatabase.ts"
+    "createDatabase": "tsx src/utils/createDatabase.ts"
   },
   "keywords": [],
   "author": "Sayajiaji",
   "license": "ISC",
   "dependencies": {
+    "discord.js": "^14.15.2",
     "dotenv": "^16.4.5",
     "sqlite3": "^5.1.7",
     "typescript": "^5.4.5"
   },
   "devDependencies": {
-    "tsx": "^4.10.4",
     "@types/node": "^20.12.12",
-    "@types/sqlite3": "^3.1.11"
+    "@types/sqlite3": "^3.1.11",
+    "tsx": "^4.10.4"
   }
 }

@@ -1,7 +1,8 @@
 import * as sqlite3 from "sqlite3";
 import UserPortfolio from "../models/UserPortfolio";
+import {StockHolding} from "../models/interfaces";
 
-class UserHandler {
+class UserDAO {
     private db: sqlite3.Database;
 
     constructor(db: sqlite3.Database) {
@@ -99,4 +100,4 @@ class UserHandler {
     }
 }
 
-export default UserHandler;
+export default UserDAO;

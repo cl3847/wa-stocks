@@ -1,7 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('db/data.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE);
 
-db.serialize(() => {
+function initDb() {
     db.run("CREATE TABLE users (" +
         "uid TEXT PRIMARY KEY," +
         "balance INT NOT NULL DEFAULT 0" +
@@ -27,6 +27,8 @@ db.serialize(() => {
         "FOREIGN KEY(uid) REFERENCES user(uid) ON UPDATE CASCADE ON DELETE CASCADE," +
         "FOREIGN KEY(ticker) REFERENCES stock(ticker) ON UPDATE CASCADE ON DELETE CASCADE" +
         ")")
-});
 
-db.close();
+    db.close();
+}
+
+export {initDb}
