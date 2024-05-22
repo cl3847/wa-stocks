@@ -1,4 +1,4 @@
-import {DAOs} from "../models/interfaces";
+import {DAOs} from "../models/types";
 
 class UserService {
     daos: DAOs;

@@ -3,7 +3,7 @@ import {initDb} from "./utils/createDatabase";
 import * as sqlite3 from "sqlite3";
 import UserDAO from "./handlers/UserDAO";
 import StockDAO from "./handlers/StockDAO";
-import {DAOs, Services} from "./models/interfaces"
+import {DAOs, Services} from "./models/types"
 import UserService from "./services/UserService";
 
 function main() {

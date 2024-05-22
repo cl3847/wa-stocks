@@ -1,6 +1,6 @@
 import * as sqlite3 from "sqlite3";
 import UserPortfolio from "../models/UserPortfolio";
-import {StockHolding} from "../models/interfaces";
+import {HeldStock} from "../models/types";
 
 class UserDAO {
     private db: sqlite3.Database;
@@ -92,11 +92,47 @@ class UserDAO {
             this.db.all(query, params, (err, rows: (User & UserStock & Stock)[]) => {
                 if (err) reject(err);
                 else {
-                    const portfolio = rows.map((row) => row as StockHolding);
+                    const portfolio = rows.map((row) => row as HeldStock);
                     resolve(new UserPortfolio(rows[0] as User, portfolio) || null)
                 }
             });
         });
+    }
+
+    public async createStockHolding(holding: UserStock): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const keyString = Object.keys(holding).join(", ");
+            const placeholderString = Object.keys(holding).fill('?').join(", ");
+            const query = `INSERT INTO users_stocks (${keyString}) VALUES (${placeholderString})`;
+            const params = Object.values(holding);
+            this.db.run(query, params, (err) => {
+                if (err) reject(err);
+                else resolve();
+            })
+        })
+    }
+
+    public async getStockHolding(uid: string, ticker: string): Promise<UserStock | null> {
+        return new Promise((resolve, reject) => {
+            const query = "SELECT * FROM users_stocks WHERE uid = $uid AND ticker = $ticker";
+            const params = {$uid: uid, $ticker: ticker};
+            this.db.get(query, params, (err, row: UserStock) => {
+                if (err) reject(err);
+                else resolve(row || null);
+            });
+        });
+    }
+
+    public async updateStockHolding(uid: string, ticker: string, holding: Partial<UserStock>): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if (Object.keys(holding).length === 0) return reject(new Error("No fields to update"));
+            const query = `UPDATE users_stocks SET ${Object.keys(holding).map(key => `${key} = ?`).join(', ')} WHERE uid = ? AND ticker = $ticker`;
+            const params = [...Object.values(holding), uid, ticker];
+            this.db.run(query, params, (err) => {
+                if (err) reject(err);
+                else resolve();
+            })
+        })
     }
 }
 

@@ -2,9 +2,7 @@ import UserDAO from "../handlers/UserDAO";
 import StockDAO from "../handlers/StockDAO";
 import UserService from "../services/UserService";
 
-interface StockHolding extends Stock {
-    quantity: number;
-}
+type HeldStock = Stock & UserStock;
 
 interface DAOs {
     users: UserDAO;
@@ -15,4 +13,4 @@ interface Services {
     users: UserService;
 }
 
-export {StockHolding, DAOs, Services};
+export {HeldStock, DAOs, Services};
