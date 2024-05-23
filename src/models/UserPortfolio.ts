@@ -1,12 +1,14 @@
+import {HeldStock} from "./types";
+
 /**
  * A class containing all the information in a User and a listing of all the stock holdings they have
  */
 class UserPortfolio implements User {
     uid: string;
     balance: number;
-    portfolio: StockHolding[];
+    portfolio: HeldStock[];
 
-    constructor(user: User, portfolio: StockHolding[]) {
+    constructor(user: User, portfolio: HeldStock[]) {
         Object.assign(this, user);
         this.portfolio = portfolio;
     }
