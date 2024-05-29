@@ -1,8 +1,6 @@
-import {Pool} from "pg";
+import {PoolClient} from "pg";
 
-const initDb = async (pool: Pool) => {
-    const pc = await pool.connect();
-
+const initDb = async (pc: PoolClient) => {
     const createTable = async (tableName: string, createSql: string) => {
         const checkQuery = `SELECT EXISTS (
             SELECT FROM pg_tables 
@@ -44,8 +42,6 @@ const initDb = async (pool: Pool) => {
             FOREIGN KEY(ticker) REFERENCES stocks(ticker) ON UPDATE CASCADE ON DELETE CASCADE
         );`
     );
-
-    pc.release();
 };
 
 export {initDb}
