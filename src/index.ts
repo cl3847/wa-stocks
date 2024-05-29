@@ -23,7 +23,7 @@ async function main() {
             process.exit(1);
         });
 
-    initDb(postgres);
+    await initDb(postgres);
 
     const daos: DAOs = {
         users: new UserDAO(postgres),

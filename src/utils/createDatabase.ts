@@ -11,8 +11,6 @@ const initDb = async (pg: Client) => {
         if (!existsResult.rows[0].exists) {
             await pg.query(createSql);
             console.log(`Table created: ${tableName}`);
-        } else {
-            console.log(`Table already exists: ${tableName}`);
         }
     };
 
