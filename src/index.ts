@@ -3,8 +3,9 @@ import {initDb} from "./utils/createDatabase";
 import * as sqlite3 from "sqlite3";
 import UserDAO from "./handlers/UserDAO";
 import StockDAO from "./handlers/StockDAO";
-import {DAOs, Services} from "./models/types"
 import UserService from "./services/UserService";
+import DAOs from "./models/DAOs";
+import Services from "./models/Services";
 
 function main() {
     if(!fs.existsSync("db/data.db")) {

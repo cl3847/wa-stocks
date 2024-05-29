@@ -1,4 +1,5 @@
 import * as sqlite3 from "sqlite3";
+import Stock from "../models/stock/Stock";
 
 class StockDAO {
     private db: sqlite3.Database;

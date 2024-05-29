@@ -1,6 +1,9 @@
 import * as sqlite3 from "sqlite3";
-import UserPortfolio from "../models/UserPortfolio";
-import {HeldStock} from "../models/types";
+import UserPortfolio from "../models/user/UserPortfolio";
+import User from "../models/user/User"
+import UserStock from "../models/user_stock/UserStock";
+import HeldStock from "../models/stock/HeldStock";
+import Stock from "../models/stock/Stock";
 
 class UserDAO {
     private db: sqlite3.Database;
