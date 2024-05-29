@@ -1,4 +1,5 @@
 import {DAOs} from "../models/types";
+import User from "../models/user/User"
 
 class UserService {
     daos: DAOs;

@@ -1,8 +1,3 @@
-interface User {
-    uid: string;
-    balance: number;
-}
-
 interface Stock {
     ticker: string;
     price: number;
@@ -13,8 +8,4 @@ interface Stock {
     last_price_update: number;
 }
 
-interface UserStock {
-    uid: string;
-    ticker: string;
-    quantity: number;
-}
+export default Stock;
