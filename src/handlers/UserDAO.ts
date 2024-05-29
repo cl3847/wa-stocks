@@ -2,13 +2,13 @@ import UserPortfolio from "../models/user/UserPortfolio";
 import User from "../models/user/User"
 import UserStock from "../models/user_stock/UserStock";
 import HeldStock from "../models/stock/HeldStock";
-import {Client} from "pg";
+import {Pool} from "pg";
 
 class UserDAO {
-    private postgres: Client;
+    private pool: Pool;
 
-    constructor(postgres: Client) {
-        this.postgres = postgres;
+    constructor(pool: Pool) {
+        this.pool = pool;
     }
 
     /**
@@ -17,11 +17,13 @@ class UserDAO {
      * @returns {Promise<void>} A promise resolving to nothing
      */
     public async createUser(user: User): Promise<void> {
+        const pc = await this.pool.connect();
         const keyString = Object.keys(user).join(", ");
         const valueString = Object.keys(user).map((_, index) => `$${index + 1}`).join(", ");
         const query = `INSERT INTO users (${keyString}) VALUES (${valueString})`;
         const params = Object.values(user);
-        await this.postgres.query(query, params);
+        pc.release();
+        await pc.query(query, params);
     }
 
     /**
@@ -30,9 +32,11 @@ class UserDAO {
      * @returns {Promise<User | null>} A promise resolving to a User if a user with the UID exists, otherwise null
      */
     public async getUser(uid: string): Promise<User | null> {
+        const pc = await this.pool.connect();
         const query = "SELECT * FROM users WHERE uid = $1";
         const params = [uid];
-        const result = await this.postgres.query(query, params);
+        const result = await pc.query(query, params);
+        pc.release();
         return result.rows[0] || null;
     }
 

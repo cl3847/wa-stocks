@@ -1,15 +1,17 @@
-import {Client} from "pg";
+import {Pool} from "pg";
 
-const initDb = async (pg: Client) => {
+const initDb = async (pool: Pool) => {
+    const pc = await pool.connect();
+
     const createTable = async (tableName: string, createSql: string) => {
         const checkQuery = `SELECT EXISTS (
             SELECT FROM pg_tables 
             WHERE  schemaname = 'public' 
             AND    tablename  = $1
         );`;
-        const existsResult = await pg.query(checkQuery, [tableName]);
+        const existsResult = await pc.query(checkQuery, [tableName]);
         if (!existsResult.rows[0].exists) {
-            await pg.query(createSql);
+            await pc.query(createSql);
             console.log(`Table created: ${tableName}`);
         }
     };
@@ -40,7 +42,10 @@ const initDb = async (pg: Client) => {
             PRIMARY KEY (uid, ticker),
             FOREIGN KEY(uid) REFERENCES users(uid) ON UPDATE CASCADE ON DELETE CASCADE,
             FOREIGN KEY(ticker) REFERENCES stocks(ticker) ON UPDATE CASCADE ON DELETE CASCADE
-        );`);
+        );`
+    );
+
+    pc.release();
 };
 
 export {initDb}

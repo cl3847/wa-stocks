@@ -1,4 +1,4 @@
-import {Client} from "pg";
+import {Pool} from "pg";
 import UserDAO from "./handlers/UserDAO";
 import StockDAO from "./handlers/StockDAO";
 import UserService from "./services/UserService";
@@ -9,25 +9,18 @@ import User from "./models/user/User";
 require('dotenv').config();
 
 async function main() {
-    const postgres = new Client({
+    const pool = new Pool({
         connectionString: process.env.DATABASE_URL,
-        ssl: {
-            rejectUnauthorized: false
-        }
+        max: 20,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 2000,
     });
 
-    postgres.connect()
-        .then(() => console.log("Connected to Postgres"))
-        .catch(err => {
-            console.error("Error connecting to Postgres", err);
-            process.exit(1);
-        });
-
-    await initDb(postgres);
+    await initDb(pool);
 
     const daos: DAOs = {
-        users: new UserDAO(postgres),
-        stocks: new StockDAO(postgres),
+        users: new UserDAO(pool),
+        stocks: new StockDAO(pool),
     };
 
     const service: Services = {
