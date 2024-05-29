@@ -1,11 +1,11 @@
-import * as sqlite3 from "sqlite3";
 import Stock from "../models/stock/Stock";
+import {Client} from "pg";
 
 class StockDAO {
-    private db: sqlite3.Database;
+    private postgres: Client;
 
-    constructor(db: sqlite3.Database) {
-        this.db = db;
+    constructor(postgres: Client) {
+        this.postgres = postgres;
     }
 
     /**
@@ -14,16 +14,11 @@ class StockDAO {
      * @returns {Promise<void>} A promise resolving to nothing
      */
     public async createStock(stock: Stock): Promise<void> {
-        return new Promise((resolve, reject) => {
-            const keyString = Object.keys(stock).join(", ");
-            const placeholderString = Object.keys(stock).fill('?').join(", ");
-            const query = `INSERT INTO stocks (${keyString}) VALUES (${placeholderString})`;
-            const params = Object.values(stock);
-            this.db.run(query, params, (err) => {
-                if (err) reject(err);
-                else resolve();
-            })
-        })
+        const keyString = Object.keys(stock).join(", ");
+        const valueString = Object.keys(stock).map((_, index) => `$${index + 1}`).join(", ");
+        const query = `INSERT INTO stocks (${keyString}) VALUES (${valueString})`;
+        const params = Object.values(stock);
+        await this.postgres.query(query, params);
     }
 
     /**
@@ -32,14 +27,10 @@ class StockDAO {
      * @returns {Promise<Stock | null>} A promise resolving to a Stock if a stock with the ticker exists, otherwise null
      */
     public async getStock(ticker: string): Promise<Stock | null> {
-        return new Promise((resolve, reject) => {
-            const query = "SELECT * FROM stocks WHERE ticker = $ticker";
-            const params = {$ticker: ticker};
-            this.db.get(query, params, (err, row: Stock) => {
-                if (err) reject(err);
-                else resolve(row || null);
-            });
-        });
+        const query = "SELECT * FROM stocks WHERE ticker = $1";
+        const params = [ticker];
+        const result = await this.postgres.query(query, params);
+        return result.rows[0] || null;
     }
 
     /**
@@ -49,15 +40,13 @@ class StockDAO {
      * @returns {Promise<void>} A promise resolving to nothing
      */
     public async updateStock(ticker: string, stock: Partial<Stock>): Promise<void> {
-        return new Promise((resolve, reject) => {
-            if (Object.keys(stock).length === 0) return reject(new Error("No fields to update"));
-            const query = `UPDATE stocks SET ${Object.keys(stock).map(key => `${key} = ?`).join(', ')} WHERE ticker = ?`;
-            const params = [...Object.values(stock), ticker];
-            this.db.run(query, params, (err) => {
-                if (err) reject(err);
-                else resolve();
-            })
-        })
+        if (Object.keys(stock).length === 0) {
+            throw new Error("No fields to update");
+        }
+        const fields = Object.keys(stock).map((key, index) => `${key} = $${index + 1}`).join(', ');
+        const query = `UPDATE stocks SET ${fields} WHERE ticker = $${Object.keys(stock).length + 1}`;
+        const params = [...Object.values(stock), ticker];
+        await this.postgres.query(query, params);
     }
 
     /**
@@ -66,14 +55,9 @@ class StockDAO {
      * @returns {Promise<void>} A promise resolving to nothing
      */
     public async deleteStock(ticker: string): Promise<void> {
-        return new Promise((resolve, reject) => {
-            const query = "DELETE FROM stocks WHERE ticker = $ticker";
-            const params = {$ticker: ticker};
-            this.db.run(query, params, (err) => {
-                if (err) reject(err);
-                else resolve();
-            })
-        })
+        const query = "DELETE FROM stocks WHERE ticker = $1";
+        const params = [ticker];
+        await this.postgres.query(query, params);
     }
 
     /**
@@ -81,13 +65,9 @@ class StockDAO {
      * @returns {Promise<Stock[] | null>} A promise resolving to a list of all stocks
      */
     public async getAllStocks(): Promise<Stock[] | null> {
-        return new Promise((resolve, reject) => {
-            const query = "SELECT * FROM stocks";
-            this.db.all(query, (err, rows: Stock[]) => {
-                if (err) reject(err);
-                else resolve(rows || null);
-            });
-        });
+        const query = "SELECT * FROM stocks";
+        const result = await this.postgres.query(query);
+        return result.rows.length ? result.rows : null;
     }
 }
 
