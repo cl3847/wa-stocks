@@ -8,6 +8,7 @@ import Service from "./services/Service";
 require('dotenv').config();
 
 async function main() {
+    // create database connection pool
     const pool = new Pool({
         connectionString: process.env.DATABASE_URL,
         max: 20,
@@ -21,7 +22,7 @@ async function main() {
     // test connection to database, and initialize tables if not created
     try {
         const pc = await pool.connect();
-        log.success("Connected to Postgres database.")
+        log.success("Connected to Postgres database.");
         await initDb(pc);
         pc.release();
     } catch(err) {
@@ -29,12 +30,16 @@ async function main() {
         process.exit(1);
     }
 
+    // initialize DAOs and Services
     const daos: DAOs = {
         users: new UserDAO(),
         stocks: new StockDAO(),
     };
-
     Service.init(daos, pool);
+
+    // initialize Discord client
+
+
 }
 
 main();

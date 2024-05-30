@@ -47,7 +47,7 @@ class TransactionService {
                     uid: uid,
                     ticker: ticker,
                     quantity: newQuantity,
-                }
+                };
                 await this.daos.users.createStockHolding(client, newHolding);
             }
             await this.daos.users.updateUser(client, uid, {balance: newBalance});
