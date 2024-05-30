@@ -14,16 +14,6 @@ class TransactionService {
         this.pool = pool;
     }
 
-    /**
-     *
-     * @param uid
-     * @param ticker
-     * @param add
-     *
-     * @throws UserNotFoundError
-     * @throws StockNotFoundError
-     * @throws InsufficientBalanceError
-     */
     public async buyStock(uid: string, ticker: string, add: number): Promise<void> {
         const client = await this.pool.connect();
 

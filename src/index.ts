@@ -1,12 +1,10 @@
 import {Pool} from "pg";
 import UserDAO from "./handlers/UserDAO";
 import StockDAO from "./handlers/StockDAO";
-import UserService from "./services/UserService";
 import DAOs from "./models/DAOs";
-import Services from "./models/Services";
 import {initDb} from "./utils/createDatabase";
 import log from "./utils/logger";
-import TransactionService from "./services/TransactionService";
+import Service from "./services/Service";
 require('dotenv').config();
 
 async function main() {
@@ -36,12 +34,7 @@ async function main() {
         stocks: new StockDAO(),
     };
 
-    const service: Services = {
-        users: new UserService(daos, pool),
-        transactions: new TransactionService(daos, pool),
-    };
-
-    service;
+    Service.init(daos, pool);
 }
 
 main();
