@@ -1,4 +1,5 @@
 import {PoolClient} from "pg";
+import log from "./logger";
 
 const initDb = async (pc: PoolClient) => {
     const createTable = async (tableName: string, createSql: string) => {
@@ -9,8 +10,9 @@ const initDb = async (pc: PoolClient) => {
         );`;
         const existsResult = await pc.query(checkQuery, [tableName]);
         if (!existsResult.rows[0].exists) {
+            log.info(`Table '${tableName}' not found. Creating...`);
             await pc.query(createSql);
-            console.log(`Table created: ${tableName}`);
+            log.success(`Table created: ${tableName}.`);
         }
     };
 
