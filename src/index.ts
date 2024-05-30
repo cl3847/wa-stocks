@@ -68,7 +68,7 @@ require('dotenv').config();
         const commandFiles = fs.readdirSync(`${foldersPath}/${folder}`).filter(file => file.endsWith('.ts'));
         for (const file of commandFiles) {
             const command: CommandType = require(`./commands/${folder}/${file}`);
-            commandData.push(command.data.toJSON());
+            commandData.push(JSON.stringify(command.data));
             commands.set(command.data.name, command);
         }
     }
