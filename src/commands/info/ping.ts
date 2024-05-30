@@ -1,6 +1,7 @@
 import {CacheType, CommandInteraction, SlashCommandBuilder} from "discord.js";
+import CommandType from "../../models/CommandType";
 
-module.exports = {
+const command: CommandType = {
     data: new SlashCommandBuilder()
         .setName('ping')
         .setDescription('Replies with Pong!'),
@@ -8,3 +9,5 @@ module.exports = {
         await interaction.reply('Pong!');
     },
 };
+
+module.exports = command;

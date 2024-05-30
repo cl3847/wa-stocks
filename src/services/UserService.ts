@@ -1,6 +1,7 @@
 import User from "../models/user/User"
 import DAOs from "../models/DAOs";
 import {Pool} from "pg";
+import UserPortfolio from "../models/user/UserPortfolio";
 
 class UserService {
     private daos: DAOs;
@@ -21,6 +22,13 @@ class UserService {
     public async createUser(user: User): Promise<void> {
         const pc = await this.pool.connect();
         const res = this.daos.users.createUser(pc, user);
+        pc.release();
+        return res;
+    }
+
+    public async getUserPortfolio(uid: string): Promise<UserPortfolio | null> {
+        const pc = await this.pool.connect();
+        const res = this.daos.users.getUserPortfolio(pc, uid);
         pc.release();
         return res;
     }
