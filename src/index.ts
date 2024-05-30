@@ -1,61 +1,47 @@
-import {Client} from "pg";
+import {Pool} from "pg";
 import UserDAO from "./handlers/UserDAO";
 import StockDAO from "./handlers/StockDAO";
 import UserService from "./services/UserService";
 import DAOs from "./models/DAOs";
 import Services from "./models/Services";
 import {initDb} from "./utils/createDatabase";
-import User from "./models/user/User";
+import log from "./utils/logger";
+import TransactionService from "./services/TransactionService";
 require('dotenv').config();
 
 async function main() {
-    const postgres = new Client({
+    const pool = new Pool({
         connectionString: process.env.DATABASE_URL,
+        max: 20,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 2000,
         ssl: {
             rejectUnauthorized: false
         }
     });
 
-    postgres.connect()
-        .then(() => console.log("Connected to Postgres"))
-        .catch(err => {
-            console.error("Error connecting to Postgres", err);
-            process.exit(1);
-        });
-
-    await initDb(postgres);
+    // test connection to database, and initialize tables if not created
+    try {
+        const pc = await pool.connect();
+        log.success("Connected to Postgres database.")
+        await initDb(pc);
+        pc.release();
+    } catch(err) {
+        log.error(err.message);
+        process.exit(1);
+    }
 
     const daos: DAOs = {
-        users: new UserDAO(postgres),
-        stocks: new StockDAO(postgres),
+        users: new UserDAO(),
+        stocks: new StockDAO(),
     };
 
     const service: Services = {
-        users: new UserService(daos)
+        users: new UserService(daos, pool),
+        transactions: new TransactionService(daos, pool),
     };
 
-    test(service);
-}
-
-async function test(service: Services) {
-    const saya: User = {
-        uid: "297798128340566016",
-        balance: 1000
-    };
-
-    /*const ayup: Stock = {
-        ticker: "AYUP",
-        price: 100,
-        multiplier: 1,
-        name: "Ayupple Inc.",
-        stock_ticker: "AAPL",
-        stock_price: 100,
-        last_price_update: 0
-    };*/
-
-    console.log(await service.users.getUser("297798128340566016"));
-    await service.users.createUser(saya);
-    console.log(await service.users.getUser("297798128340566016"));
+    service;
 }
 
 main();
