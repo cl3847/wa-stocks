@@ -74,7 +74,7 @@ class UserDAO {
         const params = [uid];
         const result = await pc.query(query, params);
         if (result.rows.length === 0) return null;
-        const portfolio = result.rows.map(row => row as HeldStock);
+        const portfolio = (result.rows[0] as HeldStock).ticker ? result.rows.map(row => row as HeldStock) : [];
         return new UserPortfolio(result.rows[0] as User, portfolio);
     }
 
