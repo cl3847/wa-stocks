@@ -8,7 +8,6 @@ import CommandType from "../../models/CommandType";
  * The next pages are just lists of your stock holdings with quantity and value.
   */
 
-
 const command: CommandType = {
     data: new SlashCommandBuilder()
         .setName('profile')
