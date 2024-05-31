@@ -6,8 +6,8 @@ const config: ConfigType = {
     "guildID": "1245589131405299802" // The guild for the game to be played in
   },
   "colors": {
-    "green": 0x00c805,
-    "red": 0xff5001 ,
+    "green": `#00c805`,
+    "red": `#ff5001`,
   },
   "game": {
     "startingBalance": 1000,

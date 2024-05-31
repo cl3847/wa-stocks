@@ -17,7 +17,7 @@ const command: CommandType = {
                 balance: config.game.startingBalance,
             };
             await service.users.createUser(newUser);
-            await interaction.reply('PLACEHOLDER: Created a profile for you with $1000.');
+            await interaction.reply(`PLACEHOLDER: Created a profile for you with $1000.`);
         }
 
         // TODO start tutorial

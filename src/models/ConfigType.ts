@@ -4,8 +4,8 @@ export type ConfigType = {
         guildID: string;
     };
     colors: {
-        green: number;
-        red: number;
+        green: `#${string}`;
+        red: `#${string}`;
     };
     game: {
         startingBalance: number;
