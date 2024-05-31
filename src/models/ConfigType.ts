@@ -3,6 +3,10 @@ export type ConfigType = {
         clientID: string;
         guildID: string;
     };
+    colors: {
+        green: number;
+        red: number;
+    };
 };
 
 export default ConfigType;
