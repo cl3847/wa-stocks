@@ -7,6 +7,9 @@ export type ConfigType = {
         green: number;
         red: number;
     };
+    game: {
+        startingBalance: number;
+    };
 };
 
 export default ConfigType;

@@ -69,8 +69,8 @@ class UserDAO {
         const query = `SELECT u.*, us.*, s.* FROM users u
                        LEFT JOIN users_stocks us ON u.uid = us.uid
                        LEFT JOIN stocks s ON us.ticker = s.ticker
-                       WHERE u.uid = $1 AND us.quantity > 0
-                       ORDER BY s.price * us.quantity DESC`;
+                       WHERE u.uid = $1 AND (us.quantity > 0 OR us.quantity IS NULL)
+                       ORDER BY COALESCE(s.price * us.quantity, 0) DESC`;
         const params = [uid];
         const result = await pc.query(query, params);
         if (result.rows.length === 0) return null;
