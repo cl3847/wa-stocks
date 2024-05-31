@@ -8,6 +8,9 @@ const config: ConfigType = {
   "colors": {
     "green": 0x00c805,
     "red": 0xff5001 ,
+  },
+  "game": {
+    "startingBalance": 1000,
   }
 };
 

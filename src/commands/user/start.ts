@@ -2,6 +2,7 @@ import CommandType from "../../models/CommandType";
 import {CacheType, CommandInteraction, SlashCommandBuilder} from "discord.js";
 import Service from "../../services/Service";
 import User from "../../models/user/User";
+import config from "../../../config";
 
 const command: CommandType = {
     data: new SlashCommandBuilder()
@@ -13,7 +14,7 @@ const command: CommandType = {
         if (!user) {
             const newUser: User = {
                 uid: interaction.user.id,
-                balance: 1000,
+                balance: config.game.startingBalance,
             };
             await service.users.createUser(newUser);
             await interaction.reply('PLACEHOLDER: Created a profile for you with $1000.');
