@@ -1,6 +1,7 @@
-import {CacheType, CommandInteraction, SlashCommandBuilder} from "discord.js";
+import {CacheType, CommandInteraction, EmbedBuilder, SlashCommandBuilder, User} from "discord.js";
 import Service from "../../services/Service";
 import CommandType from "../../models/CommandType";
+import UserPortfolio from "src/models/user/UserPortfolio";
 
 /**
  * TODO Stylize these responses with embeds.
@@ -16,14 +17,26 @@ const command: CommandType = {
         const service = Service.getInstance();
         const userPortfolio = await service.users.getUserPortfolio(interaction.user.id);
         if (!userPortfolio) {
-            await interaction.reply('You do not have a profile yet.');
+            await interaction.reply('You do not have a profile yet.' + interaction.user.id);
             return;
         }
 
-        await interaction.reply(`**${interaction.user.username}**'s profile:\n` +
-            `Balance: $${userPortfolio.balance.toFixed(2)}\n` +
-            `Portfolio: ${userPortfolio.portfolio.map(hs => `${hs.ticker}: ${hs.quantity}`).join(', ')}`)
+        await interaction.reply({ embeds: [generateProfileEmbed(userPortfolio, interaction.user)] });
     },
 };
+
+const generateProfileEmbed = (userPortfolio: UserPortfolio, user: User) => {
+  const displayBalance = `$${userPortfolio.balance.toFixed(2)}`;
+  const displayPortfolio = userPortfolio.portfolio.map(hs => `${hs.ticker}: ${hs.quantity}`).join(', ') || 'No stocks owned.';
+
+  const embed = new EmbedBuilder()
+    .setColor('#00c805')
+    .setAuthor({ name: `${user.displayName}'s Profile`, iconURL: user.avatarURL() || undefined })
+    .addFields(
+      { name: 'Balance', value: displayBalance, inline: true },
+      { name: 'Portfolio', value: displayPortfolio, inline: true },
+    )
+    return embed;
+}
 
 module.exports = command;
