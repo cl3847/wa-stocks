@@ -4,7 +4,7 @@
   "description": "Gamified stock market simulation on Discord",
   "main": "src/index.ts",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,7 +15,6 @@
     "discord.js": "^14.15.2",
     "dotenv": "^16.4.5",
     "pg": "^8.11.5",
-    "ts-node": "^10.9.2",
     "tsx": "^4.11.0",
     "typescript": "^5.4.5"
   },
