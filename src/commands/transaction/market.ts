@@ -9,7 +9,7 @@ const command: CommandType = {
         .setDescription('Buy and sell stocks.')
         .addStringOption(option =>
             option
-                .setName('Transaction Type')
+                .setName("type")
                 .setDescription('Choose to buy or sell stocks')
                 .setRequired(true)
                 .addChoices(
@@ -18,19 +18,19 @@ const command: CommandType = {
                 ))
         .addStringOption(option =>
             option
-                .setName('Stock Ticker')
+                .setName('ticker')
                 .setDescription('The ticker of the stock you want to buy or sell')
                 .setRequired(true)
                 .addChoices(Service.stockTickerList.map(ticker => ({ name: ticker, value: ticker }))))
         .addIntegerOption(option =>
             option
-                .setName('Quantity')
+                    .setName('quantity')
                 .setDescription('The quantity of the stock you want to buy or sell')),
     async execute(interaction: ChatInputCommandInteraction<CacheType>) {
         if (!interaction.isCommand()) return;
-        const transactionType = interaction.options.getString('Transaction Type', true);
-        const ticker = interaction.options.getString('Stock Ticker', true);
-        const quantity = interaction.options.getInteger('Quantity') || 1;
+        const transactionType = interaction.options.getString('type', true);
+        const ticker = interaction.options.getString('ticker', true);
+        const quantity = interaction.options.getInteger('quantity') || 1;
 
         const service = Service.getInstance();
         if (transactionType === 'buy') {
@@ -50,4 +50,4 @@ const command: CommandType = {
     },
 };
 
-export default command;
+module.exports = command;

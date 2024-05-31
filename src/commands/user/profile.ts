@@ -3,6 +3,7 @@ import Service from "../../services/Service";
 import CommandType from "../../models/CommandType";
 import UserPortfolio from "src/models/user/UserPortfolio";
 import config from "../../../config";
+import {centsToDollars} from "../../utils/helpers";
 
 /**
  * TODO Stylize these responses with embeds.
@@ -27,7 +28,7 @@ const command: CommandType = {
 };
 
 const generateProfileEmbed = (userPortfolio: UserPortfolio, user: User) => {
-    const displayBalance = `$${userPortfolio.balance * 0.01}`;
+    const displayBalance = `$${centsToDollars(userPortfolio.balance)}`;
     const displayPortfolio = userPortfolio.portfolio.map(hs => `${hs.ticker}: ${hs.quantity}`).join(', ') || 'No stocks owned.';
 
     return new EmbedBuilder()
