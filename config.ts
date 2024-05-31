@@ -10,7 +10,7 @@ const config: ConfigType = {
     "red": `#ff5001`,
   },
   "game": {
-    "startingBalance": 1000,
+    "startingBalance": 1000, // Starting balance in CENTS
   }
 };
 
