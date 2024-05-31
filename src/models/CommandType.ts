@@ -1,7 +1,7 @@
-import {CacheType, CommandInteraction , SlashCommandBuilder} from "discord.js";
+import {CacheType, CommandInteraction,  SlashCommandOptionsOnlyBuilder} from "discord.js";
 
 export type CommandType = {
-    data: SlashCommandBuilder;
+    data: SlashCommandOptionsOnlyBuilder;
     execute(interaction: CommandInteraction<CacheType>): Promise<void>;
 };
 

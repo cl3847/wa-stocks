@@ -63,10 +63,10 @@ class StockDAO {
      * @param pc {PoolClient} A Postgres Client
      * @returns {Promise<Stock[] | null>} A promise resolving to a list of all stocks
      */
-    public async getAllStocks(pc: PoolClient): Promise<Stock[] | null> {
+    public async getAllStocks(pc: PoolClient): Promise<Stock[]> {
         const query = "SELECT * FROM stocks";
         const result = await pc.query(query);
-        return result.rows.length ? result.rows : null;
+        return result.rows.length ? result.rows : [];
     }
 }
 

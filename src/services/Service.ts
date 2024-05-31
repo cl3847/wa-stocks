@@ -3,12 +3,14 @@ import TransactionService from "../services/TransactionService";
 import DAOs from "../models/DAOs";
 import {Pool} from "pg";
 import StockService from "./StockService";
+import Stock from "../models/stock/Stock";
 
 class Service {
     users: UserService;
     stocks: StockService;
     transactions: TransactionService;
 
+    private static _stockTickerList: string[];
     private static instance: Service;
 
     constructor(daos: DAOs, pool: Pool) {
@@ -17,11 +19,12 @@ class Service {
         this.stocks = new StockService(daos, pool);
     }
 
-    public static init(DAOs: DAOs, pool: Pool) {
+    public static async init(DAOs: DAOs, pool: Pool) {
         if (this.instance) {
             throw new Error("Services already initialized");
         }
         this.instance = new Service(DAOs, pool);
+        this._stockTickerList = (await this.instance.stocks.getAllStocks()).map((stock: Stock) => stock.ticker);
     }
 
     public static getInstance() {
@@ -29,6 +32,13 @@ class Service {
             throw new Error("Services not initialized");
         }
         return this.instance;
+    }
+
+    static get stockTickerList(): string[] {
+        if (!this.instance) {
+            throw new Error("Services not initialized");
+        }
+        return this._stockTickerList;
     }
 }
 

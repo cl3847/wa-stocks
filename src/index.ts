@@ -44,7 +44,7 @@ require('dotenv').config();
         users: new UserDAO(),
         stocks: new StockDAO(),
     };
-    Service.init(daos, pool);
+    await Service.init(daos, pool);
 
     // initialize Discord client
     const client = new Client({intents: [GatewayIntentBits.Guilds]});

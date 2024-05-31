@@ -27,7 +27,7 @@ const command: CommandType = {
 };
 
 const generateProfileEmbed = (userPortfolio: UserPortfolio, user: User) => {
-    const displayBalance = `$${userPortfolio.balance.toFixed(2)}`;
+    const displayBalance = `$${userPortfolio.balance * 0.01}`;
     const displayPortfolio = userPortfolio.portfolio.map(hs => `${hs.ticker}: ${hs.quantity}`).join(', ') || 'No stocks owned.';
 
     return new EmbedBuilder()

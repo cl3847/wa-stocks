@@ -24,6 +24,13 @@ class StockService {
         pc.release();
         return res;
     }
+
+    public async getAllStocks(): Promise<Stock[]> {
+        const pc = await this.pool.connect();
+        const res = this.daos.stocks.getAllStocks(pc);
+        pc.release();
+        return res;
+    }
 }
 
 export default StockService;
