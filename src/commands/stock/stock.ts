@@ -1,5 +1,5 @@
 import CommandType from "../../models/CommandType";
-import {CacheType, ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder, User} from "discord.js";
+import {CacheType, ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import Service from "../../services/Service";
 import {centsToDollars} from "../../utils/helpers";
 import StockNotFoundError from "../../models/error/StockNotFoundError";
