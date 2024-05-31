@@ -17,7 +17,7 @@ const command: CommandType = {
         const service = Service.getInstance();
         const userPortfolio = await service.users.getUserPortfolio(interaction.user.id);
         if (!userPortfolio) {
-            await interaction.reply('You do not have a profile yet.' + interaction.user.id);
+            await interaction.reply('You do not have a profile yet.');
             return;
         }
 
