@@ -2,6 +2,7 @@ import CommandType from "../../models/CommandType";
 import {CacheType, ChatInputCommandInteraction, SlashCommandBuilder} from "discord.js";
 import Service from "../../services/Service";
 import InsufficientBalanceError from "../../models/error/InsufficientBalanceError";
+import log from "../../utils/logger";
 
 const command: CommandType = {
     data: new SlashCommandBuilder()
@@ -41,6 +42,7 @@ const command: CommandType = {
                 if (err instanceof InsufficientBalanceError) {
                     await interaction.reply('You do not have enough balance to buy this stock.');
                 } else {
+                    log.error(err.stack);
                     await interaction.reply('An error occurred while buying the stock.');
                 }
             }

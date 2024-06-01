@@ -5,7 +5,7 @@ interface Stock {
     name: string;
     stock_ticker: string;
     stock_price: number;
-    last_price_update: number;
+    last_update_timestamp: number;
 }
 
 export default Stock;

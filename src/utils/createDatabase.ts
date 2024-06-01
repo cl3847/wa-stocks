@@ -31,7 +31,7 @@ const initDb = async (pc: PoolClient) => {
             name TEXT NOT NULL,
             stock_ticker TEXT NOT NULL,
             stock_price INT NOT NULL,
-            last_price_update INT DEFAULT 0
+            last_update_timestamp BIGINT DEFAULT 0
         );`
     );
     await createTable('users_stocks', `
@@ -53,7 +53,7 @@ const initDb = async (pc: PoolClient) => {
             quantity INT NOT NULL,
             price INT NOT NULL,
             total_price INT NOT NULL,
-            timestamp INT NOT NULL
+            timestamp BIGINT NOT NULL
         );`
     );
 };
