@@ -1,8 +1,10 @@
 import CommandType from "../../models/CommandType";
-import {CacheType, ChatInputCommandInteraction, SlashCommandBuilder} from "discord.js";
+import {CacheType, ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import Service from "../../services/Service";
 import {centsToDollars} from "../../utils/helpers";
 import StockNotFoundError from "../../models/error/StockNotFoundError";
+import Stock from "src/models/stock/Stock";
+import config from "config";
 
 const command: CommandType = {
     data: new SlashCommandBuilder()
@@ -19,8 +21,23 @@ const command: CommandType = {
         const ticker = interaction.options.getString('ticker', true);
         const stock = await service.stocks.getStock(ticker);
         if (!stock) throw new StockNotFoundError(ticker);
-        await interaction.reply(`Stock: ${stock.ticker} - ${stock.name} - $${centsToDollars(stock.price)}`)
+        await interaction.reply({embeds: [generateStockEmbed(stock)]})
     },
 };
+
+const generateStockEmbed = (stock: Stock) => {
+    return new EmbedBuilder()
+        .setTitle(stock.name)
+        .setDescription(`AYUPDAQ: ${stock.ticker}`)
+        .setColor(config.colors.green)
+        .setThumbnail("https://i.imgur.com/AfFp7pu.png")
+        .setTimestamp(new Date())
+        .addFields(
+            { name: '\u200B', value: '\u200B' },
+            {name: 'Price', value: `$${centsToDollars(stock.price)}`, inline: true},
+            {name: 'Change', value: `+0.67`, inline: true},
+            {name: 'Volume', value: `1,000`, inline: true},
+        );
+}
 
 module.exports = command;

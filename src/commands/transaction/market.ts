@@ -46,6 +46,7 @@ const command: CommandType = {
             }
         } else if (transactionType === 'sell') {
             // TODO sell functionality
+            await interaction.reply('Sell functionality is not implemented yet.');
         }
     },
 };
