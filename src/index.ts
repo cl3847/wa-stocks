@@ -10,6 +10,7 @@ import {Client, Events, GatewayIntentBits, Routes, REST, Collection} from "disco
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import CommandType from "./models/CommandType";
+import TransactionDAO from "./handlers/TransactionDAO";
 require('dotenv').config();
 
 (async () => {
@@ -43,6 +44,7 @@ require('dotenv').config();
     const daos: DAOs = {
         users: new UserDAO(),
         stocks: new StockDAO(),
+        transactions: new TransactionDAO(),
     };
     await Service.init(daos, pool);
 

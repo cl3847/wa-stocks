@@ -4,6 +4,7 @@ import {Pool} from "pg";
 import UserNotFoundError from "../models/error/UserNotFoundError";
 import StockNotFoundError from "../models/error/StockNotFoundError";
 import InsufficientBalanceError from "../models/error/InsufficientBalanceError";
+import Transaction from "../models/Transaction";
 
 class TransactionService {
     private daos: DAOs;
@@ -14,6 +15,13 @@ class TransactionService {
         this.pool = pool;
     }
 
+    /**
+     * Buys a stock for a user and updates their balance and stock holdings.
+     * @param {string} uid The user ID
+     * @param {string} ticker The stock ticker of the stock to buy
+     * @param {number} add The quantity of the stock to buy
+     * @returns {Promise<void>} A promise resolving to nothing
+     */
     public async buyStock(uid: string, ticker: string, add: number): Promise<void> {
         const client = await this.pool.connect();
 
@@ -40,6 +48,8 @@ class TransactionService {
 
         try {
             await client.query('BEGIN');
+
+            // update or create stock holding
             if (holding) {
                 await this.daos.users.updateStockHolding(client, uid, ticker, {quantity: newQuantity});
             } else {
@@ -51,6 +61,18 @@ class TransactionService {
                 await this.daos.users.createStockHolding(client, newHolding);
             }
             await this.daos.users.updateUser(client, uid, {balance: newBalance});
+
+            // save transaction record
+            const transactionRecord: Transaction = {
+                type: 'buy',
+                uid: uid,
+                ticker: ticker,
+                quantity: add,
+                price: stock.price,
+                total_price: cost,
+                timestamp: Date.now(),
+            };
+            await this.daos.transactions.createTransaction(client, transactionRecord);
             await client.query('COMMIT');
         } catch (err) {
             await client.query('ROLLBACK');
