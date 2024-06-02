@@ -13,6 +13,7 @@ import CommandType from "./models/CommandType";
 import TransactionDAO from "./handlers/TransactionDAO";
 import * as cron from "node-cron";
 import {updatePriceBoard} from "./utils/priceBoard";
+import {chooseRandomStocks, stockPriceRandomWalk} from "./utils/helpers";
 require('dotenv').config();
 
 (async () => {
@@ -115,6 +116,12 @@ require('dotenv').config();
 
     try {
         cron.schedule('*/5 * * * *', async () => updatePriceBoard(client));
+        cron.schedule(`*/${config.game.randomWalkInterval} * * * *`, async () => {
+            const randomStocks = await chooseRandomStocks(2);
+            for (const stock of randomStocks) {
+                await stockPriceRandomWalk(stock.ticker, config.game.randomWalkVolatility);
+            }
+        });
     } catch (err) {
         log.error(err.stack);
     }

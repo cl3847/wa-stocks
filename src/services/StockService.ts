@@ -13,21 +13,28 @@ class StockService {
 
     public async getStock(ticker: string): Promise<Stock | null> {
         const pc = await this.pool.connect();
-        const res = this.daos.stocks.getStock(pc, ticker);
+        const res = await this.daos.stocks.getStock(pc, ticker);
         pc.release();
         return res;
     }
 
     public async createStock(stock: Stock): Promise<void> {
         const pc = await this.pool.connect();
-        const res = this.daos.stocks.createStock(pc, stock);
+        const res = await this.daos.stocks.createStock(pc, stock);
+        pc.release();
+        return res;
+    }
+
+    public async updateStock(ticker: string, stock: Partial<Stock>): Promise<void> {
+        const pc = await this.pool.connect();
+        const res = await this.daos.stocks.updateStock(pc, ticker, stock);
         pc.release();
         return res;
     }
 
     public async getAllStocks(): Promise<Stock[]> {
         const pc = await this.pool.connect();
-        const res = this.daos.stocks.getAllStocks(pc);
+        const res = await this.daos.stocks.getAllStocks(pc);
         pc.release();
         return res;
     }

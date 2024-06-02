@@ -14,21 +14,21 @@ class UserService {
 
     public async getUser(uid: string): Promise<User | null> {
         const pc = await this.pool.connect();
-        const res = this.daos.users.getUser(pc, uid);
+        const res = await this.daos.users.getUser(pc, uid);
         pc.release();
         return res;
     }
 
     public async createUser(user: User): Promise<void> {
         const pc = await this.pool.connect();
-        const res = this.daos.users.createUser(pc, user);
+        const res = await this.daos.users.createUser(pc, user);
         pc.release();
         return res;
     }
 
     public async getUserPortfolio(uid: string): Promise<UserPortfolio | null> {
         const pc = await this.pool.connect();
-        const res = this.daos.users.getUserPortfolio(pc, uid);
+        const res = await this.daos.users.getUserPortfolio(pc, uid);
         pc.release();
         return res;
     }

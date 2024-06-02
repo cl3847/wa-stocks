@@ -18,6 +18,9 @@ const config: ConfigType = {
   },
   "game": {
     "startingBalance": 1000, // Starting balance in CENTS
+    "randomWalkVolatility": 0.005,
+    "randomWalkInterval": 1, // In minutes
+    "minimumStockPrice": 1,
   }
 };
 

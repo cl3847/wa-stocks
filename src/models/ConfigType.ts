@@ -15,6 +15,9 @@ export type ConfigType = {
     };
     game: {
         startingBalance: number;
+        randomWalkVolatility: number;
+        randomWalkInterval: number;
+        minimumStockPrice: number;
     };
 };
 
