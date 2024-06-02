@@ -11,6 +11,8 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import CommandType from "./models/CommandType";
 import TransactionDAO from "./handlers/TransactionDAO";
+import * as cron from "node-cron";
+import {updatePriceBoard} from "./utils/priceBoard";
 require('dotenv').config();
 
 (async () => {
@@ -108,5 +110,14 @@ require('dotenv').config();
     } catch (error) {
         log.error(error);
     }
+
+    // initialize cron jobs
+
+    try {
+        cron.schedule('*/5 * * * *', async () => updatePriceBoard(client));
+    } catch (err) {
+        log.error(err.stack);
+    }
+
 })();
 

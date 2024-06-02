@@ -4,7 +4,13 @@ require('dotenv').config();
 const config: ConfigType = {
   "bot": {
     "clientID": process.env.CLIENT_ID ?? "1245583548258451516", // The client ID of the bot
-    "guildID": "1245589131405299802" // The guild for the game to be played in
+    "guildID": "1245589131405299802", // The guild for the game to be played in
+    channels: {
+      "info": "1246710130033033306"
+    },
+    messages: {
+      "priceBoard": "1246713065379074138",
+    }
   },
   "colors": {
     "green": `#00c805`,
