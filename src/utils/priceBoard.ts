@@ -19,6 +19,7 @@ async function updatePriceBoard(client: Client) {
 
 function generateStockBoardMessage(allStocks: Stock[], yesterdayPrices: Price[]) {
     let newMessage = `**Stock Prices (${getDateStringETC()}):**\n\`\`\`diff\n`;
+    newMessage += `+ MARKET OPEN +\n\n`; // TODO make this dynamic
     allStocks.forEach(stock => {
        const yesterdayPrice = yesterdayPrices.find(p => p.ticker === stock.ticker);
        const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.price : 0);
