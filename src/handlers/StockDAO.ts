@@ -1,5 +1,6 @@
 import Stock from "../models/stock/Stock";
 import {PoolClient} from "pg";
+import Price from "../models/Price";
 
 class StockDAO {
     /**
@@ -67,6 +68,45 @@ class StockDAO {
         const query = "SELECT * FROM stocks ORDER BY ticker ASC";
         const result = await pc.query(query);
         return result.rows.length ? result.rows : [];
+    }
+
+    public async createPriceHistory(pc: PoolClient, priceHistory: Price): Promise<void> {
+        const keyString = Object.keys(priceHistory).join(", ");
+        const valueString = Object.keys(priceHistory).map((_, index) => `$${index + 1}`).join(", ");
+        const query = `INSERT INTO prices (${keyString}) VALUES (${valueString})`;
+        const params = Object.values(priceHistory);
+        await pc.query(query, params);
+    }
+
+    public async getPriceHistory(pc: PoolClient, ticker: string, year: number, month: number, date: number): Promise<Price> {
+        const query = "SELECT * FROM prices WHERE ticker = $1 AND year = $2 AND month = $3 AND date = $4";
+        const params = [ticker, year, month, date];
+        const result = await pc.query(query, params);
+        return result.rows[0] || null;
+    }
+
+    public async getPriceHistoryStock(pc: PoolClient, ticker: string): Promise<Price[]> {
+        const query = "SELECT * FROM prices WHERE ticker = $1";
+        const params = [ticker];
+        const result = await pc.query(query, params);
+        return result.rows;
+    }
+
+    public async updatePriceHistory(pc: PoolClient, ticker: string, year: number, month: number, date: number, price: Partial<Price>): Promise<void> {
+        if (Object.keys(price).length === 0) {
+            throw new Error("No fields to update");
+        }
+        const fields = Object.keys(price).map((key, index) => `${key} = $${index + 1}`).join(', ');
+        const query = `UPDATE prices SET ${fields} WHERE ticker = $${Object.keys(price).length + 1} AND year = $${Object.keys(price).length + 2} AND month = $${Object.keys(price).length + 3} AND date = $${Object.keys(price).length + 4}`;
+        const params = [...Object.values(price), ticker, year, month, date];
+        await pc.query(query, params);
+    }
+
+    public async getPriceHistoryDay(pc: PoolClient, year: number, month: number, date: number): Promise<Price[]> {
+        const query = "SELECT * FROM prices WHERE year = $1 AND month = $2 AND date = $3";
+        const params = [year, month, date];
+        const result = await pc.query(query, params);
+        return result.rows;
     }
 }
 

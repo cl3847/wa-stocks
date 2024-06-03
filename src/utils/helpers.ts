@@ -12,6 +12,22 @@ function getDateStringETC() {
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'America/New_York'});
 }
 
+function getETCComponents(): {year: number, month: number, date: number } {
+    const dateString = new Date().toLocaleString('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' });
+    const [month, date, year] = dateString.split('/').map(Number);
+    if (!year || !month || !date) throw new Error('Error parsing date components.');
+    return { year, month, date };
+}
+
+function getETCComponentsPreviousDay(): { year: number, month: number, date: number } {
+    const now = new Date();
+    const previousDay = new Date(now.setDate(now.getDate() - 1));
+    const dateString = previousDay.toLocaleString('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' });
+    const [month, date, year] = dateString.split('/').map(Number);
+    if (!year || !month || !date) throw new Error('Error parsing date components.');
+    return { year, month, date };
+}
+
 async function chooseRandomStocks(n: number) {
     const service = Service.getInstance();
     const allStocks = await service.stocks.getAllStocks();
@@ -37,4 +53,4 @@ async function stockPriceRandomWalk(ticker: string, volatility: number) {
     log.success(`Random walk for ${ticker} completed. New price: ${new_price}`);
 }
 
-export { centsToDollars, chooseRandomStocks, stockPriceRandomWalk, getDateStringETC };
+export { centsToDollars, chooseRandomStocks, stockPriceRandomWalk, getDateStringETC, getETCComponents, getETCComponentsPreviousDay };
