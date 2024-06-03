@@ -27,17 +27,17 @@ const command: CommandType = {
 
 const generateStockEmbed = (stock: Stock) => {
     return new EmbedBuilder()
-        .setTitle(stock.name)
-        .setDescription(`AYUPDAQ: ${stock.ticker}`)
+        .setTitle(`${stock.name} (${stock.ticker})`)
+        .setDescription(`placeholder description`)
         .setColor(config.colors.green)
         .setThumbnail("https://i.imgur.com/AfFp7pu.png")
+        .setImage("https://t4.ftcdn.net/jpg/06/46/48/39/360_F_646483996_FU8STGnemtNlh7eprlfh1fZtBmAW8lV2.jpg")
         .setTimestamp(new Date())
         .addFields(
             { name: '\u200B', value: '\u200B' },
-            {name: 'Price', value: `$${centsToDollars(stock.price)}`, inline: true},
-            {name: 'Change', value: `+0.67`, inline: true},
-            {name: 'Volume', value: `1,000`, inline: true},
+            {name: 'Price', value: `\`\`\`$${centsToDollars(stock.price)}\n\`\`\``, inline: true},
+            {name: 'Today\'s Change', value: `\`\`\`diff\n+0.67% (+$67.89)\n\`\`\``, inline: true},
         );
-}
+};
 
 module.exports = command;

@@ -17,7 +17,7 @@ const config: ConfigType = {
     "red": `#ff5001`,
   },
   "game": {
-    "startingBalance": 1000, // Starting balance in CENTS
+    "startingBalance": 100000, // Starting balance in CENTS
     "randomWalkVolatility": 0.005,
     "randomWalkInterval": 1, // In minutes
     "minimumStockPrice": 1,

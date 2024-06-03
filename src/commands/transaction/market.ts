@@ -3,6 +3,7 @@ import {CacheType, ChatInputCommandInteraction, SlashCommandBuilder} from "disco
 import Service from "../../services/Service";
 import InsufficientBalanceError from "../../models/error/InsufficientBalanceError";
 import log from "../../utils/logger";
+import UserNotFoundError from "../../models/error/UserNotFoundError";
 
 const command: CommandType = {
     data: new SlashCommandBuilder()
@@ -41,6 +42,8 @@ const command: CommandType = {
             } catch(err) {
                 if (err instanceof InsufficientBalanceError) {
                     await interaction.reply('You do not have enough balance to buy this stock.');
+                } if (err instanceof UserNotFoundError) {
+                    await interaction.reply('You do not have a profile yet.');
                 } else {
                     log.error(err.stack);
                     await interaction.reply('An error occurred while buying the stock.');

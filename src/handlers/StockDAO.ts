@@ -64,7 +64,7 @@ class StockDAO {
      * @returns {Promise<Stock[] | null>} A promise resolving to a list of all stocks
      */
     public async getAllStocks(pc: PoolClient): Promise<Stock[]> {
-        const query = "SELECT * FROM stocks";
+        const query = "SELECT * FROM stocks ORDER BY ticker ASC";
         const result = await pc.query(query);
         return result.rows.length ? result.rows : [];
     }

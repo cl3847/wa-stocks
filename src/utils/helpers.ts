@@ -7,6 +7,11 @@ function centsToDollars(cents: number) {
     return (cents / 100).toFixed(2);
 }
 
+function getDateStringETC() {
+    const date = new Date();
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'America/New_York'});
+}
+
 async function chooseRandomStocks(n: number) {
     const service = Service.getInstance();
     const allStocks = await service.stocks.getAllStocks();
@@ -32,4 +37,4 @@ async function stockPriceRandomWalk(ticker: string, volatility: number) {
     log.success(`Random walk for ${ticker} completed. New price: ${new_price}`);
 }
 
-export { centsToDollars, chooseRandomStocks, stockPriceRandomWalk };
+export { centsToDollars, chooseRandomStocks, stockPriceRandomWalk, getDateStringETC };

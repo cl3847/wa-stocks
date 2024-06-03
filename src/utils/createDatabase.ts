@@ -53,9 +53,22 @@ const initDb = async (pc: PoolClient) => {
             quantity INT NOT NULL,
             price INT NOT NULL,
             total_price INT NOT NULL,
-            timestamp BIGINT NOT NULL
+            timestamp BIGINT NOT NULL,
+            FOREIGN KEY(uid) REFERENCES users(uid) ON UPDATE CASCADE ON DELETE CASCADE,
+            FOREIGN KEY(ticker) REFERENCES stocks(ticker) ON UPDATE CASCADE ON DELETE CASCADE
         );`
     );
+    await createTable('prices', `
+        CREATE TABLE prices (
+            ticker TEXT NOT NULL, 
+            price INT NOT NULL,
+            year INT NOT NULL,
+            month INT NOT NULL,
+            date INT NOT NULL,
+            PRIMARY KEY (ticker, year, month, date),
+            FOREIGN KEY(ticker) REFERENCES stocks(ticker) ON UPDATE CASCADE ON DELETE CASCADE
+        );`
+    )
 };
 
 export {initDb}
