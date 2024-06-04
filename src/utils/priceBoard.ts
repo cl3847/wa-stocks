@@ -11,7 +11,7 @@ async function updatePriceBoard(client: Client) {
     // TODO add error handling
     if (!config.bot.channels.info || !config.bot.messages.priceBoard) return;
     const allStocks = await service.stocks.getAllStocks();
-    const yesterdayPrices = await service.stocks.getYesterdayPrices();
+    const yesterdayPrices = await service.stocks.getAllYesterdayPrice();
     const channel = await client.channels.fetch(config.bot.channels.info) as TextChannel;
     const message = await channel.messages.fetch(config.bot.messages.priceBoard);
     await message.edit({content: "", embeds: [generateStockBoardEmbed(allStocks, yesterdayPrices)]});
@@ -24,7 +24,7 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[]) {
        const yesterdayPrice = yesterdayPrices.find(p => p.ticker === stock.ticker);
        const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.price : 0);
        const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.price : 1);
-       desc += `${stock.ticker} - ${stock.name} - $${centsToDollars(stock.price)}\n${priceDiff > 0 ? '+' : '-'}$${centsToDollars(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)\n`;
+       desc += `${stock.ticker} - ${stock.name} - $${centsToDollars(stock.price)}\n${priceDiff >= 0 ? '+' : '-'}$${centsToDollars(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)\n`;
         upDownAmount += priceDiff >= 0 ? 1 : -1;
     });
     return new EmbedBuilder()

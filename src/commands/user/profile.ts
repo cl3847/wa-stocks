@@ -36,7 +36,7 @@ const command: CommandType = {
             await interaction.reply('You do not have a profile yet.');
             return;
         }
-        const yesterdayPrices = await service.stocks.getYesterdayPrices();
+        const yesterdayPrices = await service.stocks.getAllYesterdayPrice();
         await interaction.reply({embeds: [generateProfileEmbed(userPortfolio, yesterdayPrices, user)]});
     },
 };

@@ -1,10 +1,11 @@
 import CommandType from "../../models/CommandType";
 import {CacheType, ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import Service from "../../services/Service";
-import {centsToDollars} from "../../utils/helpers";
+import {centsToDollars, stringToDiffBlock} from "../../utils/helpers";
 import StockNotFoundError from "../../models/error/StockNotFoundError";
 import Stock from "src/models/stock/Stock";
 import config from "config";
+import Price from "../../models/Price";
 
 const command: CommandType = {
     data: new SlashCommandBuilder()
@@ -21,11 +22,15 @@ const command: CommandType = {
         const ticker = interaction.options.getString('ticker', true);
         const stock = await service.stocks.getStock(ticker);
         if (!stock) throw new StockNotFoundError(ticker);
-        await interaction.reply({embeds: [generateStockEmbed(stock)]})
+        const yesterdayPrice = await service.stocks.getYesterdayPrice(ticker);
+        await interaction.reply({embeds: [generateStockEmbed(stock, yesterdayPrice)]})
     },
 };
 
-const generateStockEmbed = (stock: Stock) => {
+const generateStockEmbed = (stock: Stock, yesterdayPrice: Price | null) => {
+    const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.price : 0);
+    const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.price : 1);
+
     return new EmbedBuilder()
         .setTitle(`${stock.name} (${stock.ticker})`)
         .setDescription(`placeholder description`)
@@ -36,7 +41,7 @@ const generateStockEmbed = (stock: Stock) => {
         .addFields(
             { name: '\u200B', value: '\u200B' },
             {name: 'Price', value: `\`\`\`$${centsToDollars(stock.price)}\n\`\`\``, inline: true},
-            {name: 'Today\'s Change', value: `\`\`\`diff\n+0.67% (+$67.89)\n\`\`\``, inline: true},
+            {name: 'Today\'s Change', value: stringToDiffBlock(`${priceDiff >= 0 ? '+' : '-'}$${centsToDollars(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)`), inline: true},
         );
 };
 

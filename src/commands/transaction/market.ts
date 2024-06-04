@@ -4,6 +4,7 @@ import Service from "../../services/Service";
 import InsufficientBalanceError from "../../models/error/InsufficientBalanceError";
 import log from "../../utils/logger";
 import UserNotFoundError from "../../models/error/UserNotFoundError";
+import InsufficientStockQuantityError from "../../models/error/InsufficientStockQuantityError";
 
 const command: CommandType = {
     data: new SlashCommandBuilder()
@@ -42,7 +43,7 @@ const command: CommandType = {
             } catch(err) {
                 if (err instanceof InsufficientBalanceError) {
                     await interaction.reply('You do not have enough balance to buy this stock.');
-                } if (err instanceof UserNotFoundError) {
+                } else if (err instanceof UserNotFoundError) {
                     await interaction.reply('You do not have a profile yet.');
                 } else {
                     log.error(err.stack);
@@ -50,8 +51,19 @@ const command: CommandType = {
                 }
             }
         } else if (transactionType === 'sell') {
-            // TODO sell functionality
-            await interaction.reply('Sell functionality is not implemented yet.');
+            try {
+                await service.transactions.sellStock(interaction.user.id, ticker, quantity);
+                await interaction.reply(`You sold ${quantity} ${ticker} stocks.`);
+            } catch(err) {
+                if (err instanceof InsufficientStockQuantityError) {
+                    await interaction.reply('You do not have enough shares to sell this amount of stock.');
+                } else if (err instanceof UserNotFoundError) {
+                    await interaction.reply('You do not have a profile yet.');
+                } else {
+                    log.error(err.stack);
+                    await interaction.reply('An error occurred while selling the stock.');
+                }
+            }
         }
     },
 };

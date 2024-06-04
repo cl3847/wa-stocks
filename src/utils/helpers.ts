@@ -1,7 +1,6 @@
 import Service from "../services/Service";
 import StockNotFoundError from "../models/error/StockNotFoundError";
 import config from "../../config";
-import log from "./logger";
 
 function centsToDollars(cents: number) {
     return (cents / 100).toFixed(2);
@@ -42,7 +41,6 @@ async function stockPriceRandomWalk(ticker: string, volatility: number) {
     const stock = await service.stocks.getStock(ticker);
     if (!stock) throw new StockNotFoundError(ticker);
 
-    log.info(`Starting random walk for ${ticker} with original price ${stock.price}...`);
     const rnd = Math.random();
     let change_percent = 2 * volatility * rnd;
     if (change_percent > volatility) change_percent -= (2 * volatility);
@@ -50,7 +48,6 @@ async function stockPriceRandomWalk(ticker: string, volatility: number) {
     let new_price = Math.floor(stock.price + change_amount);
     if (new_price < config.game.minimumStockPrice) new_price = config.game.minimumStockPrice;
     await service.stocks.updateStock(ticker, {price: new_price});
-    log.success(`Random walk for ${ticker} completed. New price: ${new_price}`);
 }
 
 function stringToDiffBlock(s: string) {
