@@ -20,6 +20,7 @@ const config: ConfigType = {
     "startingBalance": 100000, // Starting balance in CENTS
     "randomWalkVolatility": 0.005,
     "randomWalkInterval": 1, // In minutes
+    "randomWalkAmount": 4, // Number of stocks to randomly walk
     "minimumStockPrice": 1,
   }
 };

@@ -47,10 +47,14 @@ async function stockPriceRandomWalk(ticker: string, volatility: number) {
     let change_percent = 2 * volatility * rnd;
     if (change_percent > volatility) change_percent -= (2 * volatility);
     const change_amount = stock.price * change_percent;
-    let new_price = Math.round(stock.price + change_amount);
+    let new_price = Math.floor(stock.price + change_amount);
     if (new_price < config.game.minimumStockPrice) new_price = config.game.minimumStockPrice;
     await service.stocks.updateStock(ticker, {price: new_price});
     log.success(`Random walk for ${ticker} completed. New price: ${new_price}`);
 }
 
-export { centsToDollars, chooseRandomStocks, stockPriceRandomWalk, getDateStringETC, getETCComponents, getETCComponentsPreviousDay };
+function stringToDiffBlock(s: string) {
+    return `\`\`\`diff\n${s}\n\`\`\``;
+}
+
+export { centsToDollars, chooseRandomStocks, stockPriceRandomWalk, getDateStringETC, getETCComponents, getETCComponentsPreviousDay, stringToDiffBlock };

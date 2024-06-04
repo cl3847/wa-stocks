@@ -17,6 +17,7 @@ export type ConfigType = {
         startingBalance: number;
         randomWalkVolatility: number;
         randomWalkInterval: number;
+        randomWalkAmount: number;
         minimumStockPrice: number;
     };
 };

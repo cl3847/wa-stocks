@@ -117,7 +117,7 @@ require('dotenv').config();
     try {
         cron.schedule('*/1 * * * *', async () => updatePriceBoard(client));
         cron.schedule(`*/${config.game.randomWalkInterval} * * * *`, async () => {
-            const randomStocks = await chooseRandomStocks(2);
+            const randomStocks = await chooseRandomStocks(config.game.randomWalkAmount);
             for (const stock of randomStocks) {
                 await stockPriceRandomWalk(stock.ticker, config.game.randomWalkVolatility);
             }

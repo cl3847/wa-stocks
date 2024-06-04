@@ -1,7 +1,7 @@
 import Service from "../services/Service";
 import config from "../../config";
-import {Client, TextChannel} from "discord.js"
-import {centsToDollars, getDateStringETC} from "./helpers";
+import {Client, EmbedBuilder, TextChannel} from "discord.js"
+import {centsToDollars, getDateStringETC, stringToDiffBlock} from "./helpers";
 import Stock from "../models/stock/Stock";
 import Price from "../models/Price";
 
@@ -14,21 +14,23 @@ async function updatePriceBoard(client: Client) {
     const yesterdayPrices = await service.stocks.getYesterdayPrices();
     const channel = await client.channels.fetch(config.bot.channels.info) as TextChannel;
     const message = await channel.messages.fetch(config.bot.messages.priceBoard);
-    await message.edit(generateStockBoardMessage(allStocks, yesterdayPrices));
+    await message.edit({content: "", embeds: [generateStockBoardEmbed(allStocks, yesterdayPrices)]});
 }
 
-function generateStockBoardMessage(allStocks: Stock[], yesterdayPrices: Price[]) {
-    let newMessage = `**Stock Prices (${getDateStringETC()}):**\n\`\`\`diff\n`;
-    newMessage += `+ MARKET OPEN +\n\n`; // TODO make this dynamic
+function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[]) {
+    let upDownAmount = 0;
+    let desc = ``;
     allStocks.forEach(stock => {
        const yesterdayPrice = yesterdayPrices.find(p => p.ticker === stock.ticker);
        const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.price : 0);
        const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.price : 1);
-       newMessage += `${stock.ticker} - ${stock.name} - $${centsToDollars(stock.price)}\n${priceDiff > 0 ? '+' : '-'}$${centsToDollars(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)\n`;
+       desc += `${stock.ticker} - ${stock.name} - $${centsToDollars(stock.price)}\n${priceDiff > 0 ? '+' : '-'}$${centsToDollars(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)\n`;
+        upDownAmount += priceDiff >= 0 ? 1 : -1;
     });
-    newMessage += `\n\`\`\`\nLast Updated: <t:${Math.floor(Date.now() / 1000)}>\n`;
-    newMessage += `Market Hours: **9:30AM to 4:00PM ET, Mon-Fri**. (<t:${1717421400}:t> to <t:${1717444800}:t>)\n`;
-    return newMessage;
+    return new EmbedBuilder()
+        .setTitle(`Stock Prices (${getDateStringETC()})`)
+        .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + stringToDiffBlock(`+ MARKET OPEN +\nHours: 9:30AM to 4:00PM ET`) + stringToDiffBlock(desc))
+        .setColor(upDownAmount >= 0 ? config.colors.green : config.colors.red);
 }
 
 export {updatePriceBoard};
