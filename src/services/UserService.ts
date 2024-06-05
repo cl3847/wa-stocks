@@ -32,6 +32,13 @@ class UserService {
         pc.release();
         return res;
     }
+
+    public async getAllUserPortfolios(): Promise<UserPortfolio[]> {
+        const pc = await this.pool.connect();
+        const res = await this.daos.users.getAllUserPortfolios(pc);
+        pc.release();
+        return res;
+    }
 }
 
 export default UserService;

@@ -1,8 +1,11 @@
 import DAOs from "../models/DAOs";
-import {Pool} from "pg";
+import {Pool, PoolClient} from "pg";
 import Stock from "../models/stock/Stock";
-import {getETCComponents, getETCComponentsPreviousDay} from "../utils/helpers";
+import {getETCComponentsPreviousDay} from "../utils/helpers";
 import Price from "../models/Price";
+import StockNotFoundError from "../models/error/StockNotFoundError";
+import log from "../utils/logger";
+import yahooFinance from "yahoo-finance2";
 
 class StockService {
     private daos: DAOs;
@@ -31,17 +34,6 @@ class StockService {
         const pc = await this.pool.connect();
         const res = await this.daos.stocks.updateStock(pc, ticker, stock);
 
-        // Possibly update price history as well
-        if (stock.price) {
-            const {year, month, date} = getETCComponents();
-            const priceHistory: Price = {ticker, year, month, date, price: stock.price};
-            if (await this.daos.stocks.getPriceHistory(pc, ticker, year, month, date)) {
-                await this.daos.stocks.updatePriceHistory(pc, ticker, year, month, date, priceHistory);
-            } else {
-                await this.daos.stocks.createPriceHistory(pc, priceHistory);
-            }
-        }
-
         pc.release();
         return res;
     }
@@ -67,6 +59,48 @@ class StockService {
         const res = await this.daos.stocks.getPriceHistory(pc, ticker, year, month, date);
         pc.release();
         return res;
+    }
+
+    public async synchronizeStockPrice(ticker: string, suppliedPc?: PoolClient): Promise<void> {
+        const pc = suppliedPc || await this.pool.connect();
+        const stock = await this.daos.stocks.getStock(pc, ticker);
+        if (!stock) throw new StockNotFoundError(ticker);
+        log.info(`Synchronizing stock price for ${ticker}`);
+        try {
+            const quote = await yahooFinance.quoteSummary(stock.stock_ticker);
+            if (!quote.price || !quote.price.regularMarketPrice) {
+                log.error(`Error synchronizing stock price for ${ticker}: No price found`);
+            } else {
+                const priceCents = Math.floor(quote.price.regularMarketPrice * 100);
+                await this.daos.stocks.updateStock(pc, ticker, {
+                    price: priceCents * stock.multiplier,
+                    stock_price: priceCents,
+                    last_update_timestamp: Math.floor(Date.now() / 1000)
+                });
+                log.success(`Synchronized stock price for ${ticker}`)
+            }
+        } catch(err) {
+            log.error(`Error synchronizing stock price for ${ticker}: ${err.message}`);
+            throw err;
+        } finally {
+            if (!suppliedPc) pc.release();
+        }
+    }
+
+    public async synchronizeAllStockPrices() {
+        const pc = await this.pool.connect();
+        try {
+            await pc.query('BEGIN');
+            for (const stock of await this.daos.stocks.getAllStocks(pc)) {
+                await this.synchronizeStockPrice(stock.ticker, pc);
+            }
+            await pc.query('COMMIT');
+        } catch (err) {
+            log.error(`Error synchronizing all stock prices, rolling back: ${err.message}`);
+            await pc.query('ROLLBACK');
+        } finally {
+            pc.release();
+        }
     }
 }
 

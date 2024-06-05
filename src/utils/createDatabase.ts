@@ -61,14 +61,27 @@ const initDb = async (pc: PoolClient) => {
     await createTable('prices', `
         CREATE TABLE prices (
             ticker TEXT NOT NULL, 
-            price INT NOT NULL,
+            close_price INT NOT NULL,
+            open_price INT NOT NULL,
+            high_price INT NOT NULL,
+            low_price INT NOT NULL,
             year INT NOT NULL,
             month INT NOT NULL,
             date INT NOT NULL,
             PRIMARY KEY (ticker, year, month, date),
             FOREIGN KEY(ticker) REFERENCES stocks(ticker) ON UPDATE CASCADE ON DELETE CASCADE
         );`
-    )
+    );
+    await createTable('objects', `
+        CREATE TABLE objects (
+            name TEXT PRIMARY KEY,
+            data JSONB DEFAULT '{}'
+        );`
+    );
+    // check if gameState exists in objects
+    if (!await pc.query(`SELECT * FROM objects WHERE name = 'gameState';`)) {
+        pc.query(`INSERT INTO objects (name, data) VALUES ('gameState', '{"isMarketOpen": false}');`);
+    }
 };
 
 export {initDb}

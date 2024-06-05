@@ -4,11 +4,13 @@ import DAOs from "../models/DAOs";
 import {Pool} from "pg";
 import StockService from "./StockService";
 import Stock from "../models/stock/Stock";
+import GameService from "./GameService";
 
 class Service {
     users: UserService;
     stocks: StockService;
     transactions: TransactionService;
+    game: GameService;
 
     private static _stockTickerList: string[];
     private static instance: Service;
@@ -17,6 +19,7 @@ class Service {
         this.users = new UserService(daos, pool);
         this.transactions = new TransactionService(daos, pool);
         this.stocks = new StockService(daos, pool);
+        this.game = new GameService(daos, pool);
     }
 
     public static async init(DAOs: DAOs, pool: Pool) {

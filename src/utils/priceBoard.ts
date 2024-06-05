@@ -4,6 +4,7 @@ import {Client, EmbedBuilder, TextChannel} from "discord.js"
 import {centsToDollars, getDateStringETC, stringToDiffBlock} from "./helpers";
 import Stock from "../models/stock/Stock";
 import Price from "../models/Price";
+import UserPortfolio from "../models/user/UserPortfolio";
 
 async function updatePriceBoard(client: Client) {
     const service = Service.getInstance();
@@ -12,9 +13,15 @@ async function updatePriceBoard(client: Client) {
     if (!config.bot.channels.info || !config.bot.messages.priceBoard) return;
     const allStocks = await service.stocks.getAllStocks();
     const yesterdayPrices = await service.stocks.getAllYesterdayPrice();
+    const allUserPortfolios = await service.users.getAllUserPortfolios();
     const channel = await client.channels.fetch(config.bot.channels.info) as TextChannel;
     const message = await channel.messages.fetch(config.bot.messages.priceBoard);
-    await message.edit({content: "", embeds: [generateStockBoardEmbed(allStocks, yesterdayPrices)]});
+    await message.edit({
+        content: "", embeds: [
+            await generateLeaderboardEmbed(client, allUserPortfolios, yesterdayPrices),
+            generateStockBoardEmbed(allStocks, yesterdayPrices)
+        ]
+    });
 }
 
 function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[]) {
@@ -22,8 +29,8 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[]) {
     let desc = ``;
     allStocks.forEach(stock => {
        const yesterdayPrice = yesterdayPrices.find(p => p.ticker === stock.ticker);
-       const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.price : 0);
-       const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.price : 1);
+       const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.close_price : 0);
+       const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price : 1);
        desc += `${stock.ticker} - ${stock.name} - $${centsToDollars(stock.price)}\n${priceDiff >= 0 ? '+' : '-'}$${centsToDollars(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)\n`;
         upDownAmount += priceDiff >= 0 ? 1 : -1;
     });
@@ -31,6 +38,29 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[]) {
         .setTitle(`Stock Prices (${getDateStringETC()})`)
         .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + stringToDiffBlock(`+ MARKET OPEN +\nHours: 9:30AM to 4:00PM ET`) + stringToDiffBlock(desc))
         .setColor(upDownAmount >= 0 ? config.colors.green : config.colors.red);
+}
+
+async function generateLeaderboardEmbed(client: Client, allUserPortfolios: UserPortfolio[], yesterdayPrices: Price[]) {
+    let desc = ``;
+    let i = 1;
+    for (let user of allUserPortfolios) {
+        let totalPriceDiff = 0;
+        let totalYesterdayPrice = 0;
+        for (let hs of user.portfolio) {
+            const yesterdayPrice = yesterdayPrices.find(p => p.ticker === hs.ticker);
+            const priceDiff = (hs.price * hs.quantity - (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 0));
+
+            totalPriceDiff += priceDiff;
+            totalYesterdayPrice += (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 0);
+        }
+        const totalPriceDiffPercent = totalPriceDiff / (totalYesterdayPrice || 1);
+        desc += stringToDiffBlock(`${i}: ${(await client.users.fetch(user.uid)).username} - $${centsToDollars(user.netWorth())}\n${totalPriceDiff > 0 ? '+' : '-'}$${centsToDollars(Math.abs(totalPriceDiff))} (${(totalPriceDiffPercent * 100).toFixed(2)}%)\n`);
+        i++;
+    }
+    return new EmbedBuilder()
+        .setTitle(`Net Worth Leaderboard (${getDateStringETC()})`)
+        .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + desc)
+        .setColor(config.colors.green);
 }
 
 export {updatePriceBoard};

@@ -47,11 +47,11 @@ const generateProfileEmbed = (userPortfolio: UserPortfolio, yesterdayPrices: Pri
     let totalYesterdayPrice = 0;
     const displayPortfolio = userPortfolio.portfolio.map(hs => {
         const yesterdayPrice = yesterdayPrices.find(p => p.ticker === hs.ticker);
-        const priceDiff = (hs.price * hs.quantity - (yesterdayPrice ? yesterdayPrice.price * hs.quantity : 0));
-        const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.price * hs.quantity : 1);
+        const priceDiff = (hs.price * hs.quantity - (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 0));
+        const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 1);
 
         totalPriceDiff += priceDiff;
-        totalYesterdayPrice += (yesterdayPrice ? yesterdayPrice.price * hs.quantity : 0);
+        totalYesterdayPrice += (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 0);
 
         return `${hs.ticker} - ${hs.quantity} share(s) - $${centsToDollars(hs.price * hs.quantity)}\n${priceDiff > 0 ? '+' : '-'}$${centsToDollars(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)`;
     }).join('\n') || 'No stocks owned.';

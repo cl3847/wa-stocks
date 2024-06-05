@@ -3,6 +3,7 @@ import User from "../models/user/User"
 import UserStock from "../models/user_stock/UserStock";
 import HeldStock from "../models/stock/HeldStock";
 import {PoolClient} from "pg";
+import Stock from "../models/stock/Stock";
 
 class UserDAO {
     /**
@@ -76,6 +77,24 @@ class UserDAO {
         if (result.rows.length === 0) return null;
         const portfolio = (result.rows[0] as HeldStock).ticker ? result.rows.map(row => row as HeldStock).filter(row => row.quantity > 0) : [];
         return new UserPortfolio(result.rows[0] as User, portfolio);
+    }
+
+    public async getAllUserPortfolios(pc: PoolClient): Promise<UserPortfolio[]> {
+        const query = `SELECT u.*, json_agg(json_build_object('user_stock', us, 'stock', s)) AS holdings
+            FROM users u
+            LEFT JOIN users_stocks us ON u.uid = us.uid
+            LEFT JOIN stocks s ON us.ticker = s.ticker
+            GROUP BY u.uid, u.balance
+            ORDER BY u.balance + COALESCE(SUM(s.price * us.quantity), 0) DESC NULLS LAST`;
+        const result = await pc.query(query);
+        if (result.rows.length === 0) return [];
+        const portfolios: UserPortfolio[] = [];
+        for (const row of result.rows) {
+            const user = row as User;
+            const portfolio = (row.holdings[0].stock as Stock)?.ticker ? row.holdings.map((h: {user_stock: UserStock, stock: Stock}) =>  Object.assign(h.user_stock, h.stock) as HeldStock).filter((row: HeldStock) => row.quantity > 0) : [];
+            portfolios.push(new UserPortfolio(user, portfolio));
+        }
+        return portfolios;
     }
 
     public async createStockHolding(pc: PoolClient, holding: UserStock): Promise<void> {
