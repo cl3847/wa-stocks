@@ -118,17 +118,20 @@ require('dotenv').config();
 
     try {
         cron.schedule('*/1 * * * *', async () => updatePriceBoard(client)); // update info channel
+
         cron.schedule(`*/${config.game.randomWalkInterval} * * * *`, async () => { // random walk stocks
             const randomStocks = await chooseRandomStocks(config.game.randomWalkAmount);
             for (const stock of randomStocks) {
                 await stockPriceRandomWalk(stock.ticker, config.game.randomWalkVolatility);
             }
         });
+
         cron.schedule('31 9 * * 1-5', async () => { // open market
             await Service.getInstance().game.updateGameState({isMarketOpen: true});
             await Service.getInstance().stocks.synchronizeAllStockPrices();
             log.info(`Market opened at ${new Date().toLocaleString()} ET`);
         }, {timezone: "America/New_York"});
+
         cron.schedule('01 4 * * 1-5', async () => { // open market
             await Service.getInstance().game.updateGameState({isMarketOpen: false});
             log.info(`Market closed at ${new Date().toLocaleString()} ET`);
