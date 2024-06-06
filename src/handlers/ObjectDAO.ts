@@ -2,10 +2,10 @@ import {PoolClient} from "pg";
 
 class ObjectDAO {
     public async getObject(pc: PoolClient, name: string): Promise<Object> {
-        const query = "SELECT * FROM objects WHERE name = $1";
+        const query = "SELECT data FROM objects WHERE name = $1";
         const params = [name];
         const result = await pc.query(query, params);
-        return result.rows[0] || null;
+        return result.rows[0].data || null;
     }
 
     public async createObject(pc: PoolClient, name: string, object: Object): Promise<void> {
