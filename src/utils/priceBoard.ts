@@ -5,6 +5,7 @@ import {centsToDollars, getDateStringETC, stringToDiffBlock} from "./helpers";
 import Stock from "../models/stock/Stock";
 import Price from "../models/Price";
 import UserPortfolio from "../models/user/UserPortfolio";
+import GameState from "../models/GameState";
 
 async function updatePriceBoard(client: Client) {
     const service = Service.getInstance();
@@ -16,15 +17,16 @@ async function updatePriceBoard(client: Client) {
     const allUserPortfolios = await service.users.getAllUserPortfolios();
     const channel = await client.channels.fetch(config.bot.channels.info) as TextChannel;
     const message = await channel.messages.fetch(config.bot.messages.priceBoard);
+    const gameState = await service.game.getGameState();
     await message.edit({
         content: "", embeds: [
             await generateLeaderboardEmbed(client, allUserPortfolios, yesterdayPrices),
-            generateStockBoardEmbed(allStocks, yesterdayPrices)
+            generateStockBoardEmbed(allStocks, yesterdayPrices, gameState)
         ]
     });
 }
 
-function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[]) {
+function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], gameState: GameState) {
     let upDownAmount = 0;
     let desc = ``;
     allStocks.forEach(stock => {
@@ -34,9 +36,10 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[]) {
        desc += `${stock.ticker} - ${stock.name} - $${centsToDollars(stock.price)}\n${priceDiff >= 0 ? '+' : '-'}$${centsToDollars(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)\n`;
         upDownAmount += priceDiff >= 0 ? 1 : -1;
     });
+    const marketStatus = gameState.isMarketOpen ? "+ MARKET OPEN +" : "- MARKET CLOSED -";
     return new EmbedBuilder()
         .setTitle(`Stock Prices (${getDateStringETC()})`)
-        .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + stringToDiffBlock(`+ MARKET OPEN +\nHours: 9:30AM to 4:00PM ET`) + stringToDiffBlock(desc))
+        .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + stringToDiffBlock(`${marketStatus}\nHours: 9:30AM to 4:00PM ET`) + stringToDiffBlock(desc))
         .setColor(upDownAmount >= 0 ? config.colors.green : config.colors.red);
 }
 

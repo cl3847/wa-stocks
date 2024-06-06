@@ -132,7 +132,7 @@ require('dotenv').config();
             log.info(`Market opened at ${new Date().toLocaleString()} ET`);
         }, {timezone: "America/New_York"});
 
-        cron.schedule('01 4 * * 1-5', async () => { // open market
+        cron.schedule('01 16 * * 1-5', async () => { // open market
             await Service.getInstance().game.updateGameState({isMarketOpen: false});
             log.info(`Market closed at ${new Date().toLocaleString()} ET`);
         }, {timezone: "America/New_York"});
