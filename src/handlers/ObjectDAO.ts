@@ -5,8 +5,7 @@ class ObjectDAO {
         const query = "SELECT * FROM objects WHERE name = $1";
         const params = [name];
         const result = await pc.query(query, params);
-        console.log(JSON.parse(result.rows[0]) || null);
-        return JSON.parse(result.rows[0]) || null;
+        return result.rows[0] || null;
     }
 
     public async createObject(pc: PoolClient, name: string, object: Object): Promise<void> {

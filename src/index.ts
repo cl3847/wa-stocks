@@ -139,5 +139,7 @@ require('dotenv').config();
     } catch (err) {
         log.error(err.stack);
     }
+
+    console.log(await Service.getInstance().game.getGameState());
 })();
 
