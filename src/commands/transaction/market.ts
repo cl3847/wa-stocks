@@ -148,11 +148,12 @@ function confirmTransactionEmbed(options: {
     const titleString = type === 'buy' ? `Confirm Purchase: ${quantity} shares of ${stock.ticker}` : `Confirm Sell: ${quantity} shares of ${stock.ticker}`;
     const priceDiffString = `${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%) today`;
     const finalBalance = type === 'buy' ? user.balance - quantity * stock.price : user.balance + quantity * stock.price;
+    const currentQuantity = user.portfolio.find(hs => hs.ticker === stock.ticker)?.quantity || 0;
 
     return {
         embed: new EmbedBuilder()
             .setTitle(titleString)
-            .setDescription(diffBlock(`${stock.name}\n${stock.ticker} - $${dollarize(stock.price)} per share\n${priceDiffString}`))
+            .setDescription(diffBlock(`${stock.name}\n${stock.ticker} - $${dollarize(stock.price)} per share\n${priceDiffString}\n\n${currentQuantity} shares owned`))
             .setColor(config.colors.green)
             .setThumbnail(thumbnail)
             .setTimestamp(new Date())
