@@ -9,7 +9,7 @@ import Service from "../../services/Service";
 import CommandType from "../../models/CommandType";
 import UserPortfolio from "src/models/user/UserPortfolio";
 import config from "../../../config";
-import {centsToDollars, stringToDiffBlock} from "../../utils/helpers";
+import {dollarize, diffBlock} from "../../utils/helpers";
 import Price from "../../models/Price";
 
 /**
@@ -42,7 +42,7 @@ const command: CommandType = {
 };
 
 const generateProfileEmbed = (userPortfolio: UserPortfolio, yesterdayPrices: Price[], user: User) => {
-    const displayBalance = `$${centsToDollars(userPortfolio.balance)}`;
+    const displayBalance = `$${dollarize(userPortfolio.balance)}`;
     let totalPriceDiff = 0;
     let totalYesterdayPrice = 0;
     const displayPortfolio = userPortfolio.portfolio.map(hs => {
@@ -53,7 +53,7 @@ const generateProfileEmbed = (userPortfolio: UserPortfolio, yesterdayPrices: Pri
         totalPriceDiff += priceDiff;
         totalYesterdayPrice += (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 0);
 
-        return `${hs.ticker} - ${hs.quantity} share(s) - $${centsToDollars(hs.price * hs.quantity)}\n${priceDiff > 0 ? '+' : '-'}$${centsToDollars(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)`;
+        return `${hs.ticker} - ${hs.quantity} share(s) - $${dollarize(hs.price * hs.quantity)}\n${priceDiff > 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)`;
     }).join('\n') || 'No stocks owned.';
     const totalPriceDiffPercent = totalPriceDiff / (totalYesterdayPrice || 1);
 
@@ -61,10 +61,10 @@ const generateProfileEmbed = (userPortfolio: UserPortfolio, yesterdayPrices: Pri
         .setColor(config.colors.green)
         .setAuthor({name: `${user.displayName}'s Profile`, iconURL: user.avatarURL() || undefined})
         .addFields(
-            {name: 'Balance', value: stringToDiffBlock(displayBalance), inline: true},
-            {name: 'Net Worth', value: stringToDiffBlock(`$${centsToDollars(userPortfolio.netWorth())}`), inline: true},
-            {name: 'Today\'s Portfolio Change', value: stringToDiffBlock(`${totalPriceDiff > 0 ? '+' : '-'}$${centsToDollars(Math.abs(totalPriceDiff))} (${(totalPriceDiffPercent * 100).toFixed(2)}%)`), inline: true},
-            {name: 'Portfolio', value: stringToDiffBlock(displayPortfolio)},
+            {name: 'Balance', value: diffBlock(displayBalance), inline: true},
+            {name: 'Net Worth', value: diffBlock(`$${dollarize(userPortfolio.netWorth())}`), inline: true},
+            {name: 'Today\'s Portfolio Change', value: diffBlock(`${totalPriceDiff > 0 ? '+' : '-'}$${dollarize(Math.abs(totalPriceDiff))} (${(totalPriceDiffPercent * 100).toFixed(2)}%)`), inline: true},
+            {name: 'Portfolio', value: diffBlock(displayPortfolio)},
         );
 };
 

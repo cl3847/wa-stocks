@@ -2,7 +2,7 @@ import Service from "../services/Service";
 import StockNotFoundError from "../models/error/StockNotFoundError";
 import config from "../../config";
 
-function centsToDollars(cents: number) {
+function dollarize(cents: number) {
     return (cents / 100).toFixed(2);
 }
 
@@ -50,8 +50,7 @@ async function stockPriceRandomWalk(ticker: string, volatility: number) {
     await service.stocks.updateStock(ticker, {price: new_price});
 }
 
-function stringToDiffBlock(s: string) {
+function diffBlock(s: string) {
     return `\`\`\`diff\n${s}\n\`\`\``;
 }
-
-export { centsToDollars, chooseRandomStocks, stockPriceRandomWalk, getDateStringETC, getETCComponents, getETCComponentsPreviousDay, stringToDiffBlock };
+export { dollarize, chooseRandomStocks, stockPriceRandomWalk, getDateStringETC, getETCComponents, getETCComponentsPreviousDay, diffBlock };

@@ -1,7 +1,7 @@
 import Service from "../services/Service";
 import config from "../../config";
 import {Client, EmbedBuilder, TextChannel} from "discord.js"
-import {centsToDollars, getDateStringETC, stringToDiffBlock} from "./helpers";
+import {dollarize, getDateStringETC, diffBlock} from "./helpers";
 import Stock from "../models/stock/Stock";
 import Price from "../models/Price";
 import UserPortfolio from "../models/user/UserPortfolio";
@@ -33,13 +33,13 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], g
        const yesterdayPrice = yesterdayPrices.find(p => p.ticker === stock.ticker);
        const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.close_price : 0);
        const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price : 1);
-       desc += `${stock.ticker} - ${stock.name} - $${centsToDollars(stock.price)}\n${priceDiff >= 0 ? '+' : '-'}$${centsToDollars(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)\n`;
+       desc += `${stock.ticker} - ${stock.name} - $${dollarize(stock.price)}\n${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)\n`;
         upDownAmount += priceDiff >= 0 ? 1 : -1;
     });
     const marketStatus = gameState.isMarketOpen ? "+ MARKET OPEN +" : "- MARKET CLOSED -";
     return new EmbedBuilder()
         .setTitle(`Stock Prices (${getDateStringETC()})`)
-        .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + stringToDiffBlock(`${marketStatus}\nHours: 9:30AM to 4:00PM ET`) + stringToDiffBlock(desc))
+        .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + diffBlock(`${marketStatus}\nHours: 9:30AM to 4:00PM ET`) + diffBlock(desc))
         .setColor(upDownAmount >= 0 ? config.colors.green : config.colors.red);
 }
 
@@ -57,7 +57,7 @@ async function generateLeaderboardEmbed(client: Client, allUserPortfolios: UserP
             totalYesterdayPrice += (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 0);
         }
         const totalPriceDiffPercent = totalPriceDiff / (totalYesterdayPrice || 1);
-        desc += stringToDiffBlock(`${i}: ${(await client.users.fetch(user.uid)).username} - $${centsToDollars(user.netWorth())}\n${totalPriceDiff > 0 ? '+' : '-'}$${centsToDollars(Math.abs(totalPriceDiff))} (${(totalPriceDiffPercent * 100).toFixed(2)}%)\n`);
+        desc += diffBlock(`${i}: ${(await client.users.fetch(user.uid)).username} - $${dollarize(user.netWorth())}\n${totalPriceDiff > 0 ? '+' : '-'}$${dollarize(Math.abs(totalPriceDiff))} (${(totalPriceDiffPercent * 100).toFixed(2)}%)\n`);
         i++;
     }
     return new EmbedBuilder()

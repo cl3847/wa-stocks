@@ -1,7 +1,7 @@
 import CommandType from "../../models/CommandType";
 import {AttachmentBuilder, CacheType, ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import Service from "../../services/Service";
-import {centsToDollars, stringToDiffBlock} from "../../utils/helpers";
+import {dollarize, diffBlock} from "../../utils/helpers";
 import StockNotFoundError from "../../models/error/StockNotFoundError";
 import Stock from "src/models/stock/Stock";
 import config from "config";
@@ -50,8 +50,8 @@ const generateStockEmbed = (stock: Stock, yesterdayPrice: Price | null) => {
             .setTimestamp(new Date())
             .addFields(
                 { name: '\u200B', value: '\u200B' },
-                {name: 'Price', value: `\`\`\`$${centsToDollars(stock.price)}\n\`\`\``, inline: true},
-                {name: 'Today\'s Change', value: stringToDiffBlock(`${priceDiff >= 0 ? '+' : '-'}$${centsToDollars(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)`), inline: true},
+                {name: 'Price', value: `\`\`\`$${dollarize(stock.price)}\n\`\`\``, inline: true},
+                {name: 'Today\'s Change', value: diffBlock(`${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)`), inline: true},
             ),
         file
     }
