@@ -33,7 +33,8 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], g
        const yesterdayPrice = yesterdayPrices.find(p => p.ticker === stock.ticker);
        const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.close_price : 0);
        const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price : 1);
-       desc += `${stock.ticker} - ${stock.name} - $${dollarize(stock.price)}\n${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)\n`;
+
+       desc += `${stock.ticker} - ${stock.name} - $${dollarize(stock.price)}\n${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%) today\n`;
         upDownAmount += priceDiff >= 0 ? 1 : -1;
     });
     const marketStatus = gameState.isMarketOpen ? "+ MARKET OPEN +" : "- MARKET CLOSED -";

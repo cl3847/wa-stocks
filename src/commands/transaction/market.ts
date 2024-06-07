@@ -146,13 +146,13 @@ function confirmTransactionEmbed(options: {
     const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price : 1);
 
     const titleString = type === 'buy' ? `Confirm Purchase: ${quantity} shares of ${stock.ticker}` : `Confirm Sell: ${quantity} shares of ${stock.ticker}`;
-    const priceDiffString = `${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)`;
+    const priceDiffString = `${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%) today`;
     const finalBalance = type === 'buy' ? user.balance - quantity * stock.price : user.balance + quantity * stock.price;
 
     return {
         embed: new EmbedBuilder()
             .setTitle(titleString)
-            .setDescription(diffBlock(`${stock.ticker} - ${stock.name} - $${dollarize(stock.price)}\n${priceDiffString}`))
+            .setDescription(diffBlock(`${stock.name}\n${stock.ticker} - $${dollarize(stock.price)} per share\n${priceDiffString}`))
             .setColor(config.colors.green)
             .setThumbnail(thumbnail)
             .setTimestamp(new Date())
