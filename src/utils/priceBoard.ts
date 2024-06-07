@@ -40,7 +40,7 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], g
     const marketStatus = gameState.isMarketOpen ? "+ MARKET OPEN +" : "- MARKET CLOSED -";
     return new EmbedBuilder()
         .setTitle(`Stock Prices (${getDateStringETC()})`)
-        .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + diffBlock(`${marketStatus}\nHours: 9:30AM to 4:00PM ET`) + diffBlock(`TICKER - Company Name - Price per Share\n+$0.00 (0.00%) price change today`) + diffBlock(desc))
+        .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + diffBlock(`${marketStatus}\nHours: 9:30AM to 4:00PM ET`) + diffBlock(`TICKER - Company Name - Price per share\n+$0.00 (0.00%) price change today`) + diffBlock(desc))
         .setColor(upDownAmount >= 0 ? config.colors.green : config.colors.red);
 }
 

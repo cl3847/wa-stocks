@@ -145,7 +145,7 @@ function confirmTransactionEmbed(options: {
     const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.close_price : 0);
     const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price : 1);
 
-    const titleString = type === 'buy' ? `Confirm Purchase: ${quantity} shares of ${stock.ticker}` : `Confirm Sell: ${quantity} shares of ${stock.ticker}`;
+    const titleString = type === 'buy' ? `Confirm Purchase: ${quantity} shares of ${stock.ticker}` : `Confirm Sale: ${quantity} shares of ${stock.ticker}`;
     const priceDiffString = `${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%) today`;
     const finalBalance = type === 'buy' ? user.balance - quantity * stock.price : user.balance + quantity * stock.price;
     const currentQuantity = user.portfolio.find(hs => hs.ticker === stock.ticker)?.quantity || 0;
@@ -153,15 +153,14 @@ function confirmTransactionEmbed(options: {
     return {
         embed: new EmbedBuilder()
             .setTitle(titleString)
-            .setDescription(diffBlock(`${stock.name}\n${stock.ticker} - $${dollarize(stock.price)} per share\n${priceDiffString}\n\n${currentQuantity} shares owned`))
-            .setColor(config.colors.green)
+            .setDescription(diffBlock(`${stock.name}\n${stock.ticker} - $${dollarize(stock.price)} per share\n${priceDiffString}`) + diffBlock(`You currently own ${currentQuantity} share(s).`))
+            .setColor(type == 'buy' ? config.colors.green : config.colors.red)
             .setThumbnail(thumbnail)
             .setTimestamp(new Date())
             .addFields(
-                { name: '\u200B', value: '\u200B' },
                 {name: 'Current Balance', value: diffBlock(`$${dollarize(user.balance)}`), inline: true},
                 {name: 'Total Price', value: diffBlock(`${type == 'buy' ? '-' : '+'}$${dollarize(quantity * stock.price)}`), inline: true},
-                {name: 'Final Balance', value: diffBlock(`$${dollarize(finalBalance)}`), inline: true},
+                {name: 'Final Balance', value: diffBlock(`= $${dollarize(finalBalance)}`), inline: true},
             ),
         file
     }

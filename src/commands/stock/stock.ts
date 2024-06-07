@@ -30,29 +30,27 @@ const command: CommandType = {
 };
 
 const generateStockEmbed = (stock: Stock, yesterdayPrice: Price | null) => {
-    const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.close_price : 0);
-    const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price : 1);
-
-    let thumbnail = 'https://i.imgur.com/AfFp7pu.png';
+    let thumbnail = 'https://i.imgur.com/AfFp7pu.png'; // TODO pop this out as a function
     let file;
     if (fs.existsSync('assets/stocks/' + stock.ticker + '.png')) {
         file = new AttachmentBuilder(`./assets/stocks/${stock.ticker}.png`, { name: `${stock.ticker}.png` });
         thumbnail = `attachment://${stock.ticker}.png`;
     }
 
+    const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.close_price : 0);
+    const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price : 1);
+
+    const titleString = `${stock.name} Stock Information`;
+    const priceDiffString = `${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%) today`;
+
     return {
             embed: new EmbedBuilder()
-            .setTitle(`${stock.name} (${stock.ticker})`)
-            .setDescription(`placeholder description`)
-            .setColor(config.colors.green)
+            .setTitle(titleString)
+            .setDescription(diffBlock(`${stock.ticker} - $${dollarize(stock.price)} per share\n${priceDiffString}`))
+            .setColor(priceDiff >= 0 ? config.colors.green : config.colors.red)
             .setThumbnail(thumbnail)
             .setImage("https://t4.ftcdn.net/jpg/06/46/48/39/360_F_646483996_FU8STGnemtNlh7eprlfh1fZtBmAW8lV2.jpg")
-            .setTimestamp(new Date())
-            .addFields(
-                { name: '\u200B', value: '\u200B' },
-                {name: 'Price', value: `\`\`\`$${dollarize(stock.price)}\n\`\`\``, inline: true},
-                {name: 'Today\'s Change', value: diffBlock(`${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)`), inline: true},
-            ),
+            .setTimestamp(new Date()),
         file
     }
 };
