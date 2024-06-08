@@ -23,7 +23,7 @@ class TransactionService {
      * @param {number} add The quantity of the stock to buy
      * @returns {Promise<void>} A promise resolving to nothing
      */
-    public async buyStock(uid: string, ticker: string, add: number): Promise<void> {
+    public async buyStock(uid: string, ticker: string, add: number): Promise<Transaction> {
         const client = await this.pool.connect();
 
         const user = await this.daos.users.getUserPortfolio(client, uid);
@@ -75,6 +75,7 @@ class TransactionService {
             };
             await this.daos.transactions.createTransaction(client, transactionRecord);
             await client.query('COMMIT');
+            return transactionRecord;
         } catch (err) {
             await client.query('ROLLBACK');
             throw err; // Re-throw to be handled by the caller
@@ -83,7 +84,7 @@ class TransactionService {
         }
     }
 
-    public async sellStock(uid: string, ticker: string, remove: number): Promise<void> {
+    public async sellStock(uid: string, ticker: string, remove: number): Promise<Transaction> {
         const pc = await this.pool.connect();
 
         const user = await this.daos.users.getUserPortfolio(pc, uid);
@@ -123,6 +124,7 @@ class TransactionService {
             };
             await this.daos.transactions.createTransaction(pc, transactionRecord);
             await pc.query('COMMIT');
+            return transactionRecord;
         } catch (err) {
             await pc.query('ROLLBACK');
             throw err; // Re-throw to be handled by the caller

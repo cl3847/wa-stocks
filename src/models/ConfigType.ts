@@ -12,6 +12,7 @@ export type ConfigType = {
     colors: {
         green: `#${string}`;
         red: `#${string}`;
+        blue: `#${string}`;
     };
     game: {
         startingBalance: number;

@@ -15,6 +15,7 @@ const config: ConfigType = {
   "colors": {
     "green": `#00c805`,
     "red": `#ff5001`,
+    "blue": `#5865f2`
   },
   "game": {
     "startingBalance": 100000, // Starting balance in CENTS

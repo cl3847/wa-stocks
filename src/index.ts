@@ -1,4 +1,4 @@
-import {Pool} from "pg";
+import {Pool, types} from "pg";
 import UserDAO from "./handlers/UserDAO";
 import StockDAO from "./handlers/StockDAO";
 import DAOs from "./models/DAOs";
@@ -32,6 +32,8 @@ require('dotenv').config();
             rejectUnauthorized: false
         }
     });
+
+    types.setTypeParser(20, (val) => parseInt(val, 10)); // parse int8 as number
 
     // test connection to database, and initialize tables if not created
     try {
