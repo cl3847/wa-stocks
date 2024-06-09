@@ -23,6 +23,7 @@ const config: ConfigType = {
     "randomWalkInterval": 1, // In minutes
     "randomWalkAmount": 10, // Number of stocks to randomly walk
     "minimumStockPrice": 1,
+    "chartsDaysBack": 15 // Number of days to show in the price chart
   }
 };
 

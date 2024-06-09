@@ -48,7 +48,7 @@ class StockService {
     public async getAllYesterdayPrice(): Promise<Price[]> {
         const pc = await this.pool.connect();
         const {year, month, date} = getETCComponentsPreviousDay();
-        const res = await this.daos.stocks.getPriceHistoryDay(pc, year, month, date);
+        const res = await this.daos.stocks.getAllPriceHistoriesDay(pc, year, month, date);
         pc.release();
         return res;
     }
@@ -56,7 +56,7 @@ class StockService {
     public async getYesterdayPrice(ticker: string): Promise<Price | null> {
         const pc = await this.pool.connect();
         const {year, month, date} = getETCComponentsPreviousDay();
-        const res = await this.daos.stocks.getPriceHistory(pc, ticker, year, month, date);
+        const res = await this.daos.stocks.getStockPriceHistory(pc, ticker, year, month, date);
         pc.release();
         return res;
     }
@@ -101,6 +101,13 @@ class StockService {
         } finally {
             pc.release();
         }
+    }
+
+    public async getStockPriceHistoryAfterDay(ticker: string, year: number, month: number, date: number): Promise<Price[]> {
+        const pc = await this.pool.connect();
+        const res = await this.daos.stocks.getStockPriceHistoryAfterDay(pc, ticker, year, month, date);
+        pc.release();
+        return res;
     }
 }
 

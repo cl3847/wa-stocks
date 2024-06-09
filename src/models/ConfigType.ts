@@ -20,6 +20,7 @@ export type ConfigType = {
         randomWalkInterval: number;
         randomWalkAmount: number;
         minimumStockPrice: number;
+        chartsDaysBack: number;
     };
 };
 
