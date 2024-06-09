@@ -97,11 +97,37 @@ async function createStockImage(ticker: string): Promise<Buffer> {
         data:
             {
                 datasets: [{
-                    label: 'test',
-                    data: priceHistory
+                    label: `${ticker} Price History`,
+                    data: priceHistory,
+                    borderWidth: 3,
+                    color: {
+                        up: config.colors.green,
+                        down: config.colors.red,
+                        unchanged: 'rgba(90, 90, 90, 1)'
+                    },
+                    borderColor: {
+                        up: config.colors.green,
+                        down: config.colors.red,
+                        unchanged: 'rgba(90, 90, 90, 1)'
+                    }
+
                 }]
             },
-        options: {}
+        options: {
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'day'
+                    }
+                },
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
     };
 
     return await chartJSNodeCanvas.renderToBuffer(configuration);
