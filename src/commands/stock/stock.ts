@@ -42,7 +42,7 @@ const command: CommandType = {
         const stockLogo = getStockLogo(ticker);
         if (stockLogo) {
             files.push(stockLogo);
-            embed.setThumbnail(`attachment://${ticker}.png`);
+            embed.setThumbnail(`attachment://logo.png`);
         }
 
         await interaction.reply({embeds: [embed], files})

@@ -67,7 +67,7 @@ const command: CommandType = {
             const stockLogo = getStockLogo(ticker);
             if (stockLogo) {
                 files.push(stockLogo);
-                embed.setThumbnail(`attachment://${ticker}.png`);
+                embed.setThumbnail(`attachment://logo.png`);
             }
 
             const response = await interaction.reply({
@@ -117,7 +117,7 @@ const command: CommandType = {
             const stockLogo = getStockLogo(ticker);
             if (stockLogo) {
                 files.push(stockLogo);
-                embed.setThumbnail(`attachment://${ticker}.png`);
+                embed.setThumbnail(`attachment://logo.png`);
             }
 
             const response = await interaction.reply({
