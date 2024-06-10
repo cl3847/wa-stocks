@@ -11,9 +11,8 @@ import InsufficientBalanceError from "../../models/error/InsufficientBalanceErro
 import log from "../../utils/logger";
 import StockNotFoundError from "../../models/error/StockNotFoundError";
 import Stock from "../../models/stock/Stock";
-import fs from "fs";
 import config from "../../../config";
-import {dollarize, diffBlock} from "../../utils/helpers";
+import {dollarize, diffBlock, getStockLogo} from "../../utils/helpers";
 import Price from "../../models/Price";
 import UserPortfolio from "../../models/user/UserPortfolio";
 import InsufficientStockQuantityError from "../../models/error/InsufficientStockQuantityError";
@@ -63,11 +62,18 @@ const command: CommandType = {
             }
 
             const row = confirmComponent("Confirm Purchase", ButtonStyle.Success);
-            const { embed, file } = confirmTransactionEmbed({ type: 'buy', quantity, stock, user, yesterdayPrice });
+            const files: AttachmentBuilder[] = [];
+            const embed = confirmTransactionEmbed({ type: 'buy', quantity, stock, user, yesterdayPrice });
+            const stockLogo = getStockLogo(ticker);
+            if (stockLogo) {
+                files.push(stockLogo);
+                embed.setThumbnail(`attachment://${ticker}.png`);
+            }
+
             const response = await interaction.reply({
                 embeds: [embed],
                 components: [row],
-                files: file ? [file] : []
+                files
             });
             try {
                 const confirmation = await response.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 60_000 });
@@ -106,11 +112,18 @@ const command: CommandType = {
             }
 
             const row = confirmComponent("Confirm Sale", ButtonStyle.Danger);
-            const { embed, file } = confirmTransactionEmbed({ type: 'sell', quantity, stock, user, yesterdayPrice });
+            const files: AttachmentBuilder[] = [];
+            const embed = confirmTransactionEmbed({ type: 'sell', quantity, stock, user, yesterdayPrice });
+            const stockLogo = getStockLogo(ticker);
+            if (stockLogo) {
+                files.push(stockLogo);
+                embed.setThumbnail(`attachment://${ticker}.png`);
+            }
+
             const response = await interaction.reply({
                 embeds: [embed],
                 components: [row],
-                files: file ? [file] : []
+                files
             });
             try {
                 const confirmation = await response.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 60_000 });
@@ -155,13 +168,6 @@ function confirmTransactionEmbed(options: {
 }) {
     const { type, quantity, stock, user, yesterdayPrice } = options;
 
-    let thumbnail = 'https://i.imgur.com/AfFp7pu.png';
-    let file;
-    if (fs.existsSync('assets/stocks/' + stock.ticker + '.png')) {
-        file = new AttachmentBuilder(`./assets/stocks/${stock.ticker}.png`, { name: `${stock.ticker}.png` });
-        thumbnail = `attachment://${stock.ticker}.png`;
-    }
-
     const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.close_price : 0);
     const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price : 1);
 
@@ -170,20 +176,16 @@ function confirmTransactionEmbed(options: {
     const finalBalance = type === 'buy' ? user.balance - quantity * stock.price : user.balance + quantity * stock.price;
     const currentQuantity = user.portfolio.find(hs => hs.ticker === stock.ticker)?.quantity || 0;
 
-    return {
-        embed: new EmbedBuilder()
-            .setTitle(titleString)
-            .setDescription(diffBlock(`${stock.name}\n${stock.ticker} - $${dollarize(stock.price)} per share\n${priceDiffString}`) + diffBlock(`You currently own ${currentQuantity} share(s).`))
-            .setColor(type == 'buy' ? config.colors.green : config.colors.red)
-            .setThumbnail(thumbnail)
-            .setTimestamp(new Date())
-            .addFields(
-                {name: 'Current Balance', value: diffBlock(`$${dollarize(user.balance)}`), inline: true},
-                {name: 'Total Price', value: diffBlock(`${type == 'buy' ? '-' : '+'}$${dollarize(quantity * stock.price)}`), inline: true},
-                {name: 'Final Balance', value: diffBlock(`= $${dollarize(finalBalance)}`), inline: true},
-            ),
-        file
-    }
+    return new EmbedBuilder()
+        .setTitle(titleString)
+        .setDescription(diffBlock(`${stock.name}\n${stock.ticker} - $${dollarize(stock.price)} per share\n${priceDiffString}`) + diffBlock(`You currently own ${currentQuantity} share(s).`))
+        .setColor(type == 'buy' ? config.colors.green : config.colors.red)
+        .setTimestamp(new Date())
+        .addFields(
+            {name: 'Current Balance', value: diffBlock(`$${dollarize(user.balance)}`), inline: true},
+            {name: 'Total Price', value: diffBlock(`${type == 'buy' ? '-' : '+'}$${dollarize(quantity * stock.price)}`), inline: true},
+            {name: 'Final Balance', value: diffBlock(`= $${dollarize(finalBalance)}`), inline: true}
+        );
 }
 
 function confirmComponent(text: string, style: ButtonStyle): ActionRowBuilder<ButtonBuilder> {
