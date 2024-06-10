@@ -1,6 +1,8 @@
 import Service from "../services/Service";
 import StockNotFoundError from "../models/error/StockNotFoundError";
 import config from "../../config";
+import fs from "fs";
+import {AttachmentBuilder} from "discord.js";
 
 function dollarize(cents: number) {
     return (cents / 100).toFixed(2);
@@ -53,4 +55,12 @@ async function stockPriceRandomWalk(ticker: string, volatility: number) {
 function diffBlock(s: string) {
     return `\`\`\`diff\n${s}\n\`\`\``;
 }
-export { dollarize, chooseRandomStocks, stockPriceRandomWalk, getDateStringETC, getETCComponents, getETCComponentsPreviousDay, diffBlock };
+
+function getStockLogo(ticker: string): AttachmentBuilder | null {
+    if (fs.existsSync('assets/stocks/' + ticker + '.png')) {
+        return new AttachmentBuilder(`./assets/stocks/${ticker}.png`, { name: `logo.png` });
+    }
+    return null;
+}
+
+export { dollarize, chooseRandomStocks, stockPriceRandomWalk, getDateStringETC, getETCComponents, getETCComponentsPreviousDay, diffBlock, getStockLogo };
