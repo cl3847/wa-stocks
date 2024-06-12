@@ -26,11 +26,11 @@ const initDb = async (pc: PoolClient) => {
     await createTable('stocks', `
         CREATE TABLE stocks (
             ticker TEXT PRIMARY KEY,
-            price INT NOT NULL,
+            price BIGINT NOT NULL,
             multiplier INT DEFAULT 1,
             name TEXT NOT NULL,
             stock_ticker TEXT NOT NULL,
-            stock_price INT NOT NULL,
+            stock_price BIGINT NOT NULL,
             last_update_timestamp BIGINT DEFAULT 0
         );`
     );
@@ -39,7 +39,8 @@ const initDb = async (pc: PoolClient) => {
             uid TEXT NOT NULL,
             ticker TEXT NOT NULL,
             quantity INT NOT NULL DEFAULT 0,
-            PRIMARY KEY (uid, ticker),
+            timestamp BIGINT NOT NULL,
+            PRIMARY KEY (uid, ticker, timestamp),
             FOREIGN KEY(uid) REFERENCES users(uid) ON UPDATE CASCADE ON DELETE CASCADE,
             FOREIGN KEY(ticker) REFERENCES stocks(ticker) ON UPDATE CASCADE ON DELETE CASCADE
         );`
@@ -51,8 +52,8 @@ const initDb = async (pc: PoolClient) => {
             uid TEXT NOT NULL,
             ticker TEXT NOT NULL,
             quantity INT NOT NULL,
-            price INT NOT NULL,
-            total_price INT NOT NULL,
+            price BIGINT NOT NULL,
+            total_price BIGINT NOT NULL,
             timestamp BIGINT NOT NULL,
             FOREIGN KEY(uid) REFERENCES users(uid) ON UPDATE CASCADE ON DELETE CASCADE,
             FOREIGN KEY(ticker) REFERENCES stocks(ticker) ON UPDATE CASCADE ON DELETE CASCADE
@@ -61,10 +62,10 @@ const initDb = async (pc: PoolClient) => {
     await createTable('prices', `
         CREATE TABLE prices (
             ticker TEXT NOT NULL, 
-            close_price INT NOT NULL,
-            open_price INT NOT NULL,
-            high_price INT NOT NULL,
-            low_price INT NOT NULL,
+            close_price BIGINT NOT NULL,
+            open_price BIGINT NOT NULL,
+            high_price BIGINT NOT NULL,
+            low_price BIGINT NOT NULL,
             year INT NOT NULL,
             month INT NOT NULL,
             date INT NOT NULL,

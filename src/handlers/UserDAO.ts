@@ -3,7 +3,6 @@ import User from "../models/user/User"
 import UserStock from "../models/user_stock/UserStock";
 import HeldStock from "../models/stock/HeldStock";
 import {PoolClient} from "pg";
-import Stock from "../models/stock/Stock";
 
 class UserDAO {
     /**
@@ -68,7 +67,13 @@ class UserDAO {
      */
     public async getUserPortfolio(pc: PoolClient, uid: string): Promise<UserPortfolio | null> {
         const query = `SELECT u.*, us.*, s.* FROM users u
-                       LEFT JOIN users_stocks us ON u.uid = us.uid
+                       LEFT JOIN (
+                            SELECT us_1.* FROM users_stocks us_1
+                            INNER JOIN (
+                                SELECT uid, ticker, MAX(timestamp) AS timestamp FROM users_stocks
+                                GROUP BY uid, ticker
+                            ) max_timestamp ON us_1.uid = max_timestamp.uid AND us_1.ticker = max_timestamp.ticker AND us_1.timestamp = max_timestamp.timestamp
+                       ) us ON u.uid = us.uid
                        LEFT JOIN stocks s ON us.ticker = s.ticker
                        WHERE u.uid = $1
                        ORDER BY COALESCE(s.price * us.quantity, 0) DESC`;
@@ -79,6 +84,7 @@ class UserDAO {
         return new UserPortfolio(result.rows[0] as User, portfolio);
     }
 
+    /*
     public async getAllUserPortfolios(pc: PoolClient): Promise<UserPortfolio[]> {
         const query = `SELECT u.*, json_agg(json_build_object('user_stock', us, 'stock', s)) AS holdings
             FROM users u
@@ -95,7 +101,7 @@ class UserDAO {
             portfolios.push(new UserPortfolio(user, portfolio));
         }
         return portfolios;
-    }
+    }*/ // TODO fix this
 
     public async createStockHolding(pc: PoolClient, holding: UserStock): Promise<void> {
         const keyString = Object.keys(holding).join(", ");
@@ -105,21 +111,11 @@ class UserDAO {
         await pc.query(query, params);
     }
 
-    public async getStockHolding(pc: PoolClient, uid: string, ticker: string): Promise<UserStock | null> {
-        const query = "SELECT * FROM users_stocks WHERE uid = $1 AND ticker = $2";
+    public async getMostRecentStockHolding(pc: PoolClient, uid: string, ticker: string): Promise<UserStock | null> {
+        const query = "SELECT * FROM users_stocks WHERE uid = $1 AND ticker = $2 ORDER BY timestamp DESC LIMIT 1";
         const params = [uid, ticker];
         const result = await pc.query(query, params);
         return result.rows[0] || null;
-    }
-
-    public async updateStockHolding(pc: PoolClient, uid: string, ticker: string, holding: Partial<UserStock>): Promise<void> {
-        if (Object.keys(holding).length === 0) {
-            throw new Error("No fields to update");
-        }
-        const fields = Object.keys(holding).map((key, index) => `${key} = $${index + 1}`).join(', ');
-        const query = `UPDATE users_stocks SET ${fields} WHERE uid = $${Object.keys(holding).length + 1} AND ticker = $${Object.keys(holding).length + 2}`;
-        const params = [...Object.values(holding), uid, ticker];
-        await pc.query(query, params);
     }
 }
 

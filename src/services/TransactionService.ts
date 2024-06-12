@@ -24,44 +24,40 @@ class TransactionService {
      * @returns {Promise<void>} A promise resolving to nothing
      */
     public async buyStock(uid: string, ticker: string, add: number): Promise<Transaction> {
-        const client = await this.pool.connect();
+        const pc = await this.pool.connect();
 
-        const user = await this.daos.users.getUserPortfolio(client, uid);
-        const stock = await this.daos.stocks.getStock(client, ticker);
+        const user = await this.daos.users.getUserPortfolio(pc, uid);
+        const stock = await this.daos.stocks.getStock(pc, ticker);
 
         if (!user) {
-            client.release();
+            pc.release();
             throw new UserNotFoundError(uid);
         } else if (!stock) {
-            client.release();
+            pc.release();
             throw new StockNotFoundError(ticker);
         }
 
         const cost = stock.price * add;
         if (user.balance < cost) {
-            client.release();
+            pc.release();
             throw new InsufficientBalanceError(uid, user.balance, cost);
         }
 
-        const holding = await this.daos.users.getStockHolding(client, uid, ticker);
+        const holding = await this.daos.users.getMostRecentStockHolding(pc, uid, ticker);
         const newQuantity = holding ? holding.quantity + add : add;
         const newBalance = user.balance - cost;
 
         try {
-            await client.query('BEGIN');
+            await pc.query('BEGIN');
 
-            // update or create stock holding
-            if (holding) {
-                await this.daos.users.updateStockHolding(client, uid, ticker, {quantity: newQuantity});
-            } else {
-                const newHolding: UserStock = {
-                    uid: uid,
-                    ticker: ticker,
-                    quantity: newQuantity,
-                };
-                await this.daos.users.createStockHolding(client, newHolding);
-            }
-            await this.daos.users.updateUser(client, uid, {balance: newBalance});
+            const newHolding: UserStock = {
+                uid: uid,
+                ticker: ticker,
+                quantity: newQuantity,
+                timestamp: Date.now(),
+            };
+            await this.daos.users.createStockHolding(pc, newHolding);
+            await this.daos.users.updateUser(pc, uid, {balance: newBalance});
 
             // save transaction record
             const transactionRecord: Transaction = {
@@ -73,14 +69,14 @@ class TransactionService {
                 total_price: cost,
                 timestamp: Date.now(),
             };
-            await this.daos.transactions.createTransaction(client, transactionRecord);
-            await client.query('COMMIT');
+            await this.daos.transactions.createTransaction(pc, transactionRecord);
+            await pc.query('COMMIT');
             return transactionRecord;
         } catch (err) {
-            await client.query('ROLLBACK');
+            await pc.query('ROLLBACK');
             throw err; // Re-throw to be handled by the caller
         } finally {
-            client.release();
+            pc.release();
         }
     }
 
@@ -89,7 +85,7 @@ class TransactionService {
 
         const user = await this.daos.users.getUserPortfolio(pc, uid);
         const stock = await this.daos.stocks.getStock(pc, ticker);
-        const holding = await this.daos.users.getStockHolding(pc, uid, ticker);
+        const holding = await this.daos.users.getMostRecentStockHolding(pc, uid, ticker);
 
         if (!user) {
             pc.release();
@@ -109,7 +105,13 @@ class TransactionService {
 
         try {
             await pc.query('BEGIN');
-            await this.daos.users.updateStockHolding(pc, uid, ticker, {quantity: newQuantity});
+            const newHolding: UserStock = {
+                uid: uid,
+                ticker: ticker,
+                quantity: newQuantity,
+                timestamp: Date.now(),
+            };
+            await this.daos.users.createStockHolding(pc, newHolding);
             await this.daos.users.updateUser(pc, uid, {balance: newBalance});
 
             // save transaction record
