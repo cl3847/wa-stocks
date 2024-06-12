@@ -12,12 +12,6 @@ import config from "../../../config";
 import {dollarize, diffBlock} from "../../utils/helpers";
 import Price from "../../models/Price";
 
-/**
- * TODO Stylize these responses with embeds.
- * I'm thinking a multiple pages approach, first page is your balance, net worth, and top 3 stocks,
- * The next pages are just lists of your stock holdings with quantity and value.
- */
-
 const command: CommandType = {
     data: new SlashCommandBuilder()
         .setName('profile')

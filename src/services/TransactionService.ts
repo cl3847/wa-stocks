@@ -43,7 +43,7 @@ class TransactionService {
             throw new InsufficientBalanceError(uid, user.balance, cost);
         }
 
-        const holding = user.portfolio.find(hs => hs.ticker === ticker);
+        const holding = await this.daos.users.getStockHolding(client, uid, ticker);
         const newQuantity = holding ? holding.quantity + add : add;
         const newBalance = user.balance - cost;
 
