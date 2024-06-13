@@ -1,7 +1,6 @@
 import UserPortfolio from "../models/user/UserPortfolio";
 import User from "../models/user/User"
 import UserStock from "../models/user_stock/UserStock";
-import HeldStock from "../models/stock/HeldStock";
 import {PoolClient} from "pg";
 
 class UserDAO {
@@ -66,42 +65,34 @@ class UserDAO {
      * @returns {Promise<UserPortfolio | null>} A promise resolving to a UserPortfolio if a user with the UID exists, otherwise null
      */
     public async getUserPortfolio(pc: PoolClient, uid: string): Promise<UserPortfolio | null> {
-        const query = `SELECT u.*, us.*, s.* FROM users u
-                       LEFT JOIN (
-                            SELECT us_1.* FROM users_stocks us_1
-                            INNER JOIN (
-                                SELECT uid, ticker, MAX(timestamp) AS timestamp FROM users_stocks
-                                GROUP BY uid, ticker
-                            ) max_timestamp ON us_1.uid = max_timestamp.uid AND us_1.ticker = max_timestamp.ticker AND us_1.timestamp = max_timestamp.timestamp
-                       ) us ON u.uid = us.uid
-                       LEFT JOIN stocks s ON us.ticker = s.ticker
-                       WHERE u.uid = $1
-                       ORDER BY COALESCE(s.price * us.quantity, 0) DESC`;
-        const params = [uid];
-        const result = await pc.query(query, params);
-        if (result.rows.length === 0) return null;
-        const portfolio = (result.rows[0] as HeldStock).ticker ? result.rows.map(row => row as HeldStock).filter(row => row.quantity > 0) : [];
-        return new UserPortfolio(result.rows[0] as User, portfolio);
+        return this.getUserPortfolioTimestamp(pc, uid, Date.now());
     }
 
-    /*
     public async getAllUserPortfolios(pc: PoolClient): Promise<UserPortfolio[]> {
-        const query = `SELECT u.*, json_agg(json_build_object('user_stock', us, 'stock', s)) AS holdings
+        const query = `SELECT row_to_json(u.*) as profile, json_agg(row_to_json(us_s.*)) AS portfolio
             FROM users u
-            LEFT JOIN users_stocks us ON u.uid = us.uid
-            LEFT JOIN stocks s ON us.ticker = s.ticker
+            LEFT JOIN (
+                SELECT us_temp.*, s.*
+                FROM users_stocks us_temp
+                JOIN stocks s ON us_temp.ticker = s.ticker
+                INNER JOIN (
+                    SELECT uid, ticker, MAX(timestamp) AS max_timestamp
+                    FROM users_stocks
+                    GROUP BY uid, ticker
+                ) max_us ON us_temp.uid = max_us.uid AND us_temp.ticker = max_us.ticker AND us_temp.timestamp = max_us.max_timestamp
+                WHERE us_temp.quantity > 0
+                ORDER BY us_temp.quantity DESC
+            ) as us_s ON u.uid = us_s.uid
             GROUP BY u.uid, u.balance
-            ORDER BY u.balance + COALESCE(SUM(s.price * us.quantity), 0) DESC NULLS LAST`;
+            ORDER BY u.balance + COALESCE(SUM(us_s.price * us_s.quantity), 0) DESC NULLS LAST
+        `;
         const result = await pc.query(query);
-        if (result.rows.length === 0) return [];
         const portfolios: UserPortfolio[] = [];
         for (const row of result.rows) {
-            const user = row as User;
-            const portfolio = (row.holdings[0].stock as Stock)?.ticker ? row.holdings.map((h: {user_stock: UserStock, stock: Stock}) =>  Object.assign(h.user_stock, h.stock) as HeldStock).filter((row: HeldStock) => row.quantity > 0) : [];
-            portfolios.push(new UserPortfolio(user, portfolio));
+            portfolios.push(new UserPortfolio(row.profile as User, row.portfolio[0] ? row.portfolio : []));
         }
         return portfolios;
-    }*/ // TODO fix this
+    }
 
     public async createStockHolding(pc: PoolClient, holding: UserStock): Promise<void> {
         const keyString = Object.keys(holding).join(", ");
@@ -116,6 +107,31 @@ class UserDAO {
         const params = [uid, ticker];
         const result = await pc.query(query, params);
         return result.rows[0] || null;
+    }
+
+    public async getUserPortfolioTimestamp(pc: PoolClient, uid: string, timestamp: number): Promise<UserPortfolio | null> {
+        const query = `SELECT row_to_json(u.*) as profile, json_agg(row_to_json(us_s.*)) AS portfolio
+            FROM users u
+            LEFT JOIN (
+                SELECT us_temp.*, s.*
+                FROM users_stocks us_temp
+                JOIN stocks s ON us_temp.ticker = s.ticker
+                INNER JOIN (
+                    SELECT uid, ticker, MAX(timestamp) AS max_timestamp
+                    FROM users_stocks
+                    WHERE timestamp <= $2
+                    GROUP BY uid, ticker
+                ) max_us ON us_temp.uid = max_us.uid AND us_temp.ticker = max_us.ticker AND us_temp.timestamp = max_us.max_timestamp
+                WHERE us_temp.quantity > 0
+                ORDER BY us_temp.quantity DESC
+            ) as us_s ON u.uid = us_s.uid
+            WHERE u.uid = $1
+            GROUP BY u.uid;
+        `;
+        const params = [uid, timestamp];
+        const result = await pc.query(query, params);
+        if (result.rows.length === 0) return null;
+        return new UserPortfolio(result.rows[0].profile as User, result.rows[0].portfolio[0] ? result.rows[0].portfolio : []);
     }
 }
 

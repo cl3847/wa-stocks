@@ -33,6 +33,13 @@ class UserService {
         return res;
     }
 
+    public async getUserPortfolioTimestamp(uid: string, timestamp: number): Promise<UserPortfolio | null> {
+        const pc = await this.pool.connect();
+        const res = await this.daos.users.getUserPortfolioTimestamp(pc, uid, timestamp);
+        pc.release();
+        return res;
+    }
+
     public async getAllUserPortfolios(): Promise<UserPortfolio[]> {
         const pc = await this.pool.connect();
         const res = await this.daos.users.getAllUserPortfolios(pc);

@@ -20,6 +20,14 @@ function getETCComponents(): {year: number, month: number, date: number } {
     return { year, month, date };
 }
 
+function timestampToETCComponents(timestamp: number): { year: number, month: number, date: number } {
+    const d = new Date(timestamp);
+    const dateString = d.toLocaleString('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' });
+    const [month, date, year] = dateString.split('/').map(Number);
+    if (!year || !month || !date) throw new Error('Error parsing date components.');
+    return { year, month, date };
+}
+
 function getETCComponentsPreviousDay(): { year: number, month: number, date: number } {
     const now = new Date();
     const previousDay = new Date(now.setDate(now.getDate() - 1));
@@ -63,4 +71,4 @@ function getStockLogo(ticker: string): AttachmentBuilder | null {
     return null;
 }
 
-export { dollarize, chooseRandomStocks, stockPriceRandomWalk, getDateStringETC, getETCComponents, getETCComponentsPreviousDay, diffBlock, getStockLogo };
+export { dollarize, chooseRandomStocks, stockPriceRandomWalk, getDateStringETC, getETCComponents, getETCComponentsPreviousDay, diffBlock, getStockLogo, timestampToETCComponents };

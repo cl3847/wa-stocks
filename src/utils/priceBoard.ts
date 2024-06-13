@@ -5,6 +5,7 @@ import {dollarize, getDateStringETC, diffBlock} from "./helpers";
 import Stock from "../models/stock/Stock";
 import Price from "../models/Price";
 import GameState from "../models/GameState";
+import UserPortfolio from "../models/user/UserPortfolio";
 
 async function updatePriceBoard(client: Client) {
     const service = Service.getInstance();
@@ -13,13 +14,13 @@ async function updatePriceBoard(client: Client) {
     if (!config.bot.channels.info || !config.bot.messages.priceBoard) return;
     const allStocks = await service.stocks.getAllStocks();
     const yesterdayPrices = await service.stocks.getAllYesterdayPrice();
-   // const allUserPortfolios = await service.users.getAllUserPortfolios();
+    const allUserPortfolios = await service.users.getAllUserPortfolios();
     const channel = await client.channels.fetch(config.bot.channels.info) as TextChannel;
     const message = await channel.messages.fetch(config.bot.messages.priceBoard);
     const gameState = await service.game.getGameState();
     await message.edit({
         content: "", embeds: [
-            //await generateLeaderboardEmbed(client, allUserPortfolios, yesterdayPrices),
+            await generateLeaderboardEmbed(client, allUserPortfolios, yesterdayPrices),
             generateStockBoardEmbed(allStocks, yesterdayPrices, gameState)
         ]
     });
@@ -42,7 +43,7 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], g
         .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + diffBlock(`${marketStatus}\nHours: 9:30AM to 4:00PM ET`) + diffBlock(`TICKER - Company Name - Price per share\n+$0.00 (0.00%) price change today`) + diffBlock(desc))
         .setColor(upDownAmount >= 0 ? config.colors.green : config.colors.red);
 }
-/* // TODO fix this
+
 async function generateLeaderboardEmbed(client: Client, allUserPortfolios: UserPortfolio[], yesterdayPrices: Price[]) {
     let desc = ``;
     let i = 1;
@@ -64,6 +65,6 @@ async function generateLeaderboardEmbed(client: Client, allUserPortfolios: UserP
         .setTitle(`Net Worth Leaderboard (${getDateStringETC()})`)
         .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + desc)
         .setColor(config.colors.green);
-}*/
+}
 
 export {updatePriceBoard};
