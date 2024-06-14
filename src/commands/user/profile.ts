@@ -50,7 +50,7 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
     }).join('\n') || 'No stocks owned.';
 
     if (userPortfolio.portfolio[0]) {
-        displayPortfolio += `\n\nTotal Portfolio Value: $${dollarize(await userPortfolio.portfolioValue())}`;
+        displayPortfolio += `\n\nTOTAL PORTFOLIO VALUE: $${dollarize(await userPortfolio.portfolioValue())}`;
     }
 
     const {diff: valueDiff, percent: valueDiffPercent} = await userPortfolio.getDayPortfolioChange();
