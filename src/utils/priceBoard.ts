@@ -52,7 +52,7 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], g
         default:
             marketStatus = "- MARKET CLOSED -";
     }
-    marketStatus += `\nHours: 9:30AM to 4:00PM ET\nPre-Market: 4:00AM to 9:30AM ET\nAfter-Hours: 4:00PM to 8:00PM ET\n`;
+    marketStatus += `\nPre-Market: 4:00AM to 9:30AM ET\nHours: 9:30AM to 4:00PM ET\nAfter-Hours: 4:00PM to 8:00PM ET\n`;
 
     return new EmbedBuilder()
         .setTitle(`Stock Prices (${getDateStringETC()})`)
