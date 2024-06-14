@@ -1,13 +1,11 @@
 import Service from "../services/Service";
 import config from "../../config";
 import {Client, EmbedBuilder, TextChannel} from "discord.js"
-import {dollarize, getDateStringETC, diffBlock} from "./helpers";
+import {dollarize, getDateStringETC, diffBlock, PADDING} from "./helpers";
 import Stock from "../models/stock/Stock";
 import Price from "../models/Price";
 import GameState from "../models/GameState";
 import UserPortfolio from "../models/user/UserPortfolio";
-
-const PADDING = "————————————————————————————————————————————\n";
 
 async function updatePriceBoard(client: Client) {
     const service = Service.getInstance();

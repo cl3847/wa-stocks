@@ -12,7 +12,7 @@ import config from "../../../config";
 import {dollarize, diffBlock} from "../../utils/helpers";
 import Price from "../../models/Price";
 
-//const PADDING = "————————————————————————————————————————————\n";
+//
 
 const command: CommandType = {
     data: new SlashCommandBuilder()

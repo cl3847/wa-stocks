@@ -12,7 +12,7 @@ import log from "../../utils/logger";
 import StockNotFoundError from "../../models/error/StockNotFoundError";
 import Stock from "../../models/stock/Stock";
 import config from "../../../config";
-import {dollarize, diffBlock, getStockLogo} from "../../utils/helpers";
+import {dollarize, diffBlock, getStockLogo, PADDING} from "../../utils/helpers";
 import Price from "../../models/Price";
 import UserPortfolio from "../../models/user/UserPortfolio";
 import InsufficientStockQuantityError from "../../models/error/InsufficientStockQuantityError";
@@ -178,7 +178,7 @@ function confirmTransactionEmbed(options: {
 
     return new EmbedBuilder()
         .setTitle(titleString)
-        .setDescription(diffBlock(`${stock.name}\n${stock.ticker} - $${dollarize(stock.price)} per share\n${priceDiffString}`) + diffBlock(`You currently own ${currentQuantity} share(s).`))
+        .setDescription(diffBlock(`${stock.name}\n${stock.ticker} - $${dollarize(stock.price)} per share\n${priceDiffString}`) + PADDING + diffBlock(`You currently own ${currentQuantity} share(s).`))
         .setColor(type == 'buy' ? config.colors.green : config.colors.red)
         .setTimestamp(new Date())
         .addFields(
