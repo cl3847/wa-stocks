@@ -20,7 +20,7 @@ async function updatePriceBoard(client: Client) {
     const gameState = await service.game.getGameState();
     await message.edit({
         content: "", embeds: [
-            await generateLeaderboardEmbed(client, allUserPortfolios, yesterdayPrices),
+            await generateLeaderboardEmbed(client, allUserPortfolios),
             generateStockBoardEmbed(allStocks, yesterdayPrices, gameState)
         ]
     });
@@ -44,20 +44,11 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], g
         .setColor(upDownAmount >= 0 ? config.colors.green : config.colors.red);
 }
 
-async function generateLeaderboardEmbed(client: Client, allUserPortfolios: UserPortfolio[], yesterdayPrices: Price[]) {
+async function generateLeaderboardEmbed(client: Client, allUserPortfolios: UserPortfolio[]) {
     let desc = ``;
     let i = 1;
     for (let user of allUserPortfolios) {
-        let totalPriceDiff = 0;
-        let totalYesterdayPrice = 0;
-        for (let hs of user.portfolio) {
-            const yesterdayPrice = yesterdayPrices.find(p => p.ticker === hs.ticker);
-            const priceDiff = (hs.price * hs.quantity - (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 0));
-
-            totalPriceDiff += priceDiff;
-            totalYesterdayPrice += (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 0);
-        }
-        const totalPriceDiffPercent = totalPriceDiff / (totalYesterdayPrice || 1);
+        const {diff: totalPriceDiff, percent: totalPriceDiffPercent} = await user.getDayPortfolioChange();
         desc += diffBlock(`${i}: ${(await client.users.fetch(user.uid)).username} - $${dollarize(user.netWorth())}\n${totalPriceDiff > 0 ? '+' : '-'}$${dollarize(Math.abs(totalPriceDiff))} (${(totalPriceDiffPercent * 100).toFixed(2)}%)\n`);
         i++;
     }

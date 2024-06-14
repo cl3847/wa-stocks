@@ -9,7 +9,7 @@ import Service from "../../services/Service";
 import CommandType from "../../models/CommandType";
 import UserPortfolio from "src/models/user/UserPortfolio";
 import config from "../../../config";
-import {dollarize, diffBlock, getETCComponentsPreviousDay} from "../../utils/helpers";
+import {dollarize, diffBlock} from "../../utils/helpers";
 import Price from "../../models/Price";
 
 const command: CommandType = {
@@ -36,12 +36,6 @@ const command: CommandType = {
 };
 
 const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrices: Price[], user: User) => {
-    const yesterdayPortfolio = await Service.getInstance().users.getUserPortfolioTimestamp(user.id, new Date().setUTCHours(config.game.etcOffset, 0, 0, 0));
-
-    const {year, month, date} = getETCComponentsPreviousDay();
-    const portfolioValue = await userPortfolio.portfolioValue();
-    const yesterdayPortfolioValue = await yesterdayPortfolio?.portfolioValueOn(year, month, date);
-
     let totalPriceDiff = 0;
     let totalYesterdayPrice = 0;
     const displayPortfolio = userPortfolio.portfolio.map(hs => {
@@ -54,8 +48,8 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
 
         return `${hs.ticker} - ${hs.quantity} share(s) - $${dollarize(hs.price * hs.quantity)}\n${priceDiff > 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)`;
     }).join('\n') || 'No stocks owned.';
-    const valueDiff = portfolioValue - (yesterdayPortfolioValue ? yesterdayPortfolioValue : 0);
-    const valueDiffPercent = valueDiff / (yesterdayPortfolioValue || 1);
+
+    const {diff: valueDiff, percent: valueDiffPercent} = await userPortfolio.getDayPortfolioChange();
 
     const displayBalance = `$${dollarize(userPortfolio.balance)}`;
     return new EmbedBuilder()

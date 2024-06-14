@@ -1,7 +1,8 @@
 import User from "./User";
 import HeldStock from "../stock/HeldStock";
 import Service from "../../services/Service";
-import {getETCComponents} from "../../utils/helpers";
+import {getETCComponents, getETCComponentsPreviousDay} from "../../utils/helpers";
+import config from "../../../config";
 
 /**
  * A class containing all the information in a User and a listing of all the stock holdings they have
@@ -36,6 +37,18 @@ class UserPortfolio implements User {
             if (!stockPrice) return acc;
             return stock.quantity * stockPrice.close_price + acc;
         }, 0);
+    }
+
+    public async getDayPortfolioChange(): Promise<{diff: number, percent: number }> {
+        const yesterdayPortfolio = await Service.getInstance().users.getUserPortfolioTimestamp(this.uid, new Date().setUTCHours(config.game.etcOffset, 0, 0, 0));
+        const {year, month, date} = getETCComponentsPreviousDay();
+        const portfolioValue = await this.portfolioValue();
+        const yesterdayPortfolioValue = await yesterdayPortfolio?.portfolioValueOn(year, month, date);
+
+        const valueDiff = portfolioValue - (yesterdayPortfolioValue ? yesterdayPortfolioValue : 0);
+        const valueDiffPercent = valueDiff / (yesterdayPortfolioValue || 1);
+
+        return {diff: valueDiff, percent: valueDiffPercent};
     }
 }
 
