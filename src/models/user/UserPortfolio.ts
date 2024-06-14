@@ -38,14 +38,14 @@ class UserPortfolio implements User {
         }, 0);
     }
 
-    public async getDayPortfolioChange(): Promise<{diff: number, percent: number }> {
+    public async getDayPortfolioChange(): Promise<{diff: number, percent: number | null }> {
         const {year, month, date} = getETCComponentsPreviousDay();
         const yesterdayPortfolio = await Service.getInstance().users.getUserPortfolioTimestamp(this.uid, getNextMidnightTimestampET(year, month, date));
         const portfolioValue = await this.portfolioValue();
         const yesterdayPortfolioValue = await yesterdayPortfolio?.portfolioValueOn(year, month, date);
 
         const valueDiff = portfolioValue - (yesterdayPortfolioValue ? yesterdayPortfolioValue : 0);
-        const valueDiffPercent = valueDiff / (yesterdayPortfolioValue || 1);
+        const valueDiffPercent = yesterdayPortfolioValue ? valueDiff / yesterdayPortfolioValue : null;
 
         return {diff: valueDiff, percent: valueDiffPercent};
     }

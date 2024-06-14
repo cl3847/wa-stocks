@@ -52,13 +52,14 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
     const {diff: valueDiff, percent: valueDiffPercent} = await userPortfolio.getDayPortfolioChange();
 
     const displayBalance = `$${dollarize(userPortfolio.balance)}`;
+    const percentDisplay = valueDiffPercent ? (valueDiffPercent * 100).toFixed(2) : "N/A";
     return new EmbedBuilder()
         .setColor(config.colors.green)
         .setAuthor({name: `${user.displayName}'s Profile`, iconURL: user.avatarURL() || undefined})
         .addFields(
             {name: 'Balance', value: diffBlock(displayBalance), inline: true},
             {name: 'Net Worth', value: diffBlock(`$${dollarize(userPortfolio.netWorth())}`), inline: true},
-            {name: 'Today\'s Portfolio Change', value: diffBlock(`${valueDiff > 0 ? '+' : '-'}$${dollarize(Math.abs(valueDiff))} (${(valueDiffPercent * 100).toFixed(2)}%)`), inline: true},
+            {name: 'Today\'s Portfolio Change', value: diffBlock(`${valueDiff > 0 ? '+' : '-'}$${dollarize(Math.abs(valueDiff))} (${percentDisplay}%)`), inline: true},
             {name: 'Portfolio', value: diffBlock(displayPortfolio)},
         );
 };
