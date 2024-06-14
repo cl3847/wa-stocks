@@ -43,6 +43,11 @@ function openMarket(expression: string) {
 
 function openPreMarket(expression: string) {
     cron.schedule(expression, async () => { // open pre-market
+        const randomStocks = await chooseRandomStocks(Service.stockTickerList.length);
+        for (const stock of randomStocks) {
+            await stockPriceRandomWalk(stock.ticker, 8 * config.game.randomWalkVolatility);
+        }
+
         await Service.getInstance().game.updateGameState({isMarketOpen: true, marketState: "pre"});
         log.info(`Pre-market opened at ${new Date().toLocaleString()} ET`);
     }, {timezone: "America/New_York"});
