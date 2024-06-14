@@ -5,6 +5,7 @@ import fs from "fs";
 import {AttachmentBuilder} from "discord.js";
 
 const PADDING = "————————————————————————————————————————————\n";
+const SHORT_PADDING = "———————————————————————————————————\n";
 
 function dollarize(cents: number) {
     return (cents / 100).toFixed(2);
@@ -100,4 +101,4 @@ function getStockLogo(ticker: string): AttachmentBuilder | null {
     return null;
 }
 
-export { dollarize, chooseRandomStocks, stockPriceRandomWalk, getDateStringETC, getETCComponents, getETCComponentsPreviousDay, diffBlock, getStockLogo, timestampToETCComponents, getNextMidnightTimestampET, PADDING };
+export { dollarize, chooseRandomStocks, stockPriceRandomWalk, getDateStringETC, getETCComponents, getETCComponentsPreviousDay, diffBlock, getStockLogo, timestampToETCComponents, getNextMidnightTimestampET, PADDING, SHORT_PADDING };
