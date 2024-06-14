@@ -55,7 +55,7 @@ async function generateLeaderboardEmbed(client: Client, allUserPortfolios: UserP
         i++;
         upDownAmount += totalPriceDiff >= 0 ? 1 : -1;
     }
-    desc = diffBlock(`RANK: USERNAME - NET WORTH (PORTFOLIO VALUE)\n+$0.00 (0.00%) today's portfolio value change`) + diffBlock(desc);
+    desc = diffBlock(`RANK: Username - Net Worth (Portfolio Value)\n+$0.00 (0.00%) today's portfolio value change`) + diffBlock(desc);
     return new EmbedBuilder()
         .setTitle(`Net Worth Leaderboard (${getDateStringETC()})`)
         .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + desc)
