@@ -28,6 +28,33 @@ function timestampToETCComponents(timestamp: number): { year: number, month: num
     return { year, month, date };
 }
 
+function getNextMidnightTimestampET(year: number, month: number, day: number): number {
+    // Create date object for given date, assuming it's in UTC
+    const date = new Date(Date.UTC(year, month - 1, day));
+
+    // Add one day
+    date.setUTCDate(date.getUTCDate() + 1);
+
+    // Set UTC time to what would be midnight Eastern Time, accounting for either standard or daylight saving time
+    const etOffset = isDstObserved(date) ? -4 : -5; // Eastern Time offset from UTC (-4 for EDT, -5 for EST)
+    date.setUTCHours(etOffset * -1, 0, 0, 0);
+
+    // Convert to UTC milliseconds
+    return date.getTime();
+}
+
+function isDstObserved(date: Date): boolean {
+    // January and July dates to determine the standard time offset vs. the current offset
+    const jan = new Date(date.getFullYear(), 0, 1); // January 1
+    const jul = new Date(date.getFullYear(), 6, 1); // July 1
+
+    // Standard time offset (should be the greatest absolute value)
+    const standardOffset = Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+
+    // Return true if current date offset is less than standard time offset
+    return date.getTimezoneOffset() < standardOffset;
+}
+
 function getETCComponentsPreviousDay(): { year: number, month: number, date: number } {
     const now = new Date();
     const previousDay = new Date(now.setDate(now.getDate() - 1));
@@ -71,4 +98,4 @@ function getStockLogo(ticker: string): AttachmentBuilder | null {
     return null;
 }
 
-export { dollarize, chooseRandomStocks, stockPriceRandomWalk, getDateStringETC, getETCComponents, getETCComponentsPreviousDay, diffBlock, getStockLogo, timestampToETCComponents };
+export { dollarize, chooseRandomStocks, stockPriceRandomWalk, getDateStringETC, getETCComponents, getETCComponentsPreviousDay, diffBlock, getStockLogo, timestampToETCComponents, getNextMidnightTimestampET };

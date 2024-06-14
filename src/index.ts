@@ -13,7 +13,10 @@ import CommandType from "./models/CommandType";
 import TransactionDAO from "./handlers/TransactionDAO";
 import * as cron from "node-cron";
 import {updatePriceBoard} from "./utils/priceBoard";
-import {chooseRandomStocks, stockPriceRandomWalk} from "./utils/helpers";
+import {
+    chooseRandomStocks,
+    stockPriceRandomWalk
+} from "./utils/helpers";
 import ObjectDAO from "./handlers/ObjectDAO";
 require('dotenv').config();
 
