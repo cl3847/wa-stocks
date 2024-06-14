@@ -7,6 +7,8 @@ import Price from "../models/Price";
 import GameState from "../models/GameState";
 import UserPortfolio from "../models/user/UserPortfolio";
 
+const PADDING = "————————————————————————————————————————————\n";
+
 async function updatePriceBoard(client: Client) {
     const service = Service.getInstance();
     // TODO create function to create stockboard message if it doesn't exist
@@ -38,25 +40,25 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], g
         upDownAmount += priceDiff >= 0 ? 1 : -1;
     });
 
-    let marketStatus;
+    let marketStatus = "";
     switch (gameState.marketState) {
         case "open":
-            marketStatus = "+ MARKET OPEN +";
+            marketStatus += "+ MARKET OPEN +";
             break;
         case "pre":
-            marketStatus = "+ MARKET OPEN (PRE-MARKET) +";
+            marketStatus += "+ MARKET OPEN (PRE-MARKET) +";
             break;
         case "after":
-            marketStatus = "+ MARKET OPEN (AFTER-HOURS) +";
+            marketStatus += "+ MARKET OPEN (AFTER-HOURS) +";
             break;
         default:
-            marketStatus = "- MARKET CLOSED -";
+            marketStatus += "- MARKET CLOSED -";
     }
     marketStatus += `\nPre-Market: 4:00AM to 9:30AM ET\nHours: 9:30AM to 4:00PM ET\nAfter-Hours: 4:00PM to 8:00PM ET\n`;
 
     return new EmbedBuilder()
         .setTitle(`Stock Prices (${getDateStringETC()})`)
-        .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + diffBlock(`${marketStatus}`) + diffBlock(`STOCK TICKER - Company Name - Price per share\n+$0.00 (0.00%) today's stock price change`) + diffBlock(desc))
+        .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + diffBlock(`${marketStatus}`) +  diffBlock(`TICKER - Company Name - Price per share\n+$0.00 (0.00%) today's stock price change`) + PADDING + diffBlock(desc))
         .setColor(upDownAmount >= 0 ? config.colors.green : config.colors.red);
 }
 
@@ -71,7 +73,7 @@ async function generateLeaderboardEmbed(client: Client, allUserPortfolios: UserP
         i++;
         upDownAmount += totalPriceDiff >= 0 ? 1 : -1;
     }
-    desc = diffBlock(`RANK: Username - Net Worth (Portfolio Value)\n+$0.00 (0.00%) today's portfolio value change`) + diffBlock(desc);
+    desc = diffBlock(`RANK: Username - Net Worth (Portfolio Value)\n+$0.00 (0.00%) today's portfolio value change`) + PADDING + diffBlock(desc);
     return new EmbedBuilder()
         .setTitle(`Net Worth Leaderboard (${getDateStringETC()})`)
         .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + desc)
