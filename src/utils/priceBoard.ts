@@ -34,7 +34,7 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], g
         const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.close_price : 0);
         const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price : 1);
 
-        desc += `${stock.ticker} - ${stock.name} - $${dollarize(stock.price)}\n${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)\n`;
+        desc += `${stock.name}\n${stock.ticker} - $${dollarize(stock.price)} per share\n${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)\n`;
         upDownAmount += priceDiff >= 0 ? 1 : -1;
     });
 
@@ -56,7 +56,7 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], g
 
     return new EmbedBuilder()
         .setTitle(`Stock Prices (${getDateStringETC()})`)
-        .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + diffBlock(`${marketStatus}`) + diffBlock(`TICKER - Company Name - Price per share\n+$0.00 (0.00%) today's stock price change`) + diffBlock(desc))
+        .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + diffBlock(`${marketStatus}`) + diffBlock(`Company Name\nTICKER - Price per share\n+$0.00 (0.00%) today's stock price change`) + diffBlock(desc))
         .setColor(upDownAmount >= 0 ? config.colors.green : config.colors.red);
 }
 
