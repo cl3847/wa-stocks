@@ -53,7 +53,7 @@ async function generateLeaderboardEmbed(client: Client, allUserPortfolios: UserP
         const percentDisplay = totalPriceDiffPercent ? (totalPriceDiffPercent * 100).toFixed(2) : "N/A";
         desc += diffBlock(`${i}: ${(await client.users.fetch(user.uid)).username} - $${dollarize(user.netWorth())}\nPortfolio Value: ${dollarize(await user.portfolioValue())}\n${totalPriceDiff > 0 ? '+' : '-'}$${dollarize(Math.abs(totalPriceDiff))} (${percentDisplay}%)\n`);
         i++;
-        //upDownAmount += totalPriceDiff >= 0 ? 1 : -1;
+        upDownAmount += totalPriceDiff >= 0 ? 1 : -1;
     }
     return new EmbedBuilder()
         .setTitle(`Net Worth Leaderboard (${getDateStringETC()})`)
