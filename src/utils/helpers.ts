@@ -6,6 +6,7 @@ import {AttachmentBuilder} from "discord.js";
 
 const PADDING = "————————————————————————————————————————————\n";
 const SHORT_PADDING = "———————————————————————————————————\n";
+const EMBED_PADDING = "————————————————————————————————————————\n";
 
 function dollarize(cents: number) {
     return (cents / 100).toFixed(2);
@@ -29,6 +30,19 @@ function timestampToETCComponents(timestamp: number): { year: number, month: num
     const [month, date, year] = dateString.split('/').map(Number);
     if (!year || !month || !date) throw new Error('Error parsing date components.');
     return { year, month, date };
+}
+
+function getTimeStringEST() {
+    // Create a new Date object for the current time
+    const now = new Date();
+
+    // Get the time in EST formatted as a string
+    return now.toLocaleTimeString('en-US', {
+        timeZone: 'America/New_York', // EST including handling for EDT automatically
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true
+    });
 }
 
 function getNextMidnightTimestampET(year: number, month: number, day: number): number {
@@ -101,4 +115,19 @@ function getStockLogo(ticker: string): AttachmentBuilder | null {
     return null;
 }
 
-export { dollarize, chooseRandomStocks, stockPriceRandomWalk, getDateStringETC, getETCComponents, getETCComponentsPreviousDay, diffBlock, getStockLogo, timestampToETCComponents, getNextMidnightTimestampET, PADDING, SHORT_PADDING };
+export {
+    dollarize,
+    chooseRandomStocks,
+    stockPriceRandomWalk,
+    getDateStringETC,
+    getETCComponents,
+    getETCComponentsPreviousDay,
+    diffBlock,
+    getStockLogo,
+    timestampToETCComponents,
+    getNextMidnightTimestampET,
+    PADDING,
+    SHORT_PADDING,
+    EMBED_PADDING,
+    getTimeStringEST,
+};

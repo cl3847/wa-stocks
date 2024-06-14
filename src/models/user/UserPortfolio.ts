@@ -1,7 +1,7 @@
 import User from "./User";
 import HeldStock from "../stock/HeldStock";
 import Service from "../../services/Service";
-import {getETCComponents, getETCComponentsPreviousDay, getNextMidnightTimestampET} from "../../utils/helpers";
+import {getETCComponentsPreviousDay, getNextMidnightTimestampET} from "../../utils/helpers";
 
 /**
  * A class containing all the information in a User and a listing of all the stock holdings they have
@@ -21,12 +21,11 @@ class UserPortfolio implements User {
      * @returns {number} The user's net worth
      */
     public netWorth(): number {
-        return this.balance + this.portfolio.reduce((acc, stock) => stock.quantity * stock.price + acc, 0);
+        return this.balance + this.portfolioValue();
     }
 
-    public async portfolioValue(): Promise<number> {
-        const {year, month, date} = getETCComponents();
-        return this.portfolioValueOn(year, month, date);
+    public portfolioValue(): number {
+        return this.portfolio.reduce((acc, stock) => stock.quantity * stock.price + acc, 0);
     }
 
     public async portfolioValueOn(year: number, month: number, date: number): Promise<number> {
@@ -41,7 +40,7 @@ class UserPortfolio implements User {
     public async getDayPortfolioChange(): Promise<{diff: number, percent: number | null }> {
         const {year, month, date} = getETCComponentsPreviousDay();
         const yesterdayPortfolio = await Service.getInstance().users.getUserPortfolioTimestamp(this.uid, getNextMidnightTimestampET(year, month, date));
-        const portfolioValue = await this.portfolioValue();
+        const portfolioValue = this.portfolioValue();
         const yesterdayPortfolioValue = await yesterdayPortfolio?.portfolioValueOn(year, month, date);
 
         const valueDiff = portfolioValue - (yesterdayPortfolioValue ? yesterdayPortfolioValue : 0);

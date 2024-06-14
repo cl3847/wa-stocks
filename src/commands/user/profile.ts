@@ -9,7 +9,7 @@ import Service from "../../services/Service";
 import CommandType from "../../models/CommandType";
 import UserPortfolio from "src/models/user/UserPortfolio";
 import config from "../../../config";
-import {dollarize, diffBlock} from "../../utils/helpers";
+import {dollarize, diffBlock, EMBED_PADDING} from "../../utils/helpers";
 import Price from "../../models/Price";
 
 //
@@ -55,17 +55,17 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
     const displayBalance = `$${dollarize(userPortfolio.balance)}`;
     const percentDisplay = valueDiffPercent ? (valueDiffPercent * 100).toFixed(2) : "N/A";
 
+    if (userPortfolio.portfolio.length > 0) {
+        displayPortfolio += `\n${EMBED_PADDING}$${dollarize(userPortfolio.portfolioValue())} total portfolio value\n${valueDiff > 0 ? '+' : '-'}$${dollarize(Math.abs(valueDiff))} (${percentDisplay}%) change today`;
+    }
+
     return new EmbedBuilder()
         .setColor(config.colors.green)
         .setAuthor({name: `${user.displayName}'s Profile`, iconURL: user.avatarURL() || undefined})
         .setImage("https://images-ext-1.discordapp.net/external/WZApakQTOFUPSVHnGC_2jHRyV54XSvIW3kAMSThiIHM/https/t4.ftcdn.net/jpg/06/46/48/39/360_F_646483996_FU8STGnemtNlh7eprlfh1fZtBmAW8lV2.jpg")
-        //.setDescription(PADDING)
         .addFields(
             {name: 'Balance', value: diffBlock(displayBalance), inline: true},
             {name: 'Net Worth', value: diffBlock(`$${dollarize(userPortfolio.netWorth())}`), inline: true},
-            {name: '\t', value: '\t'},
-            {name: 'Total Portfolio Value', value: diffBlock(`$${dollarize(totalYesterdayPrice)}`), inline: true},
-            {name: 'Portfolio Change Today', value: diffBlock(`${valueDiff > 0 ? '+' : '-'}$${dollarize(Math.abs(valueDiff))} (${percentDisplay}%)`), inline: true},
             {name: 'Portfolio', value: diffBlock(displayPortfolio)},
         );
 };

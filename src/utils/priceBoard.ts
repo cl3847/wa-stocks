@@ -1,7 +1,7 @@
 import Service from "../services/Service";
 import config from "../../config";
 import {Client, EmbedBuilder, TextChannel} from "discord.js"
-import {dollarize, getDateStringETC, diffBlock, PADDING} from "./helpers";
+import {dollarize, getDateStringETC, diffBlock, PADDING, getTimeStringEST} from "./helpers";
 import Stock from "../models/stock/Stock";
 import Price from "../models/Price";
 import GameState from "../models/GameState";
@@ -52,7 +52,7 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], g
         default:
             marketStatus += "- MARKET CLOSED -";
     }
-    marketStatus += `\nPre-Market: 4:00AM to 9:30AM ET\nHours: 9:30AM to 4:00PM ET\nAfter-Hours: 4:00PM to 8:00PM ET\n`;
+    marketStatus += `\nCURRENT TIME: ${getTimeStringEST()} ET\n\nPre-Market: 4:00 AM to 9:30 AM ET\nHours: 9:30 AM to 4:00 PM ET\nAfter-Hours: 4:00 PM to 8:00 PM ET\n`;
 
     return new EmbedBuilder()
         .setTitle(`Stock Prices (${getDateStringETC()})`)

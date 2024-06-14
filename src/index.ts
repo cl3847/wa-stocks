@@ -13,6 +13,7 @@ import CommandType from "./models/CommandType";
 import TransactionDAO from "./handlers/TransactionDAO";
 import ObjectDAO from "./handlers/ObjectDAO";
 import {initJobs} from "./utils/jobs";
+import {updatePriceBoard} from "./utils/priceBoard";
 require('dotenv').config();
 
 (async () => {
@@ -117,6 +118,7 @@ require('dotenv').config();
     // initialize cron jobs
 
     try {
+        updatePriceBoard(client);
         initJobs(client);
     } catch (err) {
         log.error(err.stack);
