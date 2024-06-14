@@ -30,11 +30,11 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], g
     let upDownAmount = 0;
     let desc = ``;
     allStocks.forEach(stock => {
-       const yesterdayPrice = yesterdayPrices.find(p => p.ticker === stock.ticker);
-       const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.close_price : 0);
-       const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price : 1);
+        const yesterdayPrice = yesterdayPrices.find(p => p.ticker === stock.ticker);
+        const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.close_price : 0);
+        const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price : 1);
 
-       desc += `${stock.ticker} - ${stock.name} - $${dollarize(stock.price)}\n${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)\n`;
+        desc += `${stock.ticker} - ${stock.name} - $${dollarize(stock.price)}\n${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)\n`;
         upDownAmount += priceDiff >= 0 ? 1 : -1;
     });
     const marketStatus = gameState.isMarketOpen ? "+ MARKET OPEN +" : "- MARKET CLOSED -";
@@ -45,18 +45,20 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], g
 }
 
 async function generateLeaderboardEmbed(client: Client, allUserPortfolios: UserPortfolio[]) {
-    let desc = ``;
+    let upDownAmount = 0;
+    let desc = diffBlock(`RANK: USERNAME - NET WORTH\nPortfolio Value: $0.00\n+$0.00 (0.00%) portfolio value change today`);
     let i = 1;
     for (let user of allUserPortfolios) {
         const {diff: totalPriceDiff, percent: totalPriceDiffPercent} = await user.getDayPortfolioChange();
         const percentDisplay = totalPriceDiffPercent ? (totalPriceDiffPercent * 100).toFixed(2) : "N/A";
-        desc += diffBlock(`${i}: ${(await client.users.fetch(user.uid)).username} - $${dollarize(user.netWorth())}\n${totalPriceDiff > 0 ? '+' : '-'}$${dollarize(Math.abs(totalPriceDiff))} (${percentDisplay}%)\n`);
+        desc += diffBlock(`${i}: ${(await client.users.fetch(user.uid)).username} - $${dollarize(user.netWorth())}\nPortfolio Value: ${dollarize(await user.portfolioValue())}\n${totalPriceDiff > 0 ? '+' : '-'}$${dollarize(Math.abs(totalPriceDiff))} (${percentDisplay}%)\n`);
         i++;
+        //upDownAmount += totalPriceDiff >= 0 ? 1 : -1;
     }
     return new EmbedBuilder()
         .setTitle(`Net Worth Leaderboard (${getDateStringETC()})`)
         .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + desc)
-        .setColor(config.colors.green);
+        .setColor(upDownAmount >= 0 ? config.colors.green : config.colors.red);
 }
 
 export {updatePriceBoard};
