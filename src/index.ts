@@ -11,13 +11,8 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import CommandType from "./models/CommandType";
 import TransactionDAO from "./handlers/TransactionDAO";
-import * as cron from "node-cron";
-import {updatePriceBoard} from "./utils/priceBoard";
-import {
-    chooseRandomStocks,
-    stockPriceRandomWalk
-} from "./utils/helpers";
 import ObjectDAO from "./handlers/ObjectDAO";
+import {initJobs} from "./utils/jobs";
 require('dotenv').config();
 
 (async () => {
@@ -122,25 +117,7 @@ require('dotenv').config();
     // initialize cron jobs
 
     try {
-        cron.schedule('*/1 * * * *', async () => updatePriceBoard(client)); // update info channel
-
-        cron.schedule(`*/${config.game.randomWalkInterval} * * * *`, async () => { // random walk stocks
-            const randomStocks = await chooseRandomStocks(config.game.randomWalkAmount);
-            for (const stock of randomStocks) {
-                await stockPriceRandomWalk(stock.ticker, config.game.randomWalkVolatility);
-            }
-        });
-
-        cron.schedule('31 9 * * 1-5', async () => { // open market
-            await Service.getInstance().game.updateGameState({isMarketOpen: true});
-            await Service.getInstance().stocks.synchronizeAllStockPrices();
-            log.info(`Market opened at ${new Date().toLocaleString()} ET`);
-        }, {timezone: "America/New_York"});
-
-        cron.schedule('01 16 * * 1-5', async () => { // open market
-            await Service.getInstance().game.updateGameState({isMarketOpen: false});
-            log.info(`Market closed at ${new Date().toLocaleString()} ET`);
-        }, {timezone: "America/New_York"});
+        initJobs(client);
     } catch (err) {
         log.error(err.stack);
     }

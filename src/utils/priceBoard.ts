@@ -37,10 +37,26 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], g
         desc += `${stock.ticker} - ${stock.name} - $${dollarize(stock.price)}\n${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)\n`;
         upDownAmount += priceDiff >= 0 ? 1 : -1;
     });
-    const marketStatus = gameState.isMarketOpen ? "+ MARKET OPEN +" : "- MARKET CLOSED -";
+
+    let marketStatus;
+    switch (gameState.marketState) {
+        case "open":
+            marketStatus = "+ MARKET OPEN +";
+            break;
+        case "pre":
+            marketStatus = "+ MARKET OPEN (PRE-MARKET) +";
+            break;
+        case "after":
+            marketStatus = "+ MARKET OPEN (AFTER-HOURS) +";
+            break;
+        default:
+            marketStatus = "- MARKET CLOSED -";
+    }
+    marketStatus += `\nHours: 9:30AM to 4:00PM ET\nPre-Market: 4:00AM to 9:30AM ET\nAfter-Hours: 4:00PM to 8:00PM ET\n`;
+
     return new EmbedBuilder()
         .setTitle(`Stock Prices (${getDateStringETC()})`)
-        .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + diffBlock(`${marketStatus}\nHours: 9:30AM to 4:00PM ET`) + diffBlock(`TICKER - Company Name - Price per share\n+$0.00 (0.00%) today's stock price change`) + diffBlock(desc))
+        .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + diffBlock(`${marketStatus}`) + diffBlock(`TICKER - Company Name - Price per share\n+$0.00 (0.00%) today's stock price change`) + diffBlock(desc))
         .setColor(upDownAmount >= 0 ? config.colors.green : config.colors.red);
 }
 

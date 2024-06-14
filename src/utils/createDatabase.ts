@@ -81,7 +81,7 @@ const initDb = async (pc: PoolClient) => {
     );
     // check if gameState exists in objects
     if (!await pc.query(`SELECT * FROM objects WHERE name = 'gameState';`)) {
-        await pc.query(`INSERT INTO objects (name, data) VALUES ('gameState', '{"isMarketOpen": false}');`);
+        await pc.query(`INSERT INTO objects (name, data) VALUES ('gameState', '{"isMarketOpen": false, "marketState": "closed"}');`);
     }
 };
 
