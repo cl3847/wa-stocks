@@ -38,7 +38,7 @@ const command: CommandType = {
 const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrices: Price[], user: User) => {
     let totalPriceDiff = 0;
     let totalYesterdayPrice = 0;
-    const displayPortfolio = userPortfolio.portfolio.map(hs => {
+    let displayPortfolio = userPortfolio.portfolio.map(hs => {
         const yesterdayPrice = yesterdayPrices.find(p => p.ticker === hs.ticker);
         const priceDiff = (hs.price * hs.quantity - (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 0));
         const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 1);
@@ -48,6 +48,10 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
 
         return `${hs.ticker} - ${hs.quantity} share(s) - $${dollarize(hs.price * hs.quantity)}\n${priceDiff > 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)`;
     }).join('\n') || 'No stocks owned.';
+
+    if (userPortfolio.portfolio[0]) {
+        displayPortfolio += `\n\nTotal Portfolio Value: $${dollarize(await userPortfolio.portfolioValue())}`;
+    }
 
     const {diff: valueDiff, percent: valueDiffPercent} = await userPortfolio.getDayPortfolioChange();
 
