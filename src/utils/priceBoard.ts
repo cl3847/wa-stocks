@@ -40,21 +40,22 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], g
     const marketStatus = gameState.isMarketOpen ? "+ MARKET OPEN +" : "- MARKET CLOSED -";
     return new EmbedBuilder()
         .setTitle(`Stock Prices (${getDateStringETC()})`)
-        .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + diffBlock(`${marketStatus}\nHours: 9:30AM to 4:00PM ET`) + diffBlock(`TICKER - Company Name - Price per share\n+$0.00 (0.00%) price change today`) + diffBlock(desc))
+        .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + diffBlock(`${marketStatus}\nHours: 9:30AM to 4:00PM ET`) + diffBlock(`TICKER - Company Name - Price per share\n+$0.00 (0.00%) today's stock price change`) + diffBlock(desc))
         .setColor(upDownAmount >= 0 ? config.colors.green : config.colors.red);
 }
 
 async function generateLeaderboardEmbed(client: Client, allUserPortfolios: UserPortfolio[]) {
     let upDownAmount = 0;
-    let desc = diffBlock(`RANK: USERNAME - NET WORTH\nPortfolio Value: $0.00\n+$0.00 (0.00%) portfolio value change today`);
+    let desc = ``;
     let i = 1;
     for (let user of allUserPortfolios) {
         const {diff: totalPriceDiff, percent: totalPriceDiffPercent} = await user.getDayPortfolioChange();
         const percentDisplay = totalPriceDiffPercent ? (totalPriceDiffPercent * 100).toFixed(2) : "N/A";
-        desc += diffBlock(`${i}: ${(await client.users.fetch(user.uid)).username} - $${dollarize(user.netWorth())}\nPortfolio Value: ${dollarize(await user.portfolioValue())}\n${totalPriceDiff > 0 ? '+' : '-'}$${dollarize(Math.abs(totalPriceDiff))} (${percentDisplay}%)\n`);
+        desc += `${i}: ${(await client.users.fetch(user.uid)).username} - $${dollarize(user.netWorth())} ($${dollarize(await user.portfolioValue())})\n${totalPriceDiff > 0 ? '+' : '-'}$${dollarize(Math.abs(totalPriceDiff))} (${percentDisplay}%)\n`;
         i++;
         upDownAmount += totalPriceDiff >= 0 ? 1 : -1;
     }
+    desc = diffBlock(`RANK: USERNAME - NET WORTH (PORTFOLIO VALUE)\n+$0.00 (0.00%) today's portfolio value change`) + diffBlock(desc);
     return new EmbedBuilder()
         .setTitle(`Net Worth Leaderboard (${getDateStringETC()})`)
         .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + desc)
