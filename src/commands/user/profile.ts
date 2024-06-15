@@ -83,7 +83,8 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
             {name: 'Balance', value: diffBlock(displayBalance), inline: true},
             {name: 'Net Worth', value: diffBlock(`$${dollarize(userPortfolio.netWorth())}`), inline: true},
             {name: 'Portfolio', value: diffBlock(displayPortfolio)},
-        );
+        )
+        .setTimestamp(new Date());
 };
 
 module.exports = command;
