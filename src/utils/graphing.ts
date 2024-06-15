@@ -9,6 +9,9 @@ import {
 } from "./helpers";
 import {ChartJSNodeCanvas} from "chartjs-node-canvas";
 import {freshRequire} from "chartjs-node-canvas/src/freshRequire";
+import {Chart} from "chart.js";
+
+Chart.defaults.color = '#fff';
 
 async function createCandlestickStockImage(ticker: string): Promise<Buffer> {
     const service = Service.getInstance();
@@ -28,8 +31,8 @@ async function createCandlestickStockImage(ticker: string): Promise<Buffer> {
         }
     });
 
-    const width = 800;
-    const height = 400;
+    const width = 600;
+    const height = 300;
     const chartJSNodeCanvas = new ChartJSNodeCanvas({
         width, height, plugins: {
             modern: [ 'chartjs-chart-financial' ],
@@ -59,8 +62,8 @@ async function createCandlestickStockImage(ticker: string): Promise<Buffer> {
                         down: config.colors.red,
                         unchanged: 'rgba(90, 90, 90, 1)'
                     }
-
-                }]
+                }],
+                fontColor : '#FFFFFF'
             },
         options: {
             scales: {
@@ -89,14 +92,14 @@ async function createLinePortfolioImage(uid: string) {
 
     const portfolio = await Service.getInstance().users.getUserPortfolio(uid);
     const labels: string[] = [formatDate(year, month, date+1)];
-    const dataPoints: number[] = [portfolio?.portfolioValue() || 0];
+    const dataPoints: number[] = [Math.round((portfolio?.portfolioValue() || 0) / 100)];
 
     for (let i = 0; i < config.game.chartsDaysBack - 1; i++) { // TODO switch to fast algorithm...
         const timestamp = startTimestamp - 86400000 * i;
         const portfolio = await Service.getInstance().users.getUserPortfolioTimestamp(uid, timestamp);
         const {year: y, month: m, date: d} = timestampToETCComponents(timestamp);
         labels.unshift(formatDate(y, m, d - 1));
-        dataPoints.unshift(await portfolio?.portfolioValueOn(y, m, d - 1) || 0);
+        dataPoints.unshift(Math.round((await portfolio?.portfolioValueOn(y, m, d - 1) || 0) / 100));
     }
 
     const width = 600;
