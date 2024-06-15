@@ -91,7 +91,7 @@ async function createLinePortfolioImage(uid: string) {
     const labels: string[] = [formatDate(year, month, date+1)];
     const dataPoints: number[] = [portfolio?.portfolioValue() || 0];
 
-    for (let i = 0; i < config.game.chartsDaysBack - 1; i++) {
+    for (let i = 0; i < config.game.chartsDaysBack - 1; i++) { // TODO switch to fast algorithm...
         const timestamp = startTimestamp - 86400000 * i;
         const portfolio = await Service.getInstance().users.getUserPortfolioTimestamp(uid, timestamp);
         const {year: y, month: m, date: d} = timestampToETCComponents(timestamp);
