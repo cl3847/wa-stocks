@@ -133,6 +133,13 @@ class UserDAO {
         if (result.rows.length === 0) return null;
         return new UserPortfolio(result.rows[0].profile as User, result.rows[0].portfolio[0] ? result.rows[0].portfolio : []);
     }
+
+    public async getUserStockHistoryAfterTimestamp(pc: PoolClient, uid: string, timestamp: number): Promise<UserStock[]> {
+        const query = "SELECT * FROM users_stocks WHERE uid = $1 AND timestamp > $2 ORDER BY timestamp DESC";
+        const params = [uid, timestamp];
+        const result = await pc.query(query, params);
+        return result.rows.map(row => row as UserStock);
+    }
 }
 
 export default UserDAO;

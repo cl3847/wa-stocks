@@ -2,6 +2,7 @@ import User from "../models/user/User"
 import DAOs from "../models/DAOs";
 import {Pool} from "pg";
 import UserPortfolio from "../models/user/UserPortfolio";
+import UserStock from "../models/user_stock/UserStock";
 
 class UserService {
     private daos: DAOs;
@@ -43,6 +44,13 @@ class UserService {
     public async getAllUserPortfolios(): Promise<UserPortfolio[]> {
         const pc = await this.pool.connect();
         const res = await this.daos.users.getAllUserPortfolios(pc);
+        pc.release();
+        return res;
+    }
+
+    public async getUserStockHistoryAfterTimestamp(uid: string, timestamp: number): Promise<UserStock[]> {
+        const pc = await this.pool.connect();
+        const res = await this.daos.users.getUserStockHistoryAfterTimestamp(pc, uid, timestamp);
         pc.release();
         return res;
     }
