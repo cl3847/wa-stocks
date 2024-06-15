@@ -1,4 +1,5 @@
 import {
+    AttachmentBuilder,
     CacheType,
     ChatInputCommandInteraction,
     EmbedBuilder,
@@ -11,6 +12,8 @@ import UserPortfolio from "src/models/user/UserPortfolio";
 import config from "../../../config";
 import {dollarize, diffBlock, EMBED_PADDING} from "../../utils/helpers";
 import Price from "../../models/Price";
+import {createLinePortfolioImage} from "../../utils/graphing";
+import log from "../../utils/logger";
 
 //
 
@@ -33,7 +36,20 @@ const command: CommandType = {
             return;
         }
         const yesterdayPrices = await service.stocks.getAllYesterdayPrice();
-        await interaction.reply({embeds: [await generateProfileEmbed(userPortfolio, yesterdayPrices, user)]});
+
+        let embed = await generateProfileEmbed(userPortfolio, yesterdayPrices, user);
+
+        const files: AttachmentBuilder[] = [];
+        try {
+            const image: Buffer = await createLinePortfolioImage(user.id);
+            const chartAttachment = new AttachmentBuilder(image, { name: 'line.png' });
+            files.push(chartAttachment);
+            embed.setImage('attachment://line.png');
+        } catch {
+            log.error('Error creating line image for user ' + user.id);
+        }
+
+        await interaction.reply({embeds: [embed], files});
     },
 };
 
@@ -48,15 +64,15 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
         totalPriceDiff += priceDiff;
         totalYesterdayPrice += (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 0);
 
-        return `${hs.ticker} - ${hs.quantity} share(s) - $${dollarize(hs.price * hs.quantity)}\n${priceDiff > 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)`;
+        return `${hs.ticker} - ${hs.quantity} share(s) - $${dollarize(hs.price * hs.quantity)}\n${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%)`;
     }).join('\n') || 'No stocks owned.';
 
     const {diff: valueDiff, percent: valueDiffPercent} = await userPortfolio.getDayPortfolioChange();
     const displayBalance = `$${dollarize(userPortfolio.balance)}`;
-    const percentDisplay = valueDiffPercent ? (valueDiffPercent * 100).toFixed(2) : "N/A";
+    const percentDisplay = valueDiffPercent !== null ? (valueDiffPercent * 100).toFixed(2) : "N/A";
 
     if (userPortfolio.portfolio.length > 0) {
-        displayPortfolio += `\n${EMBED_PADDING}$${dollarize(userPortfolio.portfolioValue())} total portfolio value\n${valueDiff > 0 ? '+' : '-'}$${dollarize(Math.abs(valueDiff))} (${percentDisplay}%) change today`;
+        displayPortfolio += `\n${EMBED_PADDING}$${dollarize(userPortfolio.portfolioValue())} total portfolio value\n${valueDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(valueDiff))} (${percentDisplay}%) change today`;
     }
 
     return new EmbedBuilder()

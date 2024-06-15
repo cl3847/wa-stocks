@@ -1,6 +1,12 @@
 import Service from "../services/Service";
 import config from "../../config";
-import {dollarize} from "./helpers";
+import {
+    dollarize,
+    formatDate,
+    getETCComponentsPreviousDay,
+    getNextMidnightTimestampET,
+    timestampToETCComponents
+} from "./helpers";
 import {ChartJSNodeCanvas} from "chartjs-node-canvas";
 import {freshRequire} from "chartjs-node-canvas/src/freshRequire";
 
@@ -76,4 +82,68 @@ async function createCandlestickStockImage(ticker: string): Promise<Buffer> {
     return await chartJSNodeCanvas.renderToBuffer(configuration);
 }
 
-export { createCandlestickStockImage };
+async function createLinePortfolioImage(uid: string) {
+    // first, we need to calculate the timestamp for config.game.chartsDaysBack days ago
+    const {year, month, date} = getETCComponentsPreviousDay();
+    const startTimestamp = getNextMidnightTimestampET(year, month, date);
+
+    const portfolio = await Service.getInstance().users.getUserPortfolio(uid);
+    const labels: string[] = [formatDate(year, month, date+1)];
+    const dataPoints: number[] = [portfolio?.portfolioValue() || 0];
+
+    for (let i = 0; i < config.game.chartsDaysBack - 1; i++) {
+        const timestamp = startTimestamp - 86400000 * i;
+        const portfolio = await Service.getInstance().users.getUserPortfolioTimestamp(uid, timestamp);
+        const {year: y, month: m, date: d} = timestampToETCComponents(timestamp);
+        labels.unshift(formatDate(y, m, d - 1));
+        dataPoints.unshift(await portfolio?.portfolioValueOn(y, m, d - 1) || 0);
+    }
+
+    const width = 600;
+    const height = 300;
+    const chartJSNodeCanvas = new ChartJSNodeCanvas({width, height});
+
+    let borderColor = config.colors.green; // Default to red
+    if (dataPoints.length >= 2) {
+        const lastValue = dataPoints.at(-1);
+        const secondLastValue = dataPoints.at(-2);
+        if (lastValue !== undefined && secondLastValue !== undefined) {
+            borderColor = lastValue >= secondLastValue ? config.colors.green : config.colors.red;
+        }
+    }
+
+    const configuration: any = {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Portfolio Value',
+                data: dataPoints,
+                fill: false,
+                borderColor,
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            elements: {
+                point:{
+                    radius: 0
+                }
+            }
+        }
+    };
+
+    return await chartJSNodeCanvas.renderToBuffer(configuration);
+}
+
+export { createCandlestickStockImage, createLinePortfolioImage };

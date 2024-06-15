@@ -118,7 +118,7 @@ require('dotenv').config();
     // initialize cron jobs
 
     try {
-        updatePriceBoard(client);
+        await updatePriceBoard(client);
         initJobs(client);
     } catch (err) {
         log.error(err.stack);
