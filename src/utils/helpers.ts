@@ -32,6 +32,21 @@ function timestampToETCComponents(timestamp: number): { year: number, month: num
     return { year, month, date };
 }
 
+function formatDate(year: number, month: number, day: number): string {
+    // Create a new Date object. Note that months are zero-indexed in JavaScript and TypeScript (0 = January, 11 = December)
+    const date = new Date(year, month - 1, day);
+
+    // Options for toLocaleDateString to format the date as 'Month day, Year'
+    const options: Intl.DateTimeFormatOptions = {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    };
+
+    // Format the date using toLocaleDateString with options
+    return date.toLocaleDateString('en-US', options);
+}
+
 function getTimeStringEST() {
     // Create a new Date object for the current time
     const now = new Date();
@@ -130,4 +145,5 @@ export {
     SHORT_PADDING,
     EMBED_PADDING,
     getTimeStringEST,
+    formatDate
 };
