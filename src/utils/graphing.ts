@@ -124,7 +124,7 @@ async function createLinePortfolioImage(uid: string) {
                 data: dataPoints,
                 fill: false,
                 borderColor,
-                tension: 0.1
+                tension: 0.2
             }]
         },
         options: {
