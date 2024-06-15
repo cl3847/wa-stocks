@@ -22,10 +22,10 @@ function infoRefresh(expression: string, client: Client) {
 }
 
 async function walkStocks(expression: string) {
-    const gameState = await Service.getInstance().game.getGameState();
-    if (!gameState.isMarketOpen) return;
-
     cron.schedule(expression, async () => { // random walk stocks
+        const gameState = await Service.getInstance().game.getGameState();
+        if (!gameState.isMarketOpen) return;
+
         const randomStocks = await chooseRandomStocks(config.game.randomWalkAmount);
         for (const stock of randomStocks) {
             await stockPriceRandomWalk(stock.ticker, config.game.randomWalkVolatility);
