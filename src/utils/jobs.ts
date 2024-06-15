@@ -45,7 +45,7 @@ function openPreMarket(expression: string) {
     cron.schedule(expression, async () => { // open pre-market
         const randomStocks = await chooseRandomStocks(Service.stockTickerList.length);
         for (const stock of randomStocks) {
-            await stockPriceRandomWalk(stock.ticker, 8 * config.game.randomWalkVolatility);
+            await stockPriceRandomWalk(stock.ticker, 20 * config.game.randomWalkVolatility);
         }
 
         await Service.getInstance().game.updateGameState({isMarketOpen: true, marketState: "pre"});
