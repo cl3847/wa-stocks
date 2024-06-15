@@ -27,8 +27,8 @@ const command: CommandType = {
                 .setDescription('Choose to buy or sell stocks')
                 .setRequired(true)
                 .addChoices(
-                    { name: 'Buy', value: 'buy' },
-                    { name: 'Sell', value: 'sell' },
+                    { name: 'buy', value: 'buy' },
+                    { name: 'sell', value: 'sell' },
                 ))
         .addStringOption(option =>
             option
