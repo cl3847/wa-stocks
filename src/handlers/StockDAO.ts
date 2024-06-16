@@ -1,6 +1,7 @@
 import Stock from "../models/stock/Stock";
 import {PoolClient} from "pg";
 import Price from "../models/Price";
+import UserStock from "../models/user_stock/UserStock";
 
 class StockDAO {
     /**
@@ -117,6 +118,13 @@ class StockDAO {
             (year = $2 AND month = $3 AND date > $4))
             ORDER BY year ASC, month ASC, date ASC`;
         const params = [ticker, year, month, date];
+        const result = await pc.query(query, params);
+        return result.rows;
+    }
+
+    public async getTopShareholders(pc: PoolClient, ticker: string, limit: number): Promise<UserStock[]> {
+        const query = "SELECT us.* FROM users_stocks us WHERE us.ticker = $1 ORDER BY us.quantity DESC LIMIT $2";
+        const params = [ticker, limit];
         const result = await pc.query(query, params);
         return result.rows;
     }

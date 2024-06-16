@@ -6,6 +6,7 @@ import Price from "../models/Price";
 import StockNotFoundError from "../models/error/StockNotFoundError";
 import log from "../utils/logger";
 import yahooFinance from "yahoo-finance2";
+import UserStock from "../models/user_stock/UserStock";
 
 class StockService {
     private daos: DAOs;
@@ -113,6 +114,13 @@ class StockService {
     public async getStockPriceHistoryAfterDay(ticker: string, year: number, month: number, date: number): Promise<Price[]> {
         const pc = await this.pool.connect();
         const res = await this.daos.stocks.getStockPriceHistoryAfterDay(pc, ticker, year, month, date);
+        pc.release();
+        return res;
+    }
+
+    public async getTopShareholders(ticker: string, limit: number): Promise<UserStock[]> {
+        const pc = await this.pool.connect();
+        const res = await this.daos.stocks.getTopShareholders(pc, ticker, limit);
         pc.release();
         return res;
     }
