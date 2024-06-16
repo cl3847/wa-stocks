@@ -81,7 +81,7 @@ class UserDAO {
                     GROUP BY uid, ticker
                 ) max_us ON us_temp.uid = max_us.uid AND us_temp.ticker = max_us.ticker AND us_temp.timestamp = max_us.max_timestamp
                 WHERE us_temp.quantity > 0
-                ORDER BY us_temp.quantity DESC
+                ORDER BY us_temp.quantity * s.price DESC
             ) as us_s ON u.uid = us_s.uid
             GROUP BY u.uid, u.balance
             ORDER BY u.balance + COALESCE(SUM(us_s.price * us_s.quantity), 0) DESC NULLS LAST
@@ -123,7 +123,7 @@ class UserDAO {
                     GROUP BY uid, ticker
                 ) max_us ON us_temp.uid = max_us.uid AND us_temp.ticker = max_us.ticker AND us_temp.timestamp = max_us.max_timestamp
                 WHERE us_temp.quantity > 0
-                ORDER BY us_temp.quantity DESC
+                ORDER BY us_temp.quantity * s.price DESC
             ) as us_s ON u.uid = us_s.uid
             WHERE u.uid = $1
             GROUP BY u.uid;
