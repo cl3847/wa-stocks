@@ -10,7 +10,7 @@ import Service from "../../services/Service";
 import CommandType from "../../models/CommandType";
 import UserPortfolio from "src/models/user/UserPortfolio";
 import config from "../../../config";
-import {dollarize, diffBlock, EMBED_PADDING} from "../../utils/helpers";
+import {dollarize, diffBlock, EMBED_PADDING, confirmedEmbed} from "../../utils/helpers";
 import Price from "../../models/Price";
 import {createLinePortfolioImage} from "../../utils/graphing";
 import log from "../../utils/logger";
@@ -32,7 +32,7 @@ const command: CommandType = {
         const user = interaction.options.getUser('user') || interaction.user;
         const userPortfolio = await service.users.getUserPortfolio(user.id);
         if (!userPortfolio) {
-            await interaction.reply('You do not have a profile yet.');
+            await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- LOOKUP FAILED -\nUser ${user.username}'s profile does not exist.`), config.colors.blue)]});
             return;
         }
         const yesterdayPrices = await service.stocks.getAllYesterdayPrice();

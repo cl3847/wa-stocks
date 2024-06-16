@@ -12,7 +12,7 @@ import log from "../../utils/logger";
 import StockNotFoundError from "../../models/error/StockNotFoundError";
 import Stock from "../../models/stock/Stock";
 import config from "../../../config";
-import {dollarize, diffBlock, getStockLogo, SHORT_PADDING} from "../../utils/helpers";
+import {dollarize, diffBlock, getStockLogo, SHORT_PADDING, confirmedEmbed} from "../../utils/helpers";
 import Price from "../../models/Price";
 import UserPortfolio from "../../models/user/UserPortfolio";
 import InsufficientStockQuantityError from "../../models/error/InsufficientStockQuantityError";
@@ -57,7 +57,8 @@ const command: CommandType = {
         }
         if (transactionType === 'buy') {
             if (user.balance < stock.price * quantity) {
-                await interaction.reply('You do not have enough balance to buy this stock.');
+                await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- PURCHASE FAILED -\nYou do not have enough balance to buy this amount of stock.`), config.colors.blue)]});
+                await interaction.reply('');
                 return;
             }
 
@@ -107,7 +108,7 @@ const command: CommandType = {
             }
         } else if (transactionType === 'sell') {
             if ((user.portfolio.find(hs => hs.ticker === ticker)?.quantity || 0) < quantity) {
-                await interaction.reply('You do not have enough shares to sell this quantity of stock.');
+                await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- SALE FAILED -\nYou do not have enough shares to sell this quantity of stock.`), config.colors.blue)]});
                 return;
             }
 
@@ -199,13 +200,6 @@ function confirmComponent(text: string, style: ButtonStyle): ActionRowBuilder<Bu
         .setStyle(ButtonStyle.Secondary);
     return new ActionRowBuilder<ButtonBuilder>()
         .addComponents(confirm, cancel);
-}
-
-function confirmedEmbed(text: string, color: `#${string}`) {
-    return new EmbedBuilder()
-        .setDescription(text)
-        .setColor(color)
-        .setTimestamp(new Date());
 }
 
 module.exports = command;

@@ -2,7 +2,7 @@ import Service from "../services/Service";
 import StockNotFoundError from "../models/error/StockNotFoundError";
 import config from "../../config";
 import fs from "fs";
-import {AttachmentBuilder} from "discord.js";
+import {AttachmentBuilder, EmbedBuilder} from "discord.js";
 
 const PADDING = "————————————————————————————————————————————\n";
 const SHORT_PADDING = "———————————————————————————————————\n";
@@ -130,6 +130,13 @@ function getStockLogo(ticker: string): AttachmentBuilder | null {
     return null;
 }
 
+function confirmedEmbed(text: string, color: `#${string}`) {
+    return new EmbedBuilder()
+        .setDescription(text)
+        .setColor(color)
+        .setTimestamp(new Date());
+}
+
 export {
     dollarize,
     chooseRandomStocks,
@@ -145,5 +152,6 @@ export {
     SHORT_PADDING,
     EMBED_PADDING,
     getTimeStringEST,
-    formatDate
+    formatDate,
+    confirmedEmbed
 };
