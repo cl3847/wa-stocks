@@ -47,6 +47,13 @@ const command: CommandType = {
         const quantity = interaction.options.getInteger('quantity') || 1;
 
         const service = Service.getInstance();
+        const gameState = await service.game.getGameState();
+
+        if (!gameState.isMarketOpen) {
+            await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- TRANSACTION FAILED -\nThe market is currently closed.`), config.colors.blue)]});
+            return;
+        }
+
         const stock = await service.stocks.getStock(ticker);
         const user = await service.users.getUserPortfolio(interaction.user.id);
         const yesterdayPrice = await service.stocks.getYesterdayPrice(ticker);
