@@ -27,7 +27,7 @@ const initDb = async (pc: PoolClient) => {
         CREATE TABLE stocks (
             ticker TEXT PRIMARY KEY,
             price BIGINT NOT NULL,
-            multiplier INT DEFAULT 1,
+            multiplier FLOAT DEFAULT 1,
             name TEXT NOT NULL,
             stock_ticker TEXT NOT NULL,
             stock_price BIGINT NOT NULL,

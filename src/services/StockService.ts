@@ -80,7 +80,7 @@ class StockService {
             } else {
                 const priceCents = Math.floor(quote.price.regularMarketPrice * 100);
                 await this.daos.stocks.updateStock(pc, ticker, {
-                    price: priceCents * stock.multiplier,
+                    price: Math.floor(priceCents * stock.multiplier),
                     stock_price: priceCents,
                     last_update_timestamp: Math.floor(Date.now() / 1000)
                 });
