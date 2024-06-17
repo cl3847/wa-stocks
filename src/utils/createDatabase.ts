@@ -20,7 +20,8 @@ const initDb = async (pc: PoolClient) => {
     await createTable('users', `
         CREATE TABLE users (
             uid TEXT PRIMARY KEY,
-            balance INT NOT NULL DEFAULT 0
+            balance INT NOT NULL DEFAULT 0,
+            loan_balance INT NOT NULL DEFAULT 0
         );`
     );
     await createTable('stocks', `
