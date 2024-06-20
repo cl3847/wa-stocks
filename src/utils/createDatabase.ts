@@ -80,6 +80,23 @@ const initDb = async (pc: PoolClient) => {
             data JSONB DEFAULT '{}'
         );`
     );
+    await createTable('news', `
+        CREATE TABLE news (
+            news_id SERIAL PRIMARY KEY,
+            message_link TEXT NOT NULL,
+            body TEXT NOT NULL,
+            timestamp BIGINT NOT NULL,
+        );`
+    );
+    await createTable('stocks_news', `
+        CREATE TABLE stocks_news (
+            ticker TEXT NOT NULL,
+            news_id INT NOT NULL,
+            PRIMARY KEY (ticker, news_id),
+            FOREIGN KEY (ticker) REFERENCES stocks(ticker) ON UPDATE CASCADE ON DELETE CASCADE,
+            FOREIGN KEY (news_id) REFERENCES news(news_id) ON UPDATE CASCADE ON DELETE CASCADE
+        );`
+    );
     // check if gameState exists in objects
     if (!await pc.query(`SELECT * FROM objects WHERE name = 'gameState';`)) {
         await pc.query(`INSERT INTO objects (name, data) VALUES ('gameState', '{"isMarketOpen": false, "marketState": "closed"}');`);
