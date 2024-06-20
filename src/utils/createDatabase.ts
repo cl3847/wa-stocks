@@ -85,7 +85,7 @@ const initDb = async (pc: PoolClient) => {
             news_id SERIAL PRIMARY KEY,
             message_link TEXT NOT NULL,
             body TEXT NOT NULL,
-            timestamp BIGINT NOT NULL,
+            timestamp BIGINT NOT NULL
         );`
     );
     await createTable('stocks_news', `
