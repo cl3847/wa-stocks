@@ -2,7 +2,7 @@ import User from "../models/user/User"
 import DAOs from "../models/DAOs";
 import {Pool} from "pg";
 import UserPortfolio from "../models/user/UserPortfolio";
-import UserStock from "../models/user_stock/UserStock";
+import UserStock from "../models/user/UserStock";
 
 class UserService {
     private daos: DAOs;

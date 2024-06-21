@@ -1,5 +1,5 @@
 import DAOs from "../models/DAOs";
-import UserStock from "../models/user_stock/UserStock";
+import UserStock from "../models/user/UserStock";
 import {Pool} from "pg";
 import UserNotFoundError from "../models/error/UserNotFoundError";
 import StockNotFoundError from "../models/error/StockNotFoundError";

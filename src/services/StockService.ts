@@ -6,7 +6,7 @@ import Price from "../models/Price";
 import StockNotFoundError from "../models/error/StockNotFoundError";
 import log from "../utils/logger";
 import yahooFinance from "yahoo-finance2";
-import UserStock from "../models/user_stock/UserStock";
+import UserStock from "../models/user/UserStock";
 
 class StockService {
     private daos: DAOs;

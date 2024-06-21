@@ -1,7 +1,7 @@
 import Stock from "../models/stock/Stock";
 import {PoolClient} from "pg";
 import Price from "../models/Price";
-import UserStock from "../models/user_stock/UserStock";
+import UserStock from "../models/user/UserStock";
 
 class StockDAO {
     /**

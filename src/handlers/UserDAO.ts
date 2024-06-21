@@ -1,6 +1,6 @@
 import UserPortfolio from "../models/user/UserPortfolio";
 import User from "../models/user/User"
-import UserStock from "../models/user_stock/UserStock";
+import UserStock from "../models/user/UserStock";
 import {PoolClient} from "pg";
 
 class UserDAO {

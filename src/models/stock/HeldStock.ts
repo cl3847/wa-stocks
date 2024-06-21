@@ -1,5 +1,5 @@
 import Stock from "./Stock";
-import UserStock from "../user_stock/UserStock";
+import UserStock from "../user/UserStock";
 
 type HeldStock = Stock & UserStock;
 
