@@ -26,7 +26,8 @@ const config: ConfigType = {
     "randomWalkAmount": 10, // Number of stocks to randomly walk
     "minimumStockPrice": 1,
     "chartsDaysBack": 15, // Number of days to show in the price chart
-    "etcOffset": 4
+    "etcOffset": 4,
+    "loanMaxMultiplier": 4,
   }
 };
 

@@ -24,6 +24,7 @@ export type ConfigType = {
         minimumStockPrice: number;
         chartsDaysBack: number;
         etcOffset: number;
+        loanMaxMultiplier: number;
     };
 };
 
