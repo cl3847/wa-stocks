@@ -3,11 +3,11 @@ import {AttachmentBuilder, CacheType, ChatInputCommandInteraction, EmbedBuilder,
 import Service from "../../services/Service";
 import {dollarize, diffBlock, getStockLogo} from "../../utils/helpers";
 import StockNotFoundError from "../../models/error/StockNotFoundError";
-import Stock from "src/models/stock/Stock";
 import config from "config";
 import Price from "../../models/Price";
 import {createCandlestickStockImage} from "../../utils/graphing";
 import log from "../../utils/logger";
+import NewsPopulatedStock from "../../models/stock/NewsPopulatedStock";
 
 const command: CommandType = {
     data: new SlashCommandBuilder()
@@ -49,18 +49,30 @@ const command: CommandType = {
     },
 };
 
-const generateStockEmbed = (stock: Stock, yesterdayPrice: Price | null): EmbedBuilder => {
+const generateStockEmbed = (stock: NewsPopulatedStock, yesterdayPrice: Price | null): EmbedBuilder => {
     const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.close_price : 0);
     const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price : 1);
 
     const titleString = `${stock.name} Stock Information`;
     const priceDiffString = `${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%) today`;
 
-    return new EmbedBuilder()
+    const embed = new EmbedBuilder()
         .setTitle(titleString)
         .setDescription(diffBlock(`${stock.ticker} - $${dollarize(stock.price)} per share\n${priceDiffString}`))
         .setColor(priceDiff >= 0 ? config.colors.green : config.colors.red)
-        .setTimestamp(new Date())
+        .setTimestamp(new Date());
+
+    if (stock.news.length > 0) {
+        embed.addFields({
+            name: "Recent News",
+            value: stock.news.slice(0,config.bot.newsAmountTruncate).map(article => {
+                //return `${article.message_link} - ${article.body.substring(0, 30)}...`;
+                return `[${article.body.substring(0, config.bot.newsLengthTruncate)}...](${article.message_link})`;
+            }).join("\n")
+        });
+    }
+
+    return embed;
 };
 
 module.exports = command;

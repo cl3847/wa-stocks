@@ -8,6 +8,8 @@ export type ConfigType = {
         messages: {
             priceBoard: string | null;
         };
+        newsAmountTruncate: number;
+        newsLengthTruncate: number;
     };
     colors: {
         green: `#${string}`;

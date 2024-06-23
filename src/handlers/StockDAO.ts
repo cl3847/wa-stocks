@@ -2,6 +2,7 @@ import Stock from "../models/stock/Stock";
 import {PoolClient} from "pg";
 import Price from "../models/Price";
 import UserStock from "../models/user/UserStock";
+import NewsPopulatedStock from "../models/stock/NewsPopulatedStock";
 
 class StockDAO {
     /**
@@ -24,8 +25,13 @@ class StockDAO {
      * @param {string} ticker The ticker of the stock for which to get
      * @returns {Promise<Stock | null>} A promise resolving to a Stock if a stock with the ticker exists, otherwise null
      */
-    public async getStock(pc: PoolClient, ticker: string): Promise<Stock | null> {
-        const query = "SELECT * FROM stocks WHERE ticker = $1";
+    public async getStock(pc: PoolClient, ticker: string): Promise<NewsPopulatedStock | null> {
+        const query = `SELECT s.*, COALESCE(json_agg(n.* ORDER BY n.timestamp DESC) FILTER (WHERE n.news_id IS NOT NULL), '[]'::json) AS news
+            FROM stocks s
+                LEFT JOIN stocks_news sn ON s.ticker = sn.ticker
+                LEFT JOIN news n ON sn.news_id = n.news_id
+            WHERE s.ticker = $1
+            GROUP BY s.ticker`;
         const params = [ticker];
         const result = await pc.query(query, params);
         return result.rows[0] || null;

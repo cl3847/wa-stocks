@@ -7,6 +7,7 @@ import StockNotFoundError from "../models/error/StockNotFoundError";
 import log from "../utils/logger";
 import yahooFinance from "yahoo-finance2";
 import UserStock from "../models/user/UserStock";
+import NewsPopulatedStock from "../models/stock/NewsPopulatedStock";
 
 class StockService {
     private daos: DAOs;
@@ -17,7 +18,7 @@ class StockService {
         this.pool = pool;
     }
 
-    public async getStock(ticker: string): Promise<Stock | null> {
+    public async getStock(ticker: string): Promise<NewsPopulatedStock | null> {
         const pc = await this.pool.connect();
         const res = await this.daos.stocks.getStock(pc, ticker);
         pc.release();
