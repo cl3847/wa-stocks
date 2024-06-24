@@ -9,6 +9,7 @@ import {getETCComponentsPreviousDay, getNextMidnightTimestampET} from "../../uti
 class UserPortfolio implements User {
     uid: string;
     balance: number;
+    loan_balance: number;
     portfolio: HeldStock[];
 
     constructor(user: User, portfolio: HeldStock[]) {
