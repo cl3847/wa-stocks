@@ -10,6 +10,7 @@ class UserPortfolio implements User {
     uid: string;
     balance: number;
     loan_balance: number;
+    credit_limit: number;
     portfolio: HeldStock[];
 
     constructor(user: User, portfolio: HeldStock[]) {

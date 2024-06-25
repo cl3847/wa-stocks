@@ -18,6 +18,7 @@ export type ConfigType = {
     };
     game: {
         startingBalance: number;
+        startingCreditLimit: number;
         randomWalkVolatility: number;
         randomWalkInterval: number;
         randomWalkAmount: number;

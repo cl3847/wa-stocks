@@ -15,7 +15,8 @@ const command: CommandType = {
             const newUser: User = {
                 uid: interaction.user.id,
                 balance: config.game.startingBalance,
-                loan_balance: 0
+                loan_balance: 0,
+                credit_limit: config.game.startingCreditLimit
             };
             await service.users.createUser(newUser);
             await interaction.reply(`PLACEHOLDER: Created a profile for you with $1000.`);
