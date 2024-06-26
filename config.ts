@@ -12,7 +12,7 @@ const config: ConfigType = {
       "priceBoard": "1246713065379074138",
     },
     newsAmountTruncate: 3,
-    newsLengthTruncate: 45,
+    newsLengthTruncate: 44,
   },
   "colors": {
     "green": `#00c805`,

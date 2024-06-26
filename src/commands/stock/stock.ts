@@ -67,7 +67,7 @@ const generateStockEmbed = (stock: NewsPopulatedStock, yesterdayPrice: Price | n
             name: "Recent News",
             value: stock.news.slice(0,config.bot.newsAmountTruncate).map(article => {
                 //return `${article.message_link} - ${article.body.substring(0, 30)}...`;
-                return `[${article.body.substring(0, config.bot.newsLengthTruncate)}${article.body.length > config.bot.newsLengthTruncate ? "..." : ""}](${article.message_link})`;
+                return `🔗[${article.body.substring(0, config.bot.newsLengthTruncate)}${article.body.length > config.bot.newsLengthTruncate ? "..." : ""}](${article.message_link})`;
             }).join("\n")
         });
     }
