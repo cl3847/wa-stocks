@@ -45,7 +45,7 @@ const command: CommandType = {
             const chartAttachment = new AttachmentBuilder(image, { name: 'line.png' });
             files.push(chartAttachment);
             embed.setImage('attachment://line.png');
-        } catch {
+        } catch(e) {
             log.error('Error creating line image for user ' + user.id);
         }
 
@@ -79,7 +79,6 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
     return new EmbedBuilder()
         .setColor(config.colors.green)
         .setAuthor({name: `${user.displayName}'s Profile`, iconURL: user.avatarURL() || undefined})
-        .setImage("https://images-ext-1.discordapp.net/external/WZApakQTOFUPSVHnGC_2jHRyV54XSvIW3kAMSThiIHM/https/t4.ftcdn.net/jpg/06/46/48/39/360_F_646483996_FU8STGnemtNlh7eprlfh1fZtBmAW8lV2.jpg")
         .addFields(
             {name: 'Balance', value: diffBlock(displayBalance), inline: true},
             {name: 'Net Worth', value: diffBlock(`$${dollarize(userPortfolio.netWorth())}`), inline: true},
