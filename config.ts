@@ -13,6 +13,7 @@ const config: ConfigType = {
     },
     newsAmountTruncate: 3,
     newsLengthTruncate: 44,
+    leaderboardSize: 10,
   },
   "colors": {
     "green": `#00c805`,

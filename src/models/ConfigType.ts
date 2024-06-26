@@ -10,6 +10,7 @@ export type ConfigType = {
         };
         newsAmountTruncate: number;
         newsLengthTruncate: number;
+        leaderboardSize: number;
     };
     colors: {
         green: `#${string}`;

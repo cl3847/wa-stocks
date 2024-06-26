@@ -64,7 +64,7 @@ async function generateLeaderboardEmbed(client: Client, allUserPortfolios: UserP
     let upDownAmount = 0;
     let desc = ``;
     let i = 1;
-    for (let user of allUserPortfolios) {
+    for (let user of allUserPortfolios.slice(0, config.bot.leaderboardSize)) {
         const {diff: totalPriceDiff, percent: totalPriceDiffPercent} = await user.getDayPortfolioChange();
         const percentDisplay = totalPriceDiffPercent !== null ? (totalPriceDiffPercent * 100).toFixed(2) : "N/A";
         desc += `${i}: ${(await client.users.fetch(user.uid)).username} - $${dollarize(user.netWorth())} ($${dollarize(user.portfolioValue())})\n${totalPriceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(totalPriceDiff))} (${percentDisplay}%)\n`;
