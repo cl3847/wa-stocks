@@ -12,7 +12,7 @@ const config: ConfigType = {
       "priceBoard": "1246713065379074138",
     },
     newsAmountTruncate: 3,
-    newsLengthTruncate: 44,
+    newsLengthTruncate: 42,
     leaderboardSize: 10,
   },
   "colors": {
