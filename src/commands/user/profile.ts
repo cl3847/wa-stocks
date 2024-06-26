@@ -60,7 +60,7 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
         const yesterdayPrice = yesterdayPrices.find(p => p.ticker === hs.ticker);
         const priceDiff = (hs.price * hs.quantity - (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 0));
         const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 1);
-        const percentDisplay = priceDiffPercent !== null ? (priceDiffPercent * 100).toFixed(2) : "N/A";
+        const percentDisplay = yesterdayPrice !== null ? (priceDiffPercent * 100).toFixed(2) : "N/A";
 
         totalPriceDiff += priceDiff;
         totalYesterdayPrice += (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 0);
