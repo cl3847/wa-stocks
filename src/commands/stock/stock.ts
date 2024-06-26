@@ -1,8 +1,7 @@
 import CommandType from "../../models/CommandType";
 import {AttachmentBuilder, CacheType, ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import Service from "../../services/Service";
-import {dollarize, diffBlock, getStockLogo} from "../../utils/helpers";
-import StockNotFoundError from "../../models/error/StockNotFoundError";
+import {dollarize, diffBlock, getStockLogo, confirmedEmbed} from "../../utils/helpers";
 import config from "config";
 import Price from "../../models/Price";
 import {createCandlestickStockImage} from "../../utils/graphing";
@@ -17,14 +16,18 @@ const command: CommandType = {
             option
                 .setName('ticker')
                 .setDescription('The ticker of the stock')
-                .setRequired(true)
-                .addChoices(Service.stockTickerList.map(ticker => ({ name: ticker, value: ticker })))),
+                .setRequired(true),
+                //.addChoices(Service.stockTickerList.map(ticker => ({ name: ticker, value: ticker })))
+            ),
     async execute(interaction: ChatInputCommandInteraction<CacheType>) {
-        const ticker = interaction.options.getString('ticker', true);
+        const ticker = interaction.options.getString('ticker', true).toUpperCase();
 
         const service = Service.getInstance();
         const stock = await service.stocks.getStock(ticker);
-        if (!stock) throw new StockNotFoundError(ticker);
+        if (!stock) {
+            await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- LOOKUP FAILED -\nStock ${ticker} does not exist.`), config.colors.blue)]});
+            return;
+        }
         const yesterdayPrice = await service.stocks.getYesterdayPrice(ticker);
 
         const embed = generateStockEmbed(stock, yesterdayPrice);

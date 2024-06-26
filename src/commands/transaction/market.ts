@@ -9,7 +9,6 @@ import {
 import Service from "../../services/Service";
 import InsufficientBalanceError from "../../models/error/InsufficientBalanceError";
 import log from "../../utils/logger";
-import StockNotFoundError from "../../models/error/StockNotFoundError";
 import Stock from "../../models/stock/Stock";
 import config from "../../../config";
 import {dollarize, diffBlock, getStockLogo, SHORT_PADDING, confirmedEmbed} from "../../utils/helpers";
@@ -34,8 +33,9 @@ const command: CommandType = {
             option
                 .setName('ticker')
                 .setDescription('The ticker of the stock you want to buy or sell')
-                .setRequired(true)
-                .addChoices(Service.stockTickerList.map(ticker => ({ name: ticker, value: ticker }))))
+                .setRequired(true),
+                //.addChoices(Service.stockTickerList.map(ticker => ({ name: ticker, value: ticker })))
+        )
         .addIntegerOption(option =>
             option
                     .setName('quantity')
@@ -43,7 +43,7 @@ const command: CommandType = {
     async execute(interaction: ChatInputCommandInteraction<CacheType>) {
         if (!interaction.isCommand()) return;
         const transactionType = interaction.options.getString('type', true);
-        const ticker = interaction.options.getString('ticker', true);
+        const ticker = interaction.options.getString('ticker', true).toUpperCase();
         const quantity = interaction.options.getInteger('quantity') || 1;
 
         const service = Service.getInstance();
@@ -57,7 +57,10 @@ const command: CommandType = {
         const stock = await service.stocks.getStock(ticker);
         const user = await service.users.getUserPortfolio(interaction.user.id);
         const yesterdayPrice = await service.stocks.getYesterdayPrice(ticker);
-        if (!stock) throw new StockNotFoundError(ticker);
+        if (!stock) {
+            await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- LOOKUP FAILED -\nStock ${ticker} does not exist.`), config.colors.blue)]});
+            return;
+        }
         if (!user) {
             await interaction.reply('You do not have a profile yet.');
             return;
