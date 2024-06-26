@@ -181,7 +181,7 @@ function confirmTransactionEmbed(options: {
 
     const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.close_price : 0);
     const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price : 1);
-    const percentDisplay = yesterdayPrice !== null ? (priceDiffPercent * 100).toFixed(2) : "N/A";
+    const percentDisplay = yesterdayPrice !== undefined ? (priceDiffPercent * 100).toFixed(2) : "N/A";
 
     const titleString = type === 'buy' ? `Confirm Purchase: ${quantity} share(s) of ${stock.ticker}` : `Confirm Sale: ${quantity} share(s) of ${stock.ticker}`;
     const priceDiffString = `${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${percentDisplay}%) today`;
