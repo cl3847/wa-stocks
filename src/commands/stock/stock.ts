@@ -57,7 +57,8 @@ const generateStockEmbed = (stock: NewsPopulatedStock, yesterdayPrice: Price | n
     const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price : 1);
 
     const titleString = `${stock.name} Stock Information`;
-    const priceDiffString = `${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${(priceDiffPercent * 100).toFixed(2)}%) today`;
+    const percentDisplay = priceDiffPercent !== null ? (priceDiffPercent * 100).toFixed(2) : "N/A";
+    const priceDiffString = `${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${percentDisplay}%) today`;
 
     const embed = new EmbedBuilder()
         .setTitle(titleString)
