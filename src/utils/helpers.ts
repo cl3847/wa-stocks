@@ -123,9 +123,9 @@ function diffBlock(s: string) {
     return `\`\`\`diff\n${s}\n\`\`\``;
 }
 
-function getStockLogo(ticker: string): AttachmentBuilder | null {
+function getStockLogo(ticker: string, filename: string = "logo.png"): AttachmentBuilder | null {
     if (fs.existsSync('assets/stocks/' + ticker + '.png')) {
-        return new AttachmentBuilder(`./assets/stocks/${ticker}.png`, { name: `logo.png` });
+        return new AttachmentBuilder(`./assets/stocks/${ticker}.png`, { name: filename });
     }
     return null;
 }

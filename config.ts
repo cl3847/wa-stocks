@@ -15,6 +15,11 @@ const config: ConfigType = {
     newsLengthTruncate: 42,
     leaderboardSize: 10,
   },
+  "theme": {
+    financialCompanyName: "Mickital One",
+    financialCompanyLogo: "MOF",
+    financialCompanyColor: `#00558e`
+  },
   "colors": {
     "green": `#00c805`,
     "red": `#ff5001`,
@@ -30,6 +35,7 @@ const config: ConfigType = {
     "chartsDaysBack": 15, // Number of days to show in the price chart
     "etcOffset": 4,
     "loanMaxMultiplier": 4,
+    "creditDailyInterestPercent": 1,
   }
 };
 

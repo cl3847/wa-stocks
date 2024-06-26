@@ -12,6 +12,11 @@ export type ConfigType = {
         newsLengthTruncate: number;
         leaderboardSize: number;
     };
+    theme: {
+        financialCompanyName: string;
+        financialCompanyLogo: string;
+        financialCompanyColor: `#${string}`;
+    }
     colors: {
         green: `#${string}`;
         red: `#${string}`;
@@ -27,6 +32,7 @@ export type ConfigType = {
         chartsDaysBack: number;
         etcOffset: number;
         loanMaxMultiplier: number;
+        creditDailyInterestPercent: number;
     };
 };
 
