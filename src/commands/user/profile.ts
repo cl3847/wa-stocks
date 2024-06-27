@@ -82,7 +82,7 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
             {
                 name: 'Financials', value: diffBlock(`  $${dollarize(userPortfolio.balance)} account balance\n` +
                     `+ $${dollarize(userPortfolio.portfolioValue())} total portfolio value\n` +
-                    `- $${dollarize(userPortfolio.loan_balance)} debt to ${config.theme.financialCompanyName}\n` +
+                    (userPortfolio.loan_balance > 0 ? `- $${dollarize(userPortfolio.loan_balance)} debt to ${config.theme.financialCompanyName}\n` : "") +
                     `= $${dollarize(userPortfolio.netWorth())} NET WORTH\n\n` +
                     `Credit Limit: $${dollarize(userPortfolio.credit_limit)}\n` +
                     `${(Math.floor(userPortfolio.loan_balance / userPortfolio.credit_limit * 10000) / 100).toFixed(2)}% utilization`,
