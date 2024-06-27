@@ -110,7 +110,7 @@ const command: CommandType = {
                 embeds,
                 components: [row],
                 files,
-                ephemeral: true
+                ephemeral: config.bot.useEphemeralPurchase,
             });
             try {
                 const confirmation = await response.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 60_000 });
@@ -163,7 +163,7 @@ const command: CommandType = {
                 embeds: [embed],
                 components: [row],
                 files,
-                ephemeral: true
+                ephemeral: config.bot.useEphemeralPurchase,
             });
             try {
                 const confirmation = await response.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 60_000 });

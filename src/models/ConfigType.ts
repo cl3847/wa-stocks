@@ -12,6 +12,7 @@ export type ConfigType = {
         newsAmountTruncate: number;
         newsLengthTruncate: number;
         leaderboardSize: number;
+        useEphemeralPurchase: boolean;
     };
     theme: {
         financialCompanyName: string;

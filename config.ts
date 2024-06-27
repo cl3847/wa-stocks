@@ -15,6 +15,7 @@ const config: ConfigType = {
     newsAmountTruncate: 3,
     newsLengthTruncate: 42,
     leaderboardSize: 10,
+    useEphemeralPurchase: false,
   },
   "theme": {
     financialCompanyName: "Mickital One",
