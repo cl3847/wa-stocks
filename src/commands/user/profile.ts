@@ -69,7 +69,6 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
     }).join('\n') || 'No stocks owned.';
 
     const {diff: valueDiff, percent: valueDiffPercent} = await userPortfolio.getDayPortfolioChange();
-    const displayBalance = `$${dollarize(userPortfolio.balance)}`;
     const percentDisplay = valueDiffPercent !== null ? (valueDiffPercent * 100).toFixed(2) : "N/A";
 
     if (userPortfolio.portfolio.length > 0) {
@@ -80,8 +79,15 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
         .setColor(config.colors.green)
         .setAuthor({name: `${user.displayName}'s Profile`, iconURL: user.avatarURL() || undefined})
         .addFields(
-            {name: 'Balance', value: diffBlock(displayBalance), inline: true},
-            {name: 'Net Worth', value: diffBlock(`$${dollarize(userPortfolio.netWorth())}`), inline: true},
+            {
+                name: 'Financials', value: diffBlock(`  $${dollarize(userPortfolio.balance)} account balance\n` +
+                    `+ $${dollarize(userPortfolio.portfolioValue())} total portfolio value\n` +
+                    `- $${dollarize(userPortfolio.loan_balance)} debt to ${config.theme.financialCompanyName}\n` +
+                    `= $${dollarize(userPortfolio.netWorth())} NET WORTH\n\n` +
+                    `Credit Limit: $${dollarize(userPortfolio.credit_limit)}\n` +
+                    `${(Math.floor(userPortfolio.loan_balance / userPortfolio.credit_limit * 10000) / 100).toFixed(2)}% utilization`,
+                )
+            },
             {name: 'Portfolio', value: diffBlock(displayPortfolio)},
         )
         .setTimestamp(new Date());
