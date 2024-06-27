@@ -4,6 +4,7 @@ export type ConfigType = {
         guildID: string;
         channels: {
             info: string | null;
+            log: string | null;
         };
         messages: {
             priceBoard: string | null;

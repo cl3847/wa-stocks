@@ -1,8 +1,10 @@
 import Service from "../services/Service";
 import StockNotFoundError from "../models/error/StockNotFoundError";
+import {Client} from "discord.js"
 import config from "../../config";
 import fs from "fs";
-import {AttachmentBuilder, EmbedBuilder} from "discord.js";
+import {AttachmentBuilder, EmbedBuilder, TextChannel} from "discord.js";
+import log from "./logger";
 
 const PADDING = "————————————————————————————————————————————\n";
 const SHORT_PADDING = "———————————————————————————————————\n";
@@ -137,8 +139,19 @@ function confirmedEmbed(text: string, color: `#${string}`) {
         .setTimestamp(new Date());
 }
 
+async function logToChannel(client: Client, text: string) {
+    if (!config.bot.channels.log) return;
+    const channel = await client.channels.fetch(config.bot.channels.log) as TextChannel;
+    try {
+        await channel.send(text)
+    } catch (err) {
+        log.error("Error logging event to log channel: " + text)
+    }
+}
+
 export {
     dollarize,
+    logToChannel,
     chooseRandomStocks,
     stockPriceRandomWalk,
     getDateStringETC,

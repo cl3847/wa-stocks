@@ -3,6 +3,8 @@ interface Transaction {
     type: string;
     uid: string;
     ticker: string;
+    balance_used: number | null;
+    credit_used: number | null;
     quantity: number;
     price: number;
     total_price: number;

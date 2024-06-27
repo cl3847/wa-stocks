@@ -11,7 +11,7 @@ import InsufficientBalanceError from "../../models/error/InsufficientBalanceErro
 import log from "../../utils/logger";
 import Stock from "../../models/stock/Stock";
 import config from "../../../config";
-import {dollarize, diffBlock, getStockLogo, SHORT_PADDING, confirmedEmbed} from "../../utils/helpers";
+import {dollarize, diffBlock, getStockLogo, SHORT_PADDING, confirmedEmbed, logToChannel} from "../../utils/helpers";
 import Price from "../../models/Price";
 import UserPortfolio from "../../models/user/UserPortfolio";
 import InsufficientStockQuantityError from "../../models/error/InsufficientStockQuantityError";
@@ -116,10 +116,12 @@ const command: CommandType = {
                 const confirmation = await response.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 60_000 });
                 if (confirmation.customId === 'confirm') {
                     try {
-                        const transactionRecord = await service.transactions.buyStock(interaction.user.id, ticker, quantity);
+                        const transactionRecord = await service.transactions.buyStock(interaction.user.id, ticker, quantity, useCreditAmount > 0);
                         await confirmation.update({ embeds: [...embeds,
                                 confirmedEmbed(diffBlock(`+ PURCHASE SUCCESSFUL +\nOrder for ${quantity} share(s) of ${ticker} filled at $${dollarize(transactionRecord.price)} per share.`), config.colors.blue)
                             ], components: [] });
+                        await logToChannel(interaction.client, transactionRecord.credit_used ? `**${interaction.user.username}** used $${dollarize(transactionRecord.credit_used)} of ${config.theme.financialCompanyName} credit, utilizing ${Math.floor(user.loan_balance + transactionRecord.credit_used / user.credit_limit) * 100}% of credit limit.` : "" +
+                            `**${interaction.user.username}** purchased ${quantity} share(s) of ${ticker} at $${dollarize(transactionRecord.price)} per share.`)
                     } catch(err) {
                         if (err instanceof InsufficientBalanceError) {
                             await confirmation.update({ embeds: [...embeds,
@@ -171,6 +173,8 @@ const command: CommandType = {
                         await confirmation.update({ embeds: [embed,
                                 confirmedEmbed(diffBlock(`+ SALE SUCCESSFUL +\nOrder to sell ${quantity} share(s) of ${ticker} filled at $${dollarize(transactionRecord.price)} per share.`), config.colors.blue)
                             ], components: [] });
+                        await logToChannel(interaction.client,
+                            `**${interaction.user.username}** sold ${quantity} share(s) of ${ticker} at $${dollarize(transactionRecord.price)} per share.`)
                     } catch(err) {
                         if (err instanceof InsufficientStockQuantityError) {
                             await confirmation.update({ embeds: [embed,

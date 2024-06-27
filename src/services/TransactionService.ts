@@ -21,9 +21,10 @@ class TransactionService {
      * @param {string} uid The user ID
      * @param {string} ticker The stock ticker of the stock to buy
      * @param {number} add The quantity of the stock to buy
+     * @param {boolean} useCredit Whether to use credit for the purchase
      * @returns {Promise<void>} A promise resolving to nothing
      */
-    public async buyStock(uid: string, ticker: string, add: number): Promise<Transaction> {
+    public async buyStock(uid: string, ticker: string, add: number, useCredit: boolean): Promise<Transaction> {
         const pc = await this.pool.connect();
 
         const user = await this.daos.users.getUserPortfolio(pc, uid);
@@ -38,14 +39,22 @@ class TransactionService {
         }
 
         const cost = stock.price * add;
+        const userAvailableCredit = Math.max(user.credit_limit - user.loan_balance, 0);
+        let useCreditAmount = 0;
         if (user.balance < cost) {
-            pc.release();
-            throw new InsufficientBalanceError(uid, user.balance, cost);
+            if (useCredit && user.balance + userAvailableCredit > stock.price * add) {
+                // user has enough credit...
+                useCreditAmount = stock.price * add - user.balance;
+            } else {
+                pc.release();
+                throw new InsufficientBalanceError(uid, user.balance, cost);
+            }
         }
 
         const holding = await this.daos.users.getMostRecentStockHolding(pc, uid, ticker);
         const newQuantity = holding ? holding.quantity + add : add;
-        const newBalance = user.balance - cost;
+        const newBalance = user.balance + useCreditAmount - cost;
+        const newDebt = user.loan_balance + useCreditAmount;
 
         try {
             await pc.query('BEGIN');
@@ -57,13 +66,15 @@ class TransactionService {
                 timestamp: Date.now(),
             };
             await this.daos.users.createStockHolding(pc, newHolding);
-            await this.daos.users.updateUser(pc, uid, {balance: newBalance});
+            await this.daos.users.updateUser(pc, uid, {balance: newBalance, loan_balance: newDebt});
 
             // save transaction record
             const transactionRecord: Transaction = {
                 type: 'buy',
                 uid: uid,
                 ticker: ticker,
+                balance_used: cost - useCreditAmount,
+                credit_used: useCreditAmount,
                 quantity: add,
                 price: stock.price,
                 total_price: cost,
@@ -120,6 +131,8 @@ class TransactionService {
                 uid: uid,
                 ticker: ticker,
                 quantity: remove,
+                balance_used: null,
+                credit_used: null,
                 price: stock.price,
                 total_price: stock.price * remove,
                 timestamp: Date.now(),

@@ -53,6 +53,8 @@ const initDb = async (pc: PoolClient) => {
             type TEXT NOT NULL,
             uid TEXT NOT NULL,
             ticker TEXT NOT NULL,
+            balance_used INT,
+            credit_used INT,
             quantity INT NOT NULL,
             price BIGINT NOT NULL,
             total_price BIGINT NOT NULL,
