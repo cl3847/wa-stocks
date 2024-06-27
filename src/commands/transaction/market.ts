@@ -174,7 +174,7 @@ const command: CommandType = {
                                 confirmedEmbed(diffBlock(`+ SALE SUCCESSFUL +\nOrder to sell ${quantity} share(s) of ${ticker} filled at $${dollarize(transactionRecord.price)} per share.`), config.colors.blue)
                             ], components: [] });
                         await logToChannel(interaction.client,
-                            `🔴 **${interaction.user.username}** sold ${quantity} share(s) of ${ticker} at $${dollarize(transactionRecord.price * transactionRecord.quantity)} per share, bringing balance to $${dollarize(user.balance + transactionRecord.price * transactionRecord.quantity)}.`)
+                            `🔴 **${interaction.user.username}** sold ${quantity} share(s) of ${ticker} at $${dollarize(transactionRecord.price)} per share, bringing balance to $${dollarize(user.balance + transactionRecord.price * transactionRecord.quantity)}.`)
                     } catch(err) {
                         if (err instanceof InsufficientStockQuantityError) {
                             await confirmation.update({ embeds: [embed,
