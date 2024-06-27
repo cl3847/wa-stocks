@@ -120,7 +120,7 @@ const command: CommandType = {
                         await confirmation.update({ embeds: [...embeds,
                                 confirmedEmbed(diffBlock(`+ PURCHASE SUCCESSFUL +\nOrder for ${quantity} share(s) of ${ticker} filled at $${dollarize(transactionRecord.price)} per share.`), config.colors.blue)
                             ], components: [] });
-                        await logToChannel(interaction.client, transactionRecord.credit_used ? `**${interaction.user.username}** used $${dollarize(transactionRecord.credit_used)} of ${config.theme.financialCompanyName} credit, utilizing ${Math.floor(user.loan_balance + transactionRecord.credit_used / user.credit_limit) * 100}% of credit limit.` : "" +
+                        await logToChannel(interaction.client, (transactionRecord.credit_used ? `**${interaction.user.username}** used $${dollarize(transactionRecord.credit_used)} of ${config.theme.financialCompanyName} credit, utilizing $${dollarize(user.loan_balance + transactionRecord.credit_used)} of $${user.credit_limit} total credit limit (${Math.floor(user.loan_balance + transactionRecord.credit_used / user.credit_limit) * 100}% utilization).\n` : "") +
                             `**${interaction.user.username}** purchased ${quantity} share(s) of ${ticker} at $${dollarize(transactionRecord.price)} per share.`)
                     } catch(err) {
                         if (err instanceof InsufficientBalanceError) {
