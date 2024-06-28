@@ -1,6 +1,6 @@
 import Service from "../services/Service";
 import StockNotFoundError from "../models/error/StockNotFoundError";
-import {Client} from "discord.js"
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, Client} from "discord.js"
 import config from "../../config";
 import fs from "fs";
 import {AttachmentBuilder, EmbedBuilder, TextChannel} from "discord.js";
@@ -149,6 +149,19 @@ async function logToChannel(client: Client, text: string) {
     }
 }
 
+function confirmComponent(text: string, style: ButtonStyle): ActionRowBuilder<ButtonBuilder> {
+    const confirm = new ButtonBuilder()
+        .setCustomId('confirm')
+        .setLabel(text)
+        .setStyle(style);
+    const cancel = new ButtonBuilder()
+        .setCustomId('cancel')
+        .setLabel('Cancel')
+        .setStyle(ButtonStyle.Secondary);
+    return new ActionRowBuilder<ButtonBuilder>()
+        .addComponents(confirm, cancel);
+}
+
 export {
     dollarize,
     logToChannel,
@@ -166,5 +179,6 @@ export {
     EMBED_PADDING,
     getTimeStringEST,
     formatDate,
-    confirmedEmbed
+    confirmedEmbed,
+    confirmComponent
 };

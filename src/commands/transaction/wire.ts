@@ -3,9 +3,10 @@ import CommandType from "../../types/CommandType";
 import WireDestinationType from "../../types/WireDestinationType";
 import Service from "../../services/Service";
 import InsufficientBalanceError from "../../models/error/InsufficientBalanceError";
-import {confirmedEmbed, diffBlock, dollarize, logToChannel} from "../../utils/helpers";
+import {confirmedEmbed, diffBlock} from "../../utils/helpers";
 import config from "../../../config";
 import UserNotFoundError from "../../models/error/UserNotFoundError";
+import WireableUser from "../../models/wire/WireableUser";
 
 const command: CommandType = {
     data: new SlashCommandBuilder()
@@ -49,14 +50,28 @@ const command: CommandType = {
         const service = Service.getInstance();
         const destinationType = interaction.options.getSubcommand() as WireDestinationType;
         const amountToTransfer = interaction.options.getInteger('balance', true);
+        const user = await service.users.getUser(interaction.user.id);
+        if (!user) {
+            await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou do not have an account.`), config.colors.blue)]});
+            return;
+        }
+        if (user.balance < amountToTransfer) {
+            await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou do not have enough account balance to transfer this much money.`), config.colors.blue)]});
+            return;
+        }
 
         try {
             switch (destinationType) {
                 case 'user':
-                    const destinationDiscordUser = interaction.options.getUser("target", true);
-                    const transactionRecord = await service.transactions.wireToUser(interaction.user.id, destinationDiscordUser.id, amountToTransfer);
-                    await interaction.reply(`Placeholder: You wired ${destinationDiscordUser.username} $${dollarize(-transactionRecord.balance_change)}.`);
-                    await logToChannel(interaction.client, `🌐 **${interaction.user.username}** wired **${destinationDiscordUser.username}** a total of ${dollarize(-transactionRecord.balance_change)}.`);
+                    const target = interaction.options.getUser('target', true);
+                    const destUser = await service.users.getUser(target.id);
+                    if (!destUser) {
+                        await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nThe user you are trying to transfer money to does not have an account.`), config.colors.blue)]});
+                        return;
+                    }
+                    const destUserWireable = new WireableUser(destUser, target.username);
+                    await destUserWireable.onWire(interaction, user, amountToTransfer);
+                    break;
             }
         } catch(error) {
             if (error instanceof InsufficientBalanceError) {
