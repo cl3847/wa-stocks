@@ -173,7 +173,7 @@ class TransactionService {
             const transactionRecord: WireTransaction = {
                 type: 'wire',
                 uid: fromUid,
-                balance_used: amount,
+                balance_change: -amount,
                 destination: destUid,
                 is_destination_user: true,
                 timestamp: Date.now(),
