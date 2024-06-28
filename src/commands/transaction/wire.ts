@@ -56,7 +56,7 @@ const command: CommandType = {
                     const destinationDiscordUser = interaction.options.getUser("target", true);
                     const transactionRecord = await service.transactions.wireToUser(interaction.user.id, destinationDiscordUser.id, amountToTransfer);
                     await interaction.reply(`Placeholder: You wired ${destinationDiscordUser.username} $${dollarize(-transactionRecord.balance_change)}.`);
-                    await logToChannel(interaction.client, `🌐 **${interaction.user.username}** wired **${destinationDiscordUser.username}** a total of ${dollarize(-transactionRecord.balance_change)}.`);
+                    await logToChannel(interaction.client, `🌐 **${interaction.user.username}** wired **${destinationDiscordUser.username}** a total of $${dollarize(-transactionRecord.balance_change)}.`);
             }
         } catch(error) {
             if (error instanceof InsufficientBalanceError) {
