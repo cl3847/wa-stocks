@@ -18,14 +18,17 @@ class WireableUser extends Wireable implements User {
     loan_balance: number;
     credit_limit: number;
 
-    constructor(user: User, username: string) {
+    avatarUrl: string | null;
+
+    constructor(user: User, username: string, avatarUrl?: string | null) {
         super(username, user.uid);
         Object.assign(this, user);
+        this.avatarUrl = avatarUrl || null;
     }
 
     protected async executeWire(fromUser: User, amount: number): Promise<WireTransaction> {
         const service = Service.getInstance();
-        return service.transactions.wireToUser(fromUser.uid, this.identifier, amount);
+        return service.transactions.wireToUser(fromUser.uid, this.uid, amount);
     }
 
     protected async onSuccess(confirmation: MessageComponentInteraction, transaction: WireTransaction): Promise<void> {
@@ -45,7 +48,8 @@ class WireableUser extends Wireable implements User {
                 `= $${dollarize(fromUser.balance - amount)} final balance\n`
             ))
             .setColor(config.colors.red)
-            .setTimestamp(new Date());
+            .setTimestamp(new Date())
+            .setThumbnail(this.avatarUrl);
         return interaction.reply({ embeds: [embed], components: [confirmComponent('Confirm Wire', ButtonStyle.Danger)] });
     }
 }

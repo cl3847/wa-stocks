@@ -177,7 +177,41 @@ class TransactionService {
                 destination: destUid,
                 is_destination_user: true,
                 timestamp: Date.now(),
-            }
+            };
+            await this.daos.transactions.createTransaction(pc, transactionRecord);
+            await pc.query('COMMIT');
+            return transactionRecord;
+        } catch (err) {
+            await pc.query('ROLLBACK');
+            throw err;
+        } finally {
+            pc.release();
+        }
+    }
+
+    public async wireToEntity(fromUid: string, destIdentifier: string, amount: number): Promise<WireTransaction> {
+        const pc = await this.pool.connect();
+        const fromUser = await this.daos.users.getUser(pc, fromUid);
+        if (!fromUser) {
+            pc.release();
+            throw new UserNotFoundError(fromUid);
+        }
+        if (fromUser.balance < amount) {
+            pc.release();
+            throw new InsufficientBalanceError(fromUid, fromUser.balance, amount);
+        }
+
+        try {
+            await pc.query('BEGIN');
+            await this.daos.users.updateUser(pc, fromUid, {balance: fromUser.balance - amount});
+            const transactionRecord: WireTransaction = {
+                type: 'wire',
+                uid: fromUid,
+                balance_change: -amount,
+                destination: destIdentifier,
+                is_destination_user: false,
+                timestamp: Date.now(),
+            };
             await this.daos.transactions.createTransaction(pc, transactionRecord);
             await pc.query('COMMIT');
             return transactionRecord;

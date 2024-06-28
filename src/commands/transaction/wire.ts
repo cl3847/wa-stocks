@@ -69,7 +69,7 @@ const command: CommandType = {
                         await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nThe user you are trying to transfer money to does not have an account.`), config.colors.blue)]});
                         return;
                     }
-                    const destUserWireable = new WireableUser(destUser, target.username);
+                    const destUserWireable = new WireableUser(destUser, target.username, target.avatarURL());
                     await destUserWireable.onWire(interaction, user, amountToTransfer);
                     break;
             }
