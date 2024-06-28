@@ -1,9 +1,16 @@
 import User from "../user/User";
 import Wireable from "./Wireable";
 import WireTransaction from "../transaction/WireTransaction";
-import {uid} from "chart.js/helpers";
-import user from "../user/User";
-import {CommandInteraction} from "discord.js";
+import {
+    ButtonStyle,
+    CommandInteraction,
+    EmbedBuilder,
+    InteractionResponse,
+    MessageComponentInteraction
+} from "discord.js";
+import {confirmComponent, confirmedEmbed, diffBlock, dollarize, logToChannel} from "../../utils/helpers";
+import config from "../../../config";
+import Service from "../../services/Service";
 
 class WireableUser extends Wireable implements User {
     uid: string;
@@ -11,21 +18,35 @@ class WireableUser extends Wireable implements User {
     loan_balance: number;
     credit_limit: number;
 
-    constructor(user: User, username: string, uid: string) {
-        super(username, uid);
+    constructor(user: User, username: string) {
+        super(username, user.uid);
         Object.assign(this, user);
     }
 
-    executeWire(fromUid: string, amount: number): Promise<WireTransaction> {
-        return Promise.resolve(undefined);
+    protected async executeWire(fromUser: User, amount: number): Promise<WireTransaction> {
+        const service = Service.getInstance();
+        return service.transactions.wireToUser(fromUser.uid, this.identifier, amount);
     }
 
-    onSuccess(transaction: WireTransaction): Promise<void> {
-        return Promise.resolve(undefined);
+    protected async onSuccess(confirmation: MessageComponentInteraction, transaction: WireTransaction): Promise<void> {
+        await confirmation.update({ embeds: [...confirmation.message.embeds,
+                confirmedEmbed(diffBlock(`+ WIRE SUCCESSFUL +\nYou wired ${this.name} a total of $${dollarize(-transaction.balance_change)}.`), config.colors.blue)
+            ], components: [] });
+        await logToChannel(confirmation.client, `🌐 **${confirmation.user.username}** wired **${this.name}** a total of $${dollarize(-transaction.balance_change)}.`);
     }
 
-    previewWire(interaction: CommandInteraction, fromUid: string, amount: number): Promise<boolean> {
-        return Promise.resolve(false);
+    protected async previewWire(interaction: CommandInteraction, fromUser: User, amount: number): Promise<InteractionResponse<boolean>> {
+        const embed = new EmbedBuilder()
+            .setTitle('Confirm Wire Transfer')
+            .setDescription(diffBlock(
+                `Destination: ${this.name}\n\n`+
+                `  $${dollarize(fromUser.balance)} current balance\n` +
+                `- $${dollarize(amount)} wire amount\n` +
+                `= $${dollarize(fromUser.balance - amount)} final balance\n`
+            ))
+            .setColor(config.colors.red)
+            .setTimestamp(new Date());
+        return interaction.reply({ embeds: [embed], components: [confirmComponent('Confirm Wire', ButtonStyle.Danger)] });
     }
 }
 

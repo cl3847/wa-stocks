@@ -1,6 +1,5 @@
 import CommandType from "../../types/CommandType";
 import {
-    ActionRowBuilder, ButtonBuilder,
     CacheType,
     ChatInputCommandInteraction,
     SlashCommandBuilder,
@@ -11,7 +10,15 @@ import InsufficientBalanceError from "../../models/error/InsufficientBalanceErro
 import log from "../../utils/logger";
 import Stock from "../../models/stock/Stock";
 import config from "../../../config";
-import {dollarize, diffBlock, getStockLogo, SHORT_PADDING, confirmedEmbed, logToChannel} from "../../utils/helpers";
+import {
+    dollarize,
+    diffBlock,
+    getStockLogo,
+    SHORT_PADDING,
+    confirmedEmbed,
+    logToChannel,
+    confirmComponent
+} from "../../utils/helpers";
 import Price from "../../models/Price";
 import UserPortfolio from "../../models/user/UserPortfolio";
 import InsufficientStockQuantityError from "../../models/error/InsufficientStockQuantityError";
@@ -232,19 +239,6 @@ function confirmTransactionEmbed(options: {
         )
         .setColor(type == 'buy' ? config.colors.green : config.colors.red)
         .setTimestamp(new Date())
-}
-
-function confirmComponent(text: string, style: ButtonStyle): ActionRowBuilder<ButtonBuilder> {
-    const confirm = new ButtonBuilder()
-        .setCustomId('confirm')
-        .setLabel(text)
-        .setStyle(style);
-    const cancel = new ButtonBuilder()
-        .setCustomId('cancel')
-        .setLabel('Cancel')
-        .setStyle(ButtonStyle.Secondary);
-    return new ActionRowBuilder<ButtonBuilder>()
-        .addComponents(confirm, cancel);
 }
 
 function useCreditEmbed(options: {
