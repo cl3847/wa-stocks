@@ -3,7 +3,7 @@ import CommandType from "../../types/CommandType";
 import WireDestinationType from "../../types/WireDestinationType";
 import Service from "../../services/Service";
 import InsufficientBalanceError from "../../models/error/InsufficientBalanceError";
-import {confirmedEmbed, diffBlock, logToChannel} from "../../utils/helpers";
+import {confirmedEmbed, diffBlock, dollarize, logToChannel} from "../../utils/helpers";
 import config from "../../../config";
 import UserNotFoundError from "../../models/error/UserNotFoundError";
 
@@ -55,8 +55,8 @@ const command: CommandType = {
                 case 'user':
                     const destinationDiscordUser = interaction.options.getUser("target", true);
                     const transactionRecord = await service.transactions.wireToUser(interaction.user.id, destinationDiscordUser.id, amountToTransfer);
-                    await interaction.reply(`Placeholder: You wired ${destinationDiscordUser.username} $${amountToTransfer}.`);
-                    await logToChannel(interaction.client, `🌐 **${interaction.user.username}** wired **${destinationDiscordUser.username}** a total of ${-transactionRecord.balance_change}.`);
+                    await interaction.reply(`Placeholder: You wired ${destinationDiscordUser.username} $${dollarize(-transactionRecord.balance_change)}.`);
+                    await logToChannel(interaction.client, `🌐 **${interaction.user.username}** wired **${destinationDiscordUser.username}** a total of ${dollarize(-transactionRecord.balance_change)}.`);
             }
         } catch(error) {
             if (error instanceof InsufficientBalanceError) {
