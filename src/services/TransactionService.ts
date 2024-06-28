@@ -4,8 +4,8 @@ import {Pool} from "pg";
 import UserNotFoundError from "../models/error/UserNotFoundError";
 import StockNotFoundError from "../models/error/StockNotFoundError";
 import InsufficientBalanceError from "../models/error/InsufficientBalanceError";
-import Transaction from "../models/Transaction";
 import InsufficientStockQuantityError from "../models/error/InsufficientStockQuantityError";
+import StockTransaction from "../models/transaction/StockTransaction";
 
 class TransactionService {
     private daos: DAOs;
@@ -24,7 +24,7 @@ class TransactionService {
      * @param {boolean} useCredit Whether to use credit for the purchase
      * @returns {Promise<void>} A promise resolving to nothing
      */
-    public async buyStock(uid: string, ticker: string, add: number, useCredit: boolean): Promise<Transaction> {
+    public async buyStock(uid: string, ticker: string, add: number, useCredit: boolean): Promise<StockTransaction> {
         const pc = await this.pool.connect();
 
         const user = await this.daos.users.getUserPortfolio(pc, uid);
@@ -69,12 +69,12 @@ class TransactionService {
             await this.daos.users.updateUser(pc, uid, {balance: newBalance, loan_balance: newDebt});
 
             // save transaction record
-            const transactionRecord: Transaction = {
+            const transactionRecord: StockTransaction = {
                 type: 'buy',
                 uid: uid,
                 ticker: ticker,
-                balance_used: cost - useCreditAmount,
-                credit_used: useCreditAmount,
+                balance_change: -(cost - useCreditAmount),
+                credit_change: useCreditAmount,
                 quantity: add,
                 price: stock.price,
                 total_price: cost,
@@ -91,7 +91,7 @@ class TransactionService {
         }
     }
 
-    public async sellStock(uid: string, ticker: string, remove: number): Promise<Transaction> {
+    public async sellStock(uid: string, ticker: string, remove: number): Promise<StockTransaction> {
         const pc = await this.pool.connect();
 
         const user = await this.daos.users.getUserPortfolio(pc, uid);
@@ -126,13 +126,13 @@ class TransactionService {
             await this.daos.users.updateUser(pc, uid, {balance: newBalance});
 
             // save transaction record
-            const transactionRecord: Transaction = {
+            const transactionRecord: StockTransaction = {
                 type: 'sell',
                 uid: uid,
                 ticker: ticker,
                 quantity: remove,
-                balance_used: null,
-                credit_used: null,
+                balance_change: stock.price * remove,
+                credit_change: 0,
                 price: stock.price,
                 total_price: stock.price * remove,
                 timestamp: Date.now(),
@@ -147,6 +147,10 @@ class TransactionService {
             pc.release();
         }
     }
+
+    //public async wireToUser(fromUid: string, destUid: string, amount: number): Promise<Transaction> {
+//
+    //}
 }
 
 export default TransactionService;

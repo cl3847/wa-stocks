@@ -1,5 +1,5 @@
 import {PoolClient} from "pg";
-import Transaction from "../models/Transaction";
+import Transaction from "../models/transaction/Transaction";
 
 class TransactionDAO {
     public async createTransaction(pc: PoolClient, transaction: Transaction): Promise<void> {
