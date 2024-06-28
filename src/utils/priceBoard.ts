@@ -1,7 +1,7 @@
 import Service from "../services/Service";
 import config from "../../config";
 import {Client, EmbedBuilder, TextChannel} from "discord.js"
-import {dollarize, getDateStringETC, diffBlock, PADDING, getTimeStringEST} from "./helpers";
+import {diffBlock, dollarize, getDateStringETC, getTimeStringEST, PADDING} from "./helpers";
 import Stock from "../models/stock/Stock";
 import Price from "../models/Price";
 import GameState from "../models/GameState";

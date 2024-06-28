@@ -1,4 +1,5 @@
 import ConfigType from "./src/types/ConfigType";
+
 require('dotenv').config();
 
 const config: ConfigType = {

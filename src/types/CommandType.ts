@@ -1,8 +1,4 @@
-import {
-    CacheType,
-    CommandInteraction,
-    SharedSlashCommand
-} from "discord.js";
+import {CacheType, CommandInteraction, SharedSlashCommand} from "discord.js";
 
 export type CommandType = {
     data: SharedSlashCommand;

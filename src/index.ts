@@ -6,7 +6,7 @@ import {initDb} from "./utils/createDatabase";
 import log from "./utils/logger";
 import config from "../config";
 import Service from "./services/Service";
-import {Client, Events, GatewayIntentBits, Routes, REST, Collection} from "discord.js"
+import {Client, Collection, Events, GatewayIntentBits, REST, Routes} from "discord.js"
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import CommandType from "./types/CommandType";
@@ -14,6 +14,7 @@ import TransactionDAO from "./handlers/TransactionDAO";
 import ObjectDAO from "./handlers/ObjectDAO";
 import {initJobs} from "./utils/jobs";
 import {updatePriceBoard} from "./utils/priceBoard";
+
 require('dotenv').config();
 
 (async () => {

@@ -1,9 +1,16 @@
 import Service from "../services/Service";
 import StockNotFoundError from "../models/error/StockNotFoundError";
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle, Client} from "discord.js"
+import {
+    ActionRowBuilder,
+    AttachmentBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    Client,
+    EmbedBuilder,
+    TextChannel
+} from "discord.js"
 import config from "../../config";
 import fs from "fs";
-import {AttachmentBuilder, EmbedBuilder, TextChannel} from "discord.js";
 import log from "./logger";
 
 const PADDING = "————————————————————————————————————————————\n";

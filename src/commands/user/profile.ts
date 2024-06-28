@@ -10,7 +10,7 @@ import Service from "../../services/Service";
 import CommandType from "../../types/CommandType";
 import UserPortfolio from "src/models/user/UserPortfolio";
 import config from "../../../config";
-import {dollarize, diffBlock, EMBED_PADDING, confirmedEmbed} from "../../utils/helpers";
+import {confirmedEmbed, diffBlock, dollarize, EMBED_PADDING} from "../../utils/helpers";
 import Price from "../../models/Price";
 import {createLinePortfolioImage} from "../../utils/graphing";
 import log from "../../utils/logger";
