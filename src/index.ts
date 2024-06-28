@@ -9,7 +9,7 @@ import Service from "./services/Service";
 import {Client, Events, GatewayIntentBits, Routes, REST, Collection} from "discord.js"
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import CommandType from "./models/CommandType";
+import CommandType from "./types/CommandType";
 import TransactionDAO from "./handlers/TransactionDAO";
 import ObjectDAO from "./handlers/ObjectDAO";
 import {initJobs} from "./utils/jobs";

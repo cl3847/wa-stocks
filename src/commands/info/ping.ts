@@ -1,5 +1,5 @@
 import {CacheType, CommandInteraction, SlashCommandBuilder} from "discord.js";
-import CommandType from "../../models/CommandType";
+import CommandType from "../../types/CommandType";
 
 const command: CommandType = {
     data: new SlashCommandBuilder()

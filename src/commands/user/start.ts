@@ -1,4 +1,4 @@
-import CommandType from "../../models/CommandType";
+import CommandType from "../../types/CommandType";
 import {CacheType, CommandInteraction, SlashCommandBuilder} from "discord.js";
 import Service from "../../services/Service";
 import User from "../../models/user/User";

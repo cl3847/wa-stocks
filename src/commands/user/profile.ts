@@ -7,7 +7,7 @@ import {
     User
 } from "discord.js";
 import Service from "../../services/Service";
-import CommandType from "../../models/CommandType";
+import CommandType from "../../types/CommandType";
 import UserPortfolio from "src/models/user/UserPortfolio";
 import config from "../../../config";
 import {dollarize, diffBlock, EMBED_PADDING, confirmedEmbed} from "../../utils/helpers";

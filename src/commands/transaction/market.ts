@@ -1,4 +1,4 @@
-import CommandType from "../../models/CommandType";
+import CommandType from "../../types/CommandType";
 import {
     ActionRowBuilder, ButtonBuilder,
     CacheType,

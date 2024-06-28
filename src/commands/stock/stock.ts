@@ -1,4 +1,4 @@
-import CommandType from "../../models/CommandType";
+import CommandType from "../../types/CommandType";
 import {AttachmentBuilder, CacheType, ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import Service from "../../services/Service";
 import {dollarize, diffBlock, getStockLogo, confirmedEmbed} from "../../utils/helpers";
