@@ -57,7 +57,7 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], g
 
     return new EmbedBuilder()
         .setTitle(`Stock Prices (${getDateStringETC()})`)
-        .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + diffBlock(`${marketStatus}`) +  diffBlock(`TICKER - Company Name - Price per share\n+$0.00 (0.00%) today's stock price change`) + PADDING + diffBlock(desc))
+        .setDescription(`Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` + diffBlock(`${marketStatus}`) + diffBlock(`TICKER - Company Name - Price per share\n+$0.00 (0.00%) today's stock price change`) + PADDING + diffBlock(desc))
         .setColor(upDownAmount >= 0 ? config.colors.green : config.colors.red);
 }
 

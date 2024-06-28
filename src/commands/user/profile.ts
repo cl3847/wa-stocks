@@ -32,7 +32,7 @@ const command: CommandType = {
         const user = interaction.options.getUser('user') || interaction.user;
         const userPortfolio = await service.users.getUserPortfolio(user.id);
         if (!userPortfolio) {
-            await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- LOOKUP FAILED -\nUser ${user.username}'s profile does not exist.`), config.colors.blue)]});
+            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- LOOKUP FAILED -\nUser ${user.username}'s profile does not exist.`), config.colors.blue)]});
             return;
         }
         const yesterdayPrices = await service.stocks.getAllYesterdayPrice();
@@ -42,10 +42,10 @@ const command: CommandType = {
         const files: AttachmentBuilder[] = [];
         try {
             const image: Buffer = await createLinePortfolioImage(user.id);
-            const chartAttachment = new AttachmentBuilder(image, { name: 'line.png' });
+            const chartAttachment = new AttachmentBuilder(image, {name: 'line.png'});
             files.push(chartAttachment);
             embed.setImage('attachment://line.png');
-        } catch(e) {
+        } catch (e) {
             log.error('Error creating line image for user ' + user.id);
         }
 

@@ -15,7 +15,10 @@ abstract class Wireable {
 
     async onWire(interaction: CommandInteraction, fromUser: User, amount: number): Promise<void> {
         const response = await this.previewWire(interaction, fromUser, amount);
-        const confirmation = await response.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 60_000 });
+        const confirmation = await response.awaitMessageComponent({
+            filter: i => i.user.id === interaction.user.id,
+            time: 60_000
+        });
         if (confirmation.customId === 'confirm') {
             const transaction = await this.executeWire(fromUser, amount);
             await this.onSuccess(confirmation, transaction);
@@ -27,12 +30,14 @@ abstract class Wireable {
                         confirmedEmbed(diffBlock(`- WIRE CANCELLED -\nOrder to wire **${this.name}** a total of $${dollarize(amount)} cancelled.`), config.colors.blue)
                     ],
                     components: []
-            });
+                });
         }
     }
 
     protected abstract previewWire(interaction: CommandInteraction, fromUid: User, amount: number): Promise<InteractionResponse<boolean>>;
+
     protected abstract executeWire(fromUser: User, amount: number): Promise<WireTransaction>;
+
     protected abstract onSuccess(confirmation: MessageComponentInteraction, transaction: WireTransaction): Promise<void>;
 }
 

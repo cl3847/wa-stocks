@@ -3,7 +3,7 @@ class InsufficientBalanceError extends Error {
     balance: number;
     cost: number;
 
-    constructor(uid:string, balance: number, cost: number) {
+    constructor(uid: string, balance: number, cost: number) {
         super(`User with UID '${uid}' has insufficient balance of ${balance} for an operation of cost: ${cost}`);
         this.uid = uid;
         this.balance = balance;

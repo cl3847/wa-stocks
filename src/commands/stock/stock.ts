@@ -13,19 +13,19 @@ const command: CommandType = {
         .setName('stock')
         .setDescription('Looks up the information of a stock.')
         .addStringOption(option =>
-            option
-                .setName('ticker')
-                .setDescription('The ticker of the stock')
-                .setRequired(true),
-                //.addChoices(Service.stockTickerList.map(ticker => ({ name: ticker, value: ticker })))
-            ),
+                option
+                    .setName('ticker')
+                    .setDescription('The ticker of the stock')
+                    .setRequired(true),
+            //.addChoices(Service.stockTickerList.map(ticker => ({ name: ticker, value: ticker })))
+        ),
     async execute(interaction: ChatInputCommandInteraction<CacheType>) {
         const ticker = interaction.options.getString('ticker', true).toUpperCase();
 
         const service = Service.getInstance();
         const stock = await service.stocks.getStock(ticker);
         if (!stock) {
-            await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- LOOKUP FAILED -\nStock ${ticker} does not exist.`), config.colors.blue)]});
+            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- LOOKUP FAILED -\nStock ${ticker} does not exist.`), config.colors.blue)]});
             return;
         }
         const yesterdayPrice = await service.stocks.getYesterdayPrice(ticker);
@@ -35,7 +35,7 @@ const command: CommandType = {
         const files: AttachmentBuilder[] = [];
         try {
             const image: Buffer = await createCandlestickStockImage(ticker);
-            const chartAttachment = new AttachmentBuilder(image, { name: 'candlestick.png' });
+            const chartAttachment = new AttachmentBuilder(image, {name: 'candlestick.png'});
             files.push(chartAttachment);
             embed.setImage('attachment://candlestick.png');
         } catch {
@@ -69,7 +69,7 @@ const generateStockEmbed = (stock: NewsPopulatedStock, yesterdayPrice: Price | n
     if (stock.news.length > 0) {
         embed.addFields({
             name: "Recent News",
-            value: stock.news.slice(0,config.bot.newsAmountTruncate).map(article => {
+            value: stock.news.slice(0, config.bot.newsAmountTruncate).map(article => {
                 //return `${article.message_link} - ${article.body.substring(0, 30)}...`;
                 return `🔗 [${article.body.substring(0, config.bot.newsLengthTruncate)}${article.body.length > config.bot.newsLengthTruncate ? "..." : ""}](${article.message_link})`;
             }).join("\n")

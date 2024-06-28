@@ -32,9 +32,11 @@ class WireableUser extends Wireable implements User {
     }
 
     protected async onSuccess(confirmation: MessageComponentInteraction, transaction: WireTransaction): Promise<void> {
-        await confirmation.update({ embeds: [...confirmation.message.embeds,
+        await confirmation.update({
+            embeds: [...confirmation.message.embeds,
                 confirmedEmbed(diffBlock(`+ WIRE SUCCESSFUL +\nYou wired ${this.name} a total of $${dollarize(-transaction.balance_change)}.`), config.colors.blue)
-            ], components: [] });
+            ], components: []
+        });
         await logToChannel(confirmation.client, `🌐 **${confirmation.user.username}** wired **${this.name}** a total of $${dollarize(-transaction.balance_change)}.`);
     }
 
@@ -42,7 +44,7 @@ class WireableUser extends Wireable implements User {
         const embed = new EmbedBuilder()
             .setTitle('Confirm Wire Transfer')
             .setDescription(diffBlock(
-                `Destination: ${this.name}\n\n`+
+                `Destination: ${this.name}\n\n` +
                 `  $${dollarize(fromUser.balance)} current balance\n` +
                 `- $${dollarize(amount)} wire amount\n` +
                 `= $${dollarize(fromUser.balance - amount)} final balance\n`
@@ -50,7 +52,7 @@ class WireableUser extends Wireable implements User {
             .setColor(config.colors.red)
             .setTimestamp(new Date())
             .setThumbnail(this.avatarUrl);
-        return interaction.reply({ embeds: [embed], components: [confirmComponent('Confirm Wire', ButtonStyle.Danger)] });
+        return interaction.reply({embeds: [embed], components: [confirmComponent('Confirm Wire', ButtonStyle.Danger)]});
     }
 }
 

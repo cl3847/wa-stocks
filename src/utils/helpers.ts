@@ -23,22 +23,37 @@ function dollarize(cents: number) {
 
 function getDateStringETC() {
     const date = new Date();
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'America/New_York'});
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        timeZone: 'America/New_York'
+    });
 }
 
-function getETCComponents(): {year: number, month: number, date: number } {
-    const dateString = new Date().toLocaleString('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' });
+function getETCComponents(): { year: number, month: number, date: number } {
+    const dateString = new Date().toLocaleString('en-US', {
+        timeZone: 'America/New_York',
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric'
+    });
     const [month, date, year] = dateString.split('/').map(Number);
     if (!year || !month || !date) throw new Error('Error parsing date components.');
-    return { year, month, date };
+    return {year, month, date};
 }
 
 function timestampToETCComponents(timestamp: number): { year: number, month: number, date: number } {
     const d = new Date(timestamp);
-    const dateString = d.toLocaleString('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' });
+    const dateString = d.toLocaleString('en-US', {
+        timeZone: 'America/New_York',
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric'
+    });
     const [month, date, year] = dateString.split('/').map(Number);
     if (!year || !month || !date) throw new Error('Error parsing date components.');
-    return { year, month, date };
+    return {year, month, date};
 }
 
 function formatDate(year: number, month: number, day: number): string {
@@ -99,10 +114,15 @@ function isDstObserved(date: Date): boolean {
 function getETCComponentsPreviousDay(): { year: number, month: number, date: number } {
     const now = new Date();
     const previousDay = new Date(now.setDate(now.getDate() - 1));
-    const dateString = previousDay.toLocaleString('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' });
+    const dateString = previousDay.toLocaleString('en-US', {
+        timeZone: 'America/New_York',
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric'
+    });
     const [month, date, year] = dateString.split('/').map(Number);
     if (!year || !month || !date) throw new Error('Error parsing date components.');
-    return { year, month, date };
+    return {year, month, date};
 }
 
 async function chooseRandomStocks(n: number) {
@@ -134,7 +154,7 @@ function diffBlock(s: string) {
 
 function getStockLogo(ticker: string, filename: string = "logo.png"): AttachmentBuilder | null {
     if (fs.existsSync('assets/stocks/' + ticker + '.png')) {
-        return new AttachmentBuilder(`./assets/stocks/${ticker}.png`, { name: filename });
+        return new AttachmentBuilder(`./assets/stocks/${ticker}.png`, {name: filename});
     }
     return null;
 }

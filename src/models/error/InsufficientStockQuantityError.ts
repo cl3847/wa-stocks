@@ -3,7 +3,7 @@ class InsufficientStockQuantityError extends Error {
     stockQuantity: number;
     amount: number;
 
-    constructor(uid:string, stockQuantity: number, amount: number) {
+    constructor(uid: string, stockQuantity: number, amount: number) {
         super(`User with UID '${uid}' has insufficient stock quantity of ${stockQuantity} for an operation requiring: ${amount}`);
         this.uid = uid;
         this.stockQuantity = stockQuantity;

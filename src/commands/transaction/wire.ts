@@ -28,7 +28,7 @@ const command: CommandType = {
                         .setDescription('The balance of money (IN CENTS) you\'d like to transfer')
                         .setRequired(true)
                 ),
-            )
+        )
         .addSubcommand(subcommand =>
             subcommand
                 .setName('entity')
@@ -52,11 +52,11 @@ const command: CommandType = {
         const amountToTransfer = interaction.options.getInteger('balance', true);
         const user = await service.users.getUser(interaction.user.id);
         if (!user) {
-            await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou do not have an account.`), config.colors.blue)]});
+            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou do not have an account.`), config.colors.blue)]});
             return;
         }
         if (user.balance < amountToTransfer) {
-            await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou do not have enough account balance to transfer this much money.`), config.colors.blue)]});
+            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou do not have enough account balance to transfer this much money.`), config.colors.blue)]});
             return;
         }
 
@@ -66,18 +66,18 @@ const command: CommandType = {
                     const target = interaction.options.getUser('target', true);
                     const destUser = await service.users.getUser(target.id);
                     if (!destUser) {
-                        await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nThe user you are trying to transfer money to does not have an account.`), config.colors.blue)]});
+                        await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nThe user you are trying to transfer money to does not have an account.`), config.colors.blue)]});
                         return;
                     }
                     const destUserWireable = new WireableUser(destUser, target.username, target.avatarURL());
                     await destUserWireable.onWire(interaction, user, amountToTransfer);
                     break;
             }
-        } catch(error) {
+        } catch (error) {
             if (error instanceof InsufficientBalanceError) {
-                await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou do not have enough account balance to transfer this much money.`), config.colors.blue)]});
+                await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou do not have enough account balance to transfer this much money.`), config.colors.blue)]});
             } else if (error instanceof UserNotFoundError) {
-                await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou or the user you are trying to transfer money to does not have an account.`), config.colors.blue)]});
+                await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou or the user you are trying to transfer money to does not have an account.`), config.colors.blue)]});
             } else {
                 throw error;
             }

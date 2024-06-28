@@ -88,7 +88,7 @@ class StockService {
                 });
                 log.success(`Synchronized stock price for ${ticker}`)
             }
-        } catch(err) {
+        } catch (err) {
             log.error(`Error synchronizing stock price for ${ticker}: ${err.message}`);
             throw err;
         } finally {

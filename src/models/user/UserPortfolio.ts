@@ -39,7 +39,7 @@ class UserPortfolio implements User {
         }, 0);
     }
 
-    public async getDayPortfolioChange(): Promise<{diff: number, percent: number | null }> {
+    public async getDayPortfolioChange(): Promise<{ diff: number, percent: number | null }> {
         const {year, month, date} = getETCComponentsPreviousDay();
         const yesterdayPortfolio = await Service.getInstance().users.getUserPortfolioTimestamp(this.uid, getNextMidnightTimestampET(year, month, date));
         const portfolioValue = this.portfolioValue();

@@ -21,7 +21,7 @@ class WireableEntity extends Wireable {
     constructor(
         name: string,
         identifier: string,
-        thumbnail : LocalThumbnail | null,
+        thumbnail: LocalThumbnail | null,
         onSuccess: (confirmation: MessageComponentInteraction, transaction: WireTransaction) => Promise<void>
     ) {
         super(name, identifier);
@@ -38,7 +38,7 @@ class WireableEntity extends Wireable {
         const embed = new EmbedBuilder()
             .setTitle('Confirm Wire Transfer')
             .setDescription(diffBlock(
-                `Destination: ${this.name}\n\n`+
+                `Destination: ${this.name}\n\n` +
                 `  $${dollarize(fromUser.balance)} current balance\n` +
                 `- $${dollarize(amount)} wire amount\n` +
                 `= $${dollarize(fromUser.balance - amount)} final balance\n`
@@ -51,7 +51,11 @@ class WireableEntity extends Wireable {
             files.push(this.thumbnail.file);
             embed.setThumbnail(this.thumbnail.url);
         }
-        return interaction.reply({ embeds: [embed], files, components: [confirmComponent('Confirm Wire', ButtonStyle.Danger)] });
+        return interaction.reply({
+            embeds: [embed],
+            files,
+            components: [confirmComponent('Confirm Wire', ButtonStyle.Danger)]
+        });
     }
 }
 

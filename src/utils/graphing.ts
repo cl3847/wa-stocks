@@ -18,7 +18,12 @@ async function createCandlestickStockImage(ticker: string): Promise<Buffer> {
 
     const d = new Date();
     d.setDate(d.getDate() - config.game.chartsDaysBack);
-    const dateString = d.toLocaleString('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' });
+    const dateString = d.toLocaleString('en-US', {
+        timeZone: 'America/New_York',
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric'
+    });
     const [month, date, year] = dateString.split('/').map(x => parseInt(x));
     if (!year || !month || !date) throw new Error('Error parsing date components.');
     const priceHistory = (await service.stocks.getStockPriceHistoryAfterDay(ticker, year, month, date)).map(price => {
@@ -35,8 +40,8 @@ async function createCandlestickStockImage(ticker: string): Promise<Buffer> {
     const height = 300;
     const chartJSNodeCanvas = new ChartJSNodeCanvas({
         width, height, plugins: {
-            modern: [ 'chartjs-chart-financial' ],
-            globalVariableLegacy: [ 'chartjs-adapter-luxon' ]
+            modern: ['chartjs-chart-financial'],
+            globalVariableLegacy: ['chartjs-adapter-luxon']
         }
     });
 
@@ -63,7 +68,7 @@ async function createCandlestickStockImage(ticker: string): Promise<Buffer> {
                         unchanged: 'rgba(90, 90, 90, 1)'
                     }
                 }],
-                fontColor : '#FFFFFF'
+                fontColor: '#FFFFFF'
             },
         options: {
             scales: {
@@ -91,7 +96,7 @@ async function createLinePortfolioImage(uid: string) {
     const startTimestamp = getNextMidnightTimestampET(year, month, date);
 
     const portfolio = await Service.getInstance().users.getUserPortfolio(uid);
-    const labels: string[] = [formatDate(year, month, date+1)];
+    const labels: string[] = [formatDate(year, month, date + 1)];
     const dataPoints: number[] = [Math.round((portfolio?.portfolioValue() || 0) / 100)];
 
     for (let i = 0; i < config.game.chartsDaysBack - 1; i++) { // TODO switch to fast algorithm...
@@ -139,7 +144,7 @@ async function createLinePortfolioImage(uid: string) {
                 }
             },
             elements: {
-                point:{
+                point: {
                     radius: 0
                 }
             }
@@ -149,4 +154,4 @@ async function createLinePortfolioImage(uid: string) {
     return await chartJSNodeCanvas.renderToBuffer(configuration);
 }
 
-export { createCandlestickStockImage, createLinePortfolioImage };
+export {createCandlestickStockImage, createLinePortfolioImage};

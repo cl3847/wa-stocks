@@ -35,19 +35,19 @@ const command: CommandType = {
                 .setDescription('Choose to buy or sell stocks')
                 .setRequired(true)
                 .addChoices(
-                    { name: 'buy', value: 'buy' },
-                    { name: 'sell', value: 'sell' },
+                    {name: 'buy', value: 'buy'},
+                    {name: 'sell', value: 'sell'},
                 ))
         .addStringOption(option =>
-            option
-                .setName('ticker')
-                .setDescription('The ticker of the stock you want to buy or sell')
-                .setRequired(true),
-                //.addChoices(Service.stockTickerList.map(ticker => ({ name: ticker, value: ticker })))
+                option
+                    .setName('ticker')
+                    .setDescription('The ticker of the stock you want to buy or sell')
+                    .setRequired(true),
+            //.addChoices(Service.stockTickerList.map(ticker => ({ name: ticker, value: ticker })))
         )
         .addIntegerOption(option =>
             option
-                    .setName('quantity')
+                .setName('quantity')
                 .setDescription('The quantity of the stock you want to buy or sell')),
     async execute(interaction: ChatInputCommandInteraction<CacheType>) {
         if (!interaction.isCommand()) return;
@@ -59,7 +59,7 @@ const command: CommandType = {
         const gameState = await service.game.getGameState();
 
         if (!gameState.isMarketOpen) {
-            await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- TRANSACTION FAILED -\nThe market is currently closed.`), config.colors.blue)]});
+            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- TRANSACTION FAILED -\nThe market is currently closed.`), config.colors.blue)]});
             return;
         }
 
@@ -67,7 +67,7 @@ const command: CommandType = {
         const user = await service.users.getUserPortfolio(interaction.user.id);
         const yesterdayPrice = await service.stocks.getYesterdayPrice(ticker);
         if (!stock) {
-            await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- LOOKUP FAILED -\nStock ${ticker} does not exist.`), config.colors.blue)]});
+            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- LOOKUP FAILED -\nStock ${ticker} does not exist.`), config.colors.blue)]});
             return;
         }
         if (!user) {
@@ -83,7 +83,7 @@ const command: CommandType = {
                     // user has enough credit...
                     useCreditAmount = stock.price * quantity - user.balance;
                 } else {
-                    await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- PURCHASE FAILED -\nYou do not have enough balance to buy this amount of stock.`), config.colors.blue)]});
+                    await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- PURCHASE FAILED -\nYou do not have enough balance to buy this amount of stock.`), config.colors.blue)]});
                     return;
                 }
             }
@@ -107,13 +107,20 @@ const command: CommandType = {
                 embeds.push(creditEmbed)
             }
 
-            const transactionEmbed = confirmTransactionEmbed({ type: 'buy', quantity, stock, user, yesterdayPrice, useCreditAmount });
+            const transactionEmbed = confirmTransactionEmbed({
+                type: 'buy',
+                quantity,
+                stock,
+                user,
+                yesterdayPrice,
+                useCreditAmount
+            });
             const stockLogo = getStockLogo(ticker);
             if (stockLogo) {
                 files.push(stockLogo);
                 transactionEmbed.setThumbnail(`attachment://logo.png`);
             }
-            embeds.push(transactionEmbed)
+            embeds.push(transactionEmbed);
 
             const response = await interaction.reply({
                 embeds,
@@ -122,46 +129,66 @@ const command: CommandType = {
                 ephemeral: config.bot.useEphemeralPurchase,
             });
             try {
-                const confirmation = await response.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 60_000 });
+                const confirmation = await response.awaitMessageComponent({
+                    filter: i => i.user.id === interaction.user.id,
+                    time: 60_000
+                });
                 if (confirmation.customId === 'confirm') {
                     try {
                         const transactionRecord = await service.transactions.buyStock(interaction.user.id, ticker, quantity, useCreditAmount > 0);
-                        await confirmation.update({ embeds: [...embeds,
+                        await confirmation.update({
+                            embeds: [...embeds,
                                 confirmedEmbed(diffBlock(`+ PURCHASE SUCCESSFUL +\nOrder for ${quantity} share(s) of ${ticker} filled at $${dollarize(transactionRecord.price)} per share.`), config.colors.blue)
-                            ], components: [] });
+                            ], components: []
+                        });
                         await logToChannel(interaction.client, (transactionRecord.credit_change !== 0 ? `💳 **${interaction.user.username}** used $${dollarize(transactionRecord.credit_change)} of ${config.theme.financialCompanyName} credit, increasing their debt to $${dollarize(user.loan_balance + transactionRecord.credit_change)}.\n` : "") +
                             `🟢 **${interaction.user.username}** purchased ${quantity} share(s) of ${ticker} at $${dollarize(transactionRecord.price)} per share, decreasing their balance to $${dollarize(user.balance + (transactionRecord.balance_change))}.`)
-                    } catch(err) {
+                    } catch (err) {
                         if (err instanceof InsufficientBalanceError) {
-                            await confirmation.update({ embeds: [...embeds,
+                            await confirmation.update({
+                                embeds: [...embeds,
                                     confirmedEmbed(diffBlock(`- PURCHASE FAILED -\nOrder could not be filled due to insufficient balance (price may have changed).`), config.colors.blue)
-                                ], components: []});
+                                ], components: []
+                            });
                         } else {
                             log.error(err.stack);
-                            await confirmation.update({ embeds: [...embeds,
+                            await confirmation.update({
+                                embeds: [...embeds,
                                     confirmedEmbed(diffBlock(`- PURCHASE FAILED -\nAn error occurred while filling your order.`), config.colors.blue)
-                                ], components: [],});
+                                ], components: [],
+                            });
                         }
                     }
                 } else if (confirmation.customId === 'cancel') {
-                    await confirmation.update({ embeds: [...embeds,
+                    await confirmation.update({
+                        embeds: [...embeds,
                             confirmedEmbed(diffBlock(`- PURCHASE CANCELLED -\nOrder for ${quantity} share(s) of ${ticker} cancelled.`), config.colors.blue)
-                        ], components: [] });
+                        ], components: []
+                    });
                 }
             } catch (e) {
-                await response.edit({ embeds: [...embeds,
+                await response.edit({
+                    embeds: [...embeds,
                         confirmedEmbed(diffBlock(`- PURCHASE CANCELLED -\nNo trade confirmation received.`), config.colors.blue)
-                    ], components: [] });
+                    ], components: []
+                });
             }
         } else if (transactionType === 'sell') {
             if ((user.portfolio.find(hs => hs.ticker === ticker)?.quantity || 0) < quantity) {
-                await interaction.reply({ embeds: [confirmedEmbed(diffBlock(`- SALE FAILED -\nYou do not have enough shares to sell this quantity of stock.`), config.colors.blue)]});
+                await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- SALE FAILED -\nYou do not have enough shares to sell this quantity of stock.`), config.colors.blue)]});
                 return;
             }
 
             const row = confirmComponent("Confirm Sale", ButtonStyle.Danger);
             const files: AttachmentBuilder[] = [];
-            const embed = confirmTransactionEmbed({ type: 'sell', quantity, stock, user, yesterdayPrice, useCreditAmount: 0 });
+            const embed = confirmTransactionEmbed({
+                type: 'sell',
+                quantity,
+                stock,
+                user,
+                yesterdayPrice,
+                useCreditAmount: 0
+            });
             const stockLogo = getStockLogo(ticker);
             if (stockLogo) {
                 files.push(stockLogo);
@@ -175,36 +202,49 @@ const command: CommandType = {
                 ephemeral: config.bot.useEphemeralPurchase,
             });
             try {
-                const confirmation = await response.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 60_000 });
+                const confirmation = await response.awaitMessageComponent({
+                    filter: i => i.user.id === interaction.user.id,
+                    time: 60_000
+                });
                 if (confirmation.customId === 'confirm') {
                     try {
                         const transactionRecord = await service.transactions.sellStock(interaction.user.id, ticker, quantity);
-                        await confirmation.update({ embeds: [embed,
+                        await confirmation.update({
+                            embeds: [embed,
                                 confirmedEmbed(diffBlock(`+ SALE SUCCESSFUL +\nOrder to sell ${quantity} share(s) of ${ticker} filled at $${dollarize(transactionRecord.price)} per share.`), config.colors.blue)
-                            ], components: [] });
+                            ], components: []
+                        });
                         await logToChannel(interaction.client,
                             `🔴 **${interaction.user.username}** sold ${quantity} share(s) of ${ticker} at $${dollarize(transactionRecord.price)} per share, increasing their balance to $${dollarize(user.balance + transactionRecord.balance_change)}.`)
-                    } catch(err) {
+                    } catch (err) {
                         if (err instanceof InsufficientStockQuantityError) {
-                            await confirmation.update({ embeds: [embed,
+                            await confirmation.update({
+                                embeds: [embed,
                                     confirmedEmbed(diffBlock(`- SALE FAILED -\nOrder could not be filled due to insufficient stock quantity.`), config.colors.blue)
-                                ], components: [] });
+                                ], components: []
+                            });
                         } else {
                             log.error(err.stack);
-                            await confirmation.update({ embeds: [embed,
+                            await confirmation.update({
+                                embeds: [embed,
                                     confirmedEmbed(diffBlock(`- SALE FAILED -\nAn error occurred while filling your order.`), config.colors.blue)
-                                ], components: [] });
+                                ], components: []
+                            });
                         }
                     }
                 } else if (confirmation.customId === 'cancel') {
-                    await confirmation.update({ embeds: [embed,
+                    await confirmation.update({
+                        embeds: [embed,
                             confirmedEmbed(diffBlock(`- SALE CANCELLED -\nOrder to sell ${quantity} share(s) of ${ticker} cancelled.`), config.colors.blue)
-                        ], components: [] });
+                        ], components: []
+                    });
                 }
             } catch (e) {
-                await response.edit({ embeds: [embed,
+                await response.edit({
+                    embeds: [embed,
                         confirmedEmbed(diffBlock(`- SALE CANCELLED -\nNo trade confirmation received.`), config.colors.blue)
-                    ], components: [] });
+                    ], components: []
+                });
             }
         }
     },
@@ -218,7 +258,7 @@ function confirmTransactionEmbed(options: {
     useCreditAmount: number,
     yesterdayPrice: Price | null,
 }) {
-    const { type, quantity, stock, user, yesterdayPrice } = options;
+    const {type, quantity, stock, user, yesterdayPrice} = options;
 
     const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.close_price : 0);
     const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price : 1);
