@@ -29,29 +29,41 @@ const command: CommandType = {
     data: new SlashCommandBuilder()
         .setName('market')
         .setDescription('Buy and sell stocks.')
-        .addStringOption(option =>
-            option
-                .setName("type")
-                .setDescription('Choose to buy or sell stocks')
-                .setRequired(true)
-                .addChoices(
-                    {name: 'buy', value: 'buy'},
-                    {name: 'sell', value: 'sell'},
-                ))
-        .addStringOption(option =>
-                option
-                    .setName('ticker')
-                    .setDescription('The ticker of the stock you want to buy or sell')
-                    .setRequired(true),
-            //.addChoices(Service.stockTickerList.map(ticker => ({ name: ticker, value: ticker })))
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('sell')
+                .setDescription('Sell shares of a stock')
+                .addStringOption(option =>
+                        option
+                            .setName('ticker')
+                            .setDescription('The ticker of the stock you want to sell')
+                            .setRequired(true),
+                    //.addChoices(Service.stockTickerList.map(ticker => ({ name: ticker, value: ticker })))
+                )
+                .addIntegerOption(option =>
+                    option
+                        .setName('quantity')
+                        .setDescription('The quantity of the stock you want to sell')),
         )
-        .addIntegerOption(option =>
-            option
-                .setName('quantity')
-                .setDescription('The quantity of the stock you want to buy or sell')),
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('buy')
+                .setDescription('Buy shares of a stock')
+                .addStringOption(option =>
+                        option
+                            .setName('ticker')
+                            .setDescription('The ticker of the stock you want to buy')
+                            .setRequired(true),
+                    //.addChoices(Service.stockTickerList.map(ticker => ({ name: ticker, value: ticker })))
+                )
+                .addIntegerOption(option =>
+                    option
+                        .setName('quantity')
+                        .setDescription('The quantity of the stock you want to buy')),
+        ),
     async execute(interaction: ChatInputCommandInteraction<CacheType>) {
         if (!interaction.isCommand()) return;
-        const transactionType = interaction.options.getString('type', true);
+        const transactionType = interaction.options.getSubcommand() as "buy" | "sell";
         const ticker = interaction.options.getString('ticker', true).toUpperCase();
         const quantity = interaction.options.getInteger('quantity') || 1;
 
