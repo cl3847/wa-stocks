@@ -20,8 +20,9 @@ abstract class Wireable {
             time: 60_000
         });
         if (confirmation.customId === 'confirm') {
-            const transaction = await this.executeWire(fromUser, amount);
-            await this.onSuccess(confirmation, transaction);
+            const transaction = await this.executeWire(confirmation, fromUser, amount);
+            if (!transaction) return;
+            await this.onSuccess(confirmation, fromUser, transaction);
         } else if (confirmation.customId === 'cancel') {
             await confirmation.update(
                 {
@@ -36,9 +37,9 @@ abstract class Wireable {
 
     protected abstract previewWire(interaction: CommandInteraction, fromUid: User, amount: number): Promise<InteractionResponse<boolean>>;
 
-    protected abstract executeWire(fromUser: User, amount: number): Promise<WireTransaction>;
+    protected abstract executeWire(confirmation: MessageComponentInteraction, fromUser: User, amount: number): Promise<WireTransaction | null>;
 
-    protected abstract onSuccess(confirmation: MessageComponentInteraction, transaction: WireTransaction): Promise<void>;
+    protected abstract onSuccess(confirmation: MessageComponentInteraction, fromUser: User, transaction: WireTransaction): Promise<void>;
 }
 
 export default Wireable;

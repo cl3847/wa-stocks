@@ -20,6 +20,7 @@ const config: ConfigType = {
     },
     "theme": {
         financialCompanyName: "Mickital One",
+        financialCompanyTicker: "MOF",
         financialCompanyLogo: "MOF",
         financialCompanyColor: `#00558e`
     },

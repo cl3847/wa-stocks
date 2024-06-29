@@ -16,6 +16,7 @@ export type ConfigType = {
     };
     theme: {
         financialCompanyName: string;
+        financialCompanyTicker: string;
         financialCompanyLogo: string;
         financialCompanyColor: `#${string}`;
     }

@@ -7,6 +7,7 @@ import {confirmedEmbed, diffBlock} from "../../utils/helpers";
 import config from "../../../config";
 import UserNotFoundError from "../../models/error/UserNotFoundError";
 import WireableUser from "../../models/wire/WireableUser";
+import entities from "../../entities/entities.controller";
 
 const command: CommandType = {
     data: new SlashCommandBuilder()
@@ -50,6 +51,10 @@ const command: CommandType = {
         const service = Service.getInstance();
         const destinationType = interaction.options.getSubcommand() as WireDestinationType;
         const amountToTransfer = interaction.options.getInteger('balance', true);
+        if (amountToTransfer < 1) {
+            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou must transfer at least $0.01.`), config.colors.blue)]});
+            return;
+        }
         const user = await service.users.getUser(interaction.user.id);
         if (!user) {
             await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou do not have an account.`), config.colors.blue)]});
@@ -71,6 +76,15 @@ const command: CommandType = {
                     }
                     const destUserWireable = new WireableUser(destUser, target.username, target.avatarURL());
                     await destUserWireable.onWire(interaction, user, amountToTransfer);
+                    break;
+                case 'entity':
+                    const entityIdentifier = interaction.options.getString('target', true).toUpperCase();
+                    const destEntity = entities.get(entityIdentifier);
+                    if (!destEntity) {
+                        await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nThe entity you are trying to transfer money to does not exist.`), config.colors.blue)]});
+                        return;
+                    }
+                    await destEntity.onWire(interaction, user, amountToTransfer);
                     break;
             }
         } catch (error) {

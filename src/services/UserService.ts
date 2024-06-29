@@ -27,6 +27,13 @@ class UserService {
         return res;
     }
 
+    public async updateUser(uid: string, user: Partial<User>): Promise<void>{
+        const pc = await this.pool.connect();
+        const res = await this.daos.users.updateUser(pc, uid, user);
+        pc.release();
+        return res;
+    }
+
     public async getUserPortfolio(uid: string): Promise<UserPortfolio | null> {
         const pc = await this.pool.connect();
         const res = await this.daos.users.getUserPortfolio(pc, uid);

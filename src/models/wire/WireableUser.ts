@@ -26,12 +26,12 @@ class WireableUser extends Wireable implements User {
         this.avatarUrl = avatarUrl || null;
     }
 
-    protected async executeWire(fromUser: User, amount: number): Promise<WireTransaction> {
+    protected async executeWire(_: MessageComponentInteraction, fromUser: User, amount: number): Promise<WireTransaction> {
         const service = Service.getInstance();
         return service.transactions.wireToUser(fromUser.uid, this.uid, amount);
     }
 
-    protected async onSuccess(confirmation: MessageComponentInteraction, transaction: WireTransaction): Promise<void> {
+    protected async onSuccess(confirmation: MessageComponentInteraction, _: User, transaction: WireTransaction): Promise<void> {
         await confirmation.update({
             embeds: [...confirmation.message.embeds,
                 confirmedEmbed(diffBlock(`+ WIRE SUCCESSFUL +\nYou wired ${this.name} a total of $${dollarize(-transaction.balance_change)}.`), config.colors.blue)

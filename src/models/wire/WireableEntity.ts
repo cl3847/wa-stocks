@@ -11,27 +11,48 @@ import WireTransaction from "../transaction/WireTransaction";
 import LocalThumbnail from "../LocalThumbnail";
 import Service from "../../services/Service";
 import User from "../user/User";
-import {confirmComponent, diffBlock, dollarize} from "../../utils/helpers";
+import {confirmComponent, confirmedEmbed, diffBlock, dollarize} from "../../utils/helpers";
 import config from "../../../config";
+import WireRejectionError from "../error/WireRejectionError";
 
 class WireableEntity extends Wireable {
-    onSuccess: (confirmation: MessageComponentInteraction, transaction: WireTransaction) => Promise<void>;
+    protected onSuccess: (confirmation: MessageComponentInteraction, fromUser: User, transaction: WireTransaction) => Promise<void>;
+    protected checkAcceptWire: (instance: WireableEntity, fromUser: User, amount: number) => Promise<void>;
+
     thumbnail: LocalThumbnail | null;
 
     constructor(
         name: string,
         identifier: string,
         thumbnail: LocalThumbnail | null,
-        onSuccess: (confirmation: MessageComponentInteraction, transaction: WireTransaction) => Promise<void>
+        checkAcceptWire: (instance: WireableEntity, fromUser: User, amount: number) => Promise<void>,
+        onSuccess: (confirmation: MessageComponentInteraction, fromUser: User, transaction: WireTransaction) => Promise<void>
     ) {
         super(name, identifier);
+        this.checkAcceptWire = checkAcceptWire;
         this.onSuccess = onSuccess;
         this.thumbnail = thumbnail;
     }
 
-    protected executeWire(fromUser: User, amount: number): Promise<WireTransaction> {
+    protected async executeWire(confirmation: MessageComponentInteraction, fromUser: User, amount: number): Promise<WireTransaction | null> {
         const service = Service.getInstance();
-        return service.transactions.wireToEntity(fromUser.uid, this.identifier, amount);
+        try {
+            await this.checkAcceptWire(this, fromUser, amount);
+            return service.transactions.wireToEntity(fromUser.uid, this.identifier, amount);
+        } catch (err) {
+            if (err instanceof WireRejectionError) {
+                const embeds = [];
+                const originalEmbed = (await confirmation.message.fetch()).embeds[0];
+                if (originalEmbed) embeds.push(originalEmbed);
+                embeds.push(confirmedEmbed(diffBlock(`- WIRE REJECTED BY RECIPIENT -\nReason: ${err.message || "No reason provided."}`), config.colors.blue));
+                await confirmation.update({
+                    embeds, components: [], files: []
+                });
+            } else {
+                throw err;
+            }
+        }
+        return null;
     }
 
     protected async previewWire(interaction: CommandInteraction, fromUser: User, amount: number): Promise<InteractionResponse<boolean>> {
