@@ -1,4 +1,4 @@
-import LoggerType from "../models/LoggerType";
+import LoggerType from "../types/LoggerType";
 
 class Logger {
     private static instance: Logger;
