@@ -193,9 +193,10 @@ function confirmComponent(text: string, style: ButtonStyle): ActionRowBuilder<Bu
  * Handles an interaction to create an embed navigator.
  * @param interaction - The command interaction.
  * @param embeds - List of EmbedBuilder objects to navigate through.
+ * @param files - List of AttachmentBuilder objects to attach to the message.
  * @param time - Time in milliseconds before the navigator expires.
  */
-async function handleEmbedNavigator(interaction: CommandInteraction<CacheType>, embeds: EmbedBuilder[], time: number): Promise<void> {
+async function handleEmbedNavigator(interaction: CommandInteraction<CacheType>, embeds: EmbedBuilder[], files: Map<number, AttachmentBuilder[]>, time: number): Promise<void> {
     if (embeds.length === 0) return; // If there are no embeds, do nothing.
 
     let currentIndex = 0; // Track the current embed index.
@@ -246,7 +247,8 @@ async function handleEmbedNavigator(interaction: CommandInteraction<CacheType>, 
         updateButtons(currentIndex);
         await buttonInteraction.update({
             embeds: [embeds[currentIndex] || new EmbedBuilder().setDescription('No embeds to display.')],
-            components: [row]
+            components: [row],
+            files: files.get(currentIndex) ? files.get(currentIndex) : []
         });
     });
 

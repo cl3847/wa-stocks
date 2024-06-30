@@ -1,5 +1,5 @@
 import CommandType from "../../types/CommandType";
-import {CacheType, CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
+import {AttachmentBuilder, CacheType, CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import Service from "../../services/Service";
 import User from "../../models/user/User";
 import config from "../../../config";
@@ -21,7 +21,7 @@ const command: CommandType = {
             };
             await service.users.createUser(newUser);
         }
-        await handleEmbedNavigator(interaction, tutorialEmbeds, 300_000);
+        await handleEmbedNavigator(interaction, tutorialEmbeds, new Map<number, AttachmentBuilder[]>(), 300_000);
         // TODO start tutorial
     },
 };

@@ -69,7 +69,10 @@ class UserDAO {
     }
 
     public async getAllUserPortfolios(pc: PoolClient): Promise<UserPortfolio[]> {
-        const query = `SELECT row_to_json(u.*) as profile, json_agg(row_to_json(us_s.*)) AS portfolio
+        const query = `
+            SELECT row_to_json(u.*) as profile, 
+                json_agg(row_to_json(us_s.*)) AS portfolio, 
+                json_agg(row_to_json(ui_i.*)) AS inventory
             FROM users u
             LEFT JOIN (
                 SELECT us_temp.*, s.*
@@ -83,13 +86,17 @@ class UserDAO {
                 WHERE us_temp.quantity > 0
                 ORDER BY us_temp.quantity * s.price DESC
             ) as us_s ON u.uid = us_s.uid
+            LEFT JOIN (
+                SELECT ui.*, i.* FROM users_items ui
+                INNER JOIN items i ON ui.item_id = i.item_id
+            ) ui_i ON ui_i.uid = u.uid
             GROUP BY u.uid, u.balance, u.loan_balance
             ORDER BY u.balance - u.loan_balance + COALESCE(SUM(us_s.price * us_s.quantity), 0) DESC NULLS LAST
         `;
         const result = await pc.query(query);
         const portfolios: UserPortfolio[] = [];
         for (const row of result.rows) {
-            portfolios.push(new UserPortfolio(row.profile as User, row.portfolio[0] ? row.portfolio : []));
+            portfolios.push(new UserPortfolio(row.profile as User, row.portfolio[0] ? row.portfolio : [], row.inventory[0] ? row.inventory : []));
         }
         return portfolios;
     }
@@ -110,7 +117,10 @@ class UserDAO {
     }
 
     public async getUserPortfolioTimestamp(pc: PoolClient, uid: string, timestamp: number): Promise<UserPortfolio | null> {
-        const query = `SELECT row_to_json(u.*) as profile, json_agg(row_to_json(us_s.*)) AS portfolio
+        const query = `
+            SELECT row_to_json(u.*) as profile, 
+                json_agg(row_to_json(us_s.*)) AS portfolio, 
+                json_agg(row_to_json(ui_i.*)) AS inventory
             FROM users u
             LEFT JOIN (
                 SELECT us_temp.*, s.*
@@ -125,13 +135,17 @@ class UserDAO {
                 WHERE us_temp.quantity > 0
                 ORDER BY us_temp.quantity * s.price DESC
             ) as us_s ON u.uid = us_s.uid
+            LEFT JOIN (
+                SELECT ui.*, i.* FROM users_items ui
+                INNER JOIN items i ON ui.item_id = i.item_id
+            ) ui_i ON ui_i.uid = u.uid
             WHERE u.uid = $1
             GROUP BY u.uid;
         `;
         const params = [uid, timestamp];
         const result = await pc.query(query, params);
         if (result.rows.length === 0) return null;
-        return new UserPortfolio(result.rows[0].profile as User, result.rows[0].portfolio[0] ? result.rows[0].portfolio : []);
+        return new UserPortfolio(result.rows[0].profile as User, result.rows[0].portfolio[0] ? result.rows[0].portfolio : [], result.rows[0].inventory[0] ? result.rows[0].inventory : []);
     }
 
     public async getUserStockHistoryAfterTimestamp(pc: PoolClient, uid: string, timestamp: number): Promise<UserStock[]> {

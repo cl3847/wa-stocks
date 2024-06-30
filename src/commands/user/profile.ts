@@ -10,7 +10,7 @@ import Service from "../../services/Service";
 import CommandType from "../../types/CommandType";
 import UserPortfolio from "src/models/user/UserPortfolio";
 import config from "../../../config";
-import {confirmedEmbed, diffBlock, dollarize, EMBED_PADDING} from "../../utils/helpers";
+import {confirmedEmbed, diffBlock, dollarize, EMBED_PADDING, handleEmbedNavigator} from "../../utils/helpers";
 import Price from "../../models/Price";
 import {createLinePortfolioImage} from "../../utils/graphing";
 import log from "../../utils/logger";
@@ -38,6 +38,7 @@ const command: CommandType = {
         const yesterdayPrices = await service.stocks.getAllYesterdayPrice();
 
         let embed = await generateProfileEmbed(userPortfolio, yesterdayPrices, user);
+        let inventoryEmbed = generateInventoryEmbed(userPortfolio, user);
 
         const files: AttachmentBuilder[] = [];
         try {
@@ -49,7 +50,10 @@ const command: CommandType = {
             log.error('Error creating line image for user ' + user.id);
         }
 
-        await interaction.reply({embeds: [embed], files});
+        const fileMap = new Map<number, AttachmentBuilder[]>();
+        fileMap.set(0, files);
+
+        await handleEmbedNavigator(interaction, [embed, inventoryEmbed], fileMap, 300_000);
     },
 };
 
@@ -92,5 +96,17 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
         )
         .setTimestamp(new Date());
 };
+
+
+function generateInventoryEmbed(userPortfolio: UserPortfolio, user: User) {
+    return new EmbedBuilder()
+        .setColor(config.colors.green)
+        .setAuthor({name: `${user.displayName}'s Inventory`, iconURL: user.avatarURL() || undefined})
+        .setDescription(diffBlock("ID - ITEM - QUANTITY\n" +
+            userPortfolio.inventory.map(hi => {
+                return `${hi.item_id} - ${hi.name} - x${hi.quantity}`
+            }).join('\n')))
+        .setTimestamp(new Date());
+}
 
 module.exports = command;

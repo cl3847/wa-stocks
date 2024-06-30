@@ -102,6 +102,24 @@ const initDb = async (pc: PoolClient) => {
             FOREIGN KEY (news_id) REFERENCES news(news_id) ON UPDATE CASCADE ON DELETE CASCADE
         );`
     );
+    await createTable('items', `
+        CREATE TABLE items (
+            item_id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            actionable BOOLEAN NOT NULL DEFAULT FALSE,
+            rarity TEXT
+        );`
+    );
+    await createTable('users_items', `
+        CREATE TABLE users_items (
+            uid TEXT NOT NULL,
+            item_id TEXT NOT NULL,
+            quantity INT NOT NULL DEFAULT 0,
+            PRIMARY KEY (uid, item_id),
+            FOREIGN KEY(uid) REFERENCES users(uid) ON UPDATE CASCADE ON DELETE CASCADE,
+            FOREIGN KEY(item_id) REFERENCES items(item_id) ON UPDATE CASCADE ON DELETE CASCADE
+        );`
+    );
     // check if gameState exists in objects
     if (!await pc.query(`SELECT * FROM objects WHERE name = 'gameState';`)) {
         await pc.query(`INSERT INTO objects (name, data) VALUES ('gameState', '{"isMarketOpen": false, "marketState": "closed"}');`);
