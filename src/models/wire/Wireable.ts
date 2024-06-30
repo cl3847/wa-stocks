@@ -30,7 +30,8 @@ abstract class Wireable {
                         ...(await response.fetch()).embeds,
                         confirmedEmbed(diffBlock(`- WIRE CANCELLED -\nOrder to wire **${this.name}** a total of $${dollarize(amount)} cancelled.`), config.colors.blue)
                     ],
-                    components: []
+                    components: [],
+                    files: []
                 });
         }
     }

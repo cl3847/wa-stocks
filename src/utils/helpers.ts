@@ -4,9 +4,9 @@ import {
     ActionRowBuilder,
     AttachmentBuilder,
     ButtonBuilder,
-    ButtonStyle,
-    Client,
-    EmbedBuilder,
+    ButtonStyle, CacheType,
+    Client, CommandInteraction,
+    EmbedBuilder, Message,
     TextChannel
 } from "discord.js"
 import config from "../../config";
@@ -189,6 +189,75 @@ function confirmComponent(text: string, style: ButtonStyle): ActionRowBuilder<Bu
         .addComponents(confirm, cancel);
 }
 
+/**
+ * Handles an interaction to create an embed navigator.
+ * @param interaction - The command interaction.
+ * @param embeds - List of EmbedBuilder objects to navigate through.
+ * @param time - Time in milliseconds before the navigator expires.
+ */
+async function handleEmbedNavigator(interaction: CommandInteraction<CacheType>, embeds: EmbedBuilder[], time: number): Promise<void> {
+    if (embeds.length === 0) return; // If there are no embeds, do nothing.
+
+    let currentIndex = 0; // Track the current embed index.
+
+    const row = new ActionRowBuilder<ButtonBuilder>()
+        .addComponents(
+            new ButtonBuilder()
+                .setCustomId('previous')
+                .setLabel('Previous')
+                .setStyle(ButtonStyle.Primary)
+                .setDisabled(true), // Disable if there's no previous embed.
+            new ButtonBuilder()
+                .setCustomId('next')
+                .setLabel('Next')
+                .setStyle(ButtonStyle.Primary)
+                .setDisabled(embeds.length <= 1) // Disable if there's no next embed.
+        );
+
+    const updateButtons = (index: number): void => {
+        if (!row.components[0] || !row.components[1]) throw new Error('Error creating navigation buttons.');
+        row.components[0].setDisabled(index === 0);
+        row.components[1].setDisabled(index === embeds.length - 1);
+    };
+
+    const embedMessage = await interaction.reply({
+        embeds: [embeds[currentIndex] || new EmbedBuilder().setDescription('No embeds to display.')],
+        components: [row],
+        fetchReply: true
+    }) as Message;
+
+    const collector = embedMessage.createMessageComponentCollector({ time: time }); // Adjust time as needed.
+
+    collector.on('collect', async buttonInteraction => {
+        if (buttonInteraction.user.id !== interaction.user.id) {
+            await buttonInteraction.reply({ content: "You cannot control this navigation.", ephemeral: true });
+            return;
+        }
+
+        switch (buttonInteraction.customId) {
+            case 'previous':
+                if (currentIndex > 0) currentIndex--;
+                break;
+            case 'next':
+                if (currentIndex < embeds.length - 1) currentIndex++;
+                break;
+        }
+
+        updateButtons(currentIndex);
+        await buttonInteraction.update({
+            embeds: [embeds[currentIndex] || new EmbedBuilder().setDescription('No embeds to display.')],
+            components: [row]
+        });
+    });
+
+    collector.on('end', () => {
+        embedMessage.edit({
+            components: [] // Disable buttons after the collector ends
+        });
+    });
+}
+
+
 export {
     dollarize,
     logToChannel,
@@ -207,5 +276,6 @@ export {
     getTimeStringEST,
     formatDate,
     confirmedEmbed,
-    confirmComponent
+    confirmComponent,
+    handleEmbedNavigator
 };
