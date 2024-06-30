@@ -169,7 +169,7 @@ class TransactionService {
         try {
             await pc.query('BEGIN');
             await this.daos.users.updateUser(pc, fromUid, {balance: fromUser.balance - amount});
-            await this.daos.users.updateUser(pc, destUid, {balance: fromUser.balance + amount});
+            await this.daos.users.updateUser(pc, destUid, {balance: destUser.balance + amount});
             const transactionRecord: WireTransaction = {
                 type: 'wire',
                 uid: fromUid,
