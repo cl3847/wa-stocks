@@ -83,8 +83,8 @@ class UserDAO {
                 WHERE us_temp.quantity > 0
                 ORDER BY us_temp.quantity * s.price DESC
             ) as us_s ON u.uid = us_s.uid
-            GROUP BY u.uid, u.balance
-            ORDER BY u.balance + COALESCE(SUM(us_s.price * us_s.quantity), 0) DESC NULLS LAST
+            GROUP BY u.uid, u.balance, u.loan_balance
+            ORDER BY u.balance - u.loan_balance + COALESCE(SUM(us_s.price * us_s.quantity), 0) DESC NULLS LAST
         `;
         const result = await pc.query(query);
         const portfolios: UserPortfolio[] = [];

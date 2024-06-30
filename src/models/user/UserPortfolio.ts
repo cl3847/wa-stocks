@@ -23,7 +23,7 @@ class UserPortfolio implements User {
      * @returns {number} The user's net worth
      */
     public netWorth(): number {
-        return this.balance + this.portfolioValue();
+        return this.balance + this.portfolioValue() - this.loan_balance;
     }
 
     public portfolioValue(): number {
