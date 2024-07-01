@@ -25,6 +25,7 @@ const loanPayEntity = new WireableEntity(
     async (confirmation: MessageComponentInteraction, fromUser: User, transaction: WireTransaction) => {
         // TODO possible try block here
         const service = Service.getInstance();
+
         await service.users.updateUser(fromUser.uid, {loan_balance: fromUser.loan_balance + transaction.balance_change});
 
         console.log(confirmation.message.embeds)

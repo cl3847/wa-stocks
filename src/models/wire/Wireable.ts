@@ -3,6 +3,7 @@ import WireTransaction from "../transaction/WireTransaction";
 import {confirmedEmbed, diffBlock, dollarize} from "../../utils/helpers";
 import config from "../../../config";
 import User from "../user/User";
+import Service from "../../services/Service";
 
 abstract class Wireable {
     name: string;
@@ -20,9 +21,12 @@ abstract class Wireable {
             time: 60_000
         });
         if (confirmation.customId === 'confirm') {
-            const transaction = await this.executeWire(confirmation, fromUser, amount);
+            const service = Service.getInstance();
+            const updatedFromUser = await service.users.getUser(fromUser.uid);
+            if (!updatedFromUser) throw new Error('Error fetching user data.');
+            const transaction = await this.executeWire(confirmation, updatedFromUser, amount);
             if (!transaction) return;
-            await this.onSuccess(confirmation, fromUser, transaction);
+            await this.onSuccess(confirmation, updatedFromUser, transaction);
         } else if (confirmation.customId === 'cancel') {
             await confirmation.update(
                 {
