@@ -1,7 +1,7 @@
 interface Item {
     item_id: string;
     name: string;
-    actionable: boolean;
+    tradable: boolean;
     rarity: string;
 }
 
