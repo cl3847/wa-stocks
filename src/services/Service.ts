@@ -11,11 +11,13 @@ class Service {
     stocks: StockService;
     transactions: TransactionService;
     game: GameService;
+    pool: Pool;
 
     private static _stockTickerList: string[];
     private static instance: Service;
 
     constructor(daos: DAOs, pool: Pool) {
+        this.pool = pool;
         this.users = new UserService(daos, pool);
         this.transactions = new TransactionService(daos, pool);
         this.stocks = new StockService(daos, pool);

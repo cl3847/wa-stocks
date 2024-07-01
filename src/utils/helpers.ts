@@ -259,7 +259,6 @@ async function handleEmbedNavigator(interaction: CommandInteraction<CacheType>, 
     });
 }
 
-
 export {
     dollarize,
     logToChannel,
@@ -279,5 +278,5 @@ export {
     formatDate,
     confirmedEmbed,
     confirmComponent,
-    handleEmbedNavigator
+    handleEmbedNavigator,
 };
