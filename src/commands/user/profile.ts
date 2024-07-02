@@ -10,7 +10,14 @@ import Service from "../../services/Service";
 import CommandType from "../../types/CommandType";
 import UserPortfolio from "src/models/user/UserPortfolio";
 import config from "../../../config";
-import {confirmedEmbed, diffBlock, dollarize, EMBED_PADDING, handleEmbedNavigator} from "../../utils/helpers";
+import {
+    confirmedEmbed,
+    diffBlock,
+    dollarize,
+    EMBED_PADDING,
+    getItemImage,
+    handleEmbedNavigator
+} from "../../utils/helpers";
 import Price from "../../models/Price";
 import {createLinePortfolioImage} from "../../utils/graphing";
 import log from "../../utils/logger";
@@ -48,6 +55,14 @@ const command: CommandType = {
             embed.setImage('attachment://line.png');
         } catch (e) {
             log.error('Error creating line image for user ' + user.id);
+        }
+        const card = await service.items.getItem("000");
+        if (card) {
+            const cardImage = await getItemImage(card, user.username);
+            if (cardImage) {
+                files.push(cardImage);
+                embed.setThumbnail('attachment://item.png');
+            }
         }
 
         const fileMap = new Map<number, AttachmentBuilder[]>();
