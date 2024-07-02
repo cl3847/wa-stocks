@@ -51,7 +51,6 @@ class TransactionService {
         try {
             await pc.query('BEGIN');
             await this.daos.users.updateItemHolding(pc, uid, item1Holding.item_id, {quantity: newItem1Quantity});
-            console.log("test7")
             await this.daos.users.updateItemHolding(pc, uid, item2Holding.item_id, {quantity: newItem2Quantity});
             await pc.query('COMMIT');
             return;
