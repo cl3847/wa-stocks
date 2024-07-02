@@ -16,7 +16,7 @@ const ratesConfig = [
 ]
 
 const pullPair: {itemIds: string[], action: ItemAction} = {
-    itemIds: ["100"],
+    itemIds: ["900"],
     action: {
         name: "Open Booster Pack",
         order: 1,

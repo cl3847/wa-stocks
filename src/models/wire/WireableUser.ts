@@ -52,7 +52,7 @@ class WireableUser extends Wireable implements User {
             .setColor(config.colors.red)
             .setTimestamp(new Date())
             .setThumbnail(this.avatarUrl);
-        return interaction.reply({embeds: [embed], components: [confirmComponent('Confirm Wire', ButtonStyle.Danger)]});
+        return interaction.reply({embeds: [embed], components: [confirmComponent('Confirm Wire', ButtonStyle.Danger)], ephemeral: config.bot.useEphemeralWire});
     }
 }
 

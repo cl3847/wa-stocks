@@ -71,7 +71,7 @@ const command: CommandType = {
         const gameState = await service.game.getGameState();
 
         if (!gameState.isMarketOpen) {
-            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- TRANSACTION FAILED -\nThe market is currently closed.`), config.colors.blue)]});
+            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- TRANSACTION FAILED -\nThe market is currently closed.`), config.colors.blue)], ephemeral: true});
             return;
         }
 
@@ -79,7 +79,7 @@ const command: CommandType = {
         const user = await service.users.getUserPortfolio(interaction.user.id);
         const yesterdayPrice = await service.stocks.getYesterdayPrice(ticker);
         if (!stock) {
-            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- LOOKUP FAILED -\nStock ${ticker} does not exist.`), config.colors.blue)]});
+            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- LOOKUP FAILED -\nStock ${ticker} does not exist.`), config.colors.blue)], ephemeral: true});
             return;
         }
         if (!user) {
@@ -95,7 +95,7 @@ const command: CommandType = {
                     // user has enough credit...
                     useCreditAmount = stock.price * quantity - user.balance;
                 } else {
-                    await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- PURCHASE FAILED -\nYou do not have enough balance to buy this amount of stock.`), config.colors.blue)]});
+                    await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- PURCHASE FAILED -\nYou do not have enough balance to buy this amount of stock.`), config.colors.blue)], ephemeral: true});
                     return;
                 }
             }
@@ -151,10 +151,10 @@ const command: CommandType = {
                         await confirmation.update({
                             embeds: [...embeds,
                                 confirmedEmbed(diffBlock(`+ PURCHASE SUCCESSFUL +\nOrder for ${quantity} share(s) of ${ticker} filled at $${dollarize(transactionRecord.price)} per share.`), config.colors.blue)
-                            ], components: []
+                            ], components: [],
                         });
                         await logToChannel(interaction.client, (transactionRecord.credit_change !== 0 ? `💳 **${interaction.user.username}** used $${dollarize(transactionRecord.credit_change)} of ${config.theme.financialCompanyName} credit, increasing their debt to $${dollarize(user.loan_balance + transactionRecord.credit_change)}.\n` : "") +
-                            `🟢 **${interaction.user.username}** purchased ${quantity} share(s) of ${ticker} at $${dollarize(transactionRecord.price)} per share, decreasing their balance to $${dollarize(user.balance + (transactionRecord.balance_change))}.`)
+                            `🟢 **${interaction.user.username}** purchased ${quantity} share(s) of ${ticker} at $${dollarize(transactionRecord.price)} per share!`)
                     } catch (err) {
                         if (err instanceof InsufficientBalanceError) {
                             await confirmation.update({
@@ -187,7 +187,7 @@ const command: CommandType = {
             }
         } else if (transactionType === 'sell') {
             if ((user.portfolio.find(hs => hs.ticker === ticker)?.quantity || 0) < quantity) {
-                await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- SALE FAILED -\nYou do not have enough shares to sell this quantity of stock.`), config.colors.blue)]});
+                await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- SALE FAILED -\nYou do not have enough shares to sell this quantity of stock.`), config.colors.blue)], ephemeral: true});
                 return;
             }
 
@@ -227,7 +227,7 @@ const command: CommandType = {
                             ], components: []
                         });
                         await logToChannel(interaction.client,
-                            `🔴 **${interaction.user.username}** sold ${quantity} share(s) of ${ticker} at $${dollarize(transactionRecord.price)} per share, increasing their balance to $${dollarize(user.balance + transactionRecord.balance_change)}.`)
+                            `🔴 **${interaction.user.username}** sold ${quantity} share(s) of ${ticker} at $${dollarize(transactionRecord.price)} per share!`)
                     } catch (err) {
                         if (err instanceof InsufficientStockQuantityError) {
                             await confirmation.update({

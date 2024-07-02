@@ -2,7 +2,7 @@ import CommandType from "../../types/CommandType";
 import {AttachmentBuilder, CacheType, CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import Service from "../../services/Service";
 import config from "../../../config";
-import {confirmedEmbed, diffBlock, dollarize, handleEmbedNavigator} from "../../utils/helpers";
+import {confirmedEmbed, diffBlock, dollarize, handleEmbedNavigator, logToChannel} from "../../utils/helpers";
 
 const command: CommandType = {
     data: new SlashCommandBuilder()
@@ -14,6 +14,7 @@ const command: CommandType = {
         if (!user) {
             try {
                 await service.users.initUser(interaction.user.id);
+                await logToChannel(interaction.client, `🎉 **${interaction.user.username}** registered an account with ${config.theme.financialCompanyName}!`);
             } catch (err) {
                 await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- SETUP FAILED -\nYour profile could not be set up.`), config.colors.blue)]});
                 return;
@@ -50,7 +51,7 @@ const tutorialEmbeds = [
             `\`/profile <user?>\`: Second page displays inventory contents.\n` +
             `\`/item <item_id>\`: Shows information & actions for one of your items.\n\n` +
             `Be the first to collect every trading card to win! Additional booster packs are distributed by game moderators every Friday at market close to the individuals with the highest net worth.`)
-        //.setImage(`https://i.imgur.com/q9dWSyR.png`)
+        .setImage(`https://i.imgur.com/4bq2R23.png`)
         .setFooter({text: 'Page 3/5'}),
     new EmbedBuilder()
         .setTitle('Tutorial: Wire Transactions')

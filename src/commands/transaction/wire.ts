@@ -52,16 +52,16 @@ const command: CommandType = {
         const destinationType = interaction.options.getSubcommand() as WireDestinationType;
         const amountToTransfer = interaction.options.getInteger('balance', true);
         if (amountToTransfer < 1) {
-            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou must transfer at least $0.01.`), config.colors.blue)]});
+            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou must transfer at least $0.01.`), config.colors.blue)], ephemeral: true});
             return;
         }
         const user = await service.users.getUser(interaction.user.id);
         if (!user) {
-            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou do not have an account.`), config.colors.blue)]});
+            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou do not have an account.`), config.colors.blue)], ephemeral: true});
             return;
         }
         if (user.balance < amountToTransfer) {
-            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou do not have enough account balance to transfer this much money.`), config.colors.blue)]});
+            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou do not have enough account balance to transfer this much money.`), config.colors.blue)], ephemeral: true});
             return;
         }
 
@@ -71,7 +71,7 @@ const command: CommandType = {
                     const target = interaction.options.getUser('target', true);
                     const destUser = await service.users.getUser(target.id);
                     if (!destUser) {
-                        await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nThe user you are trying to transfer money to does not have an account.`), config.colors.blue)]});
+                        await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nThe user you are trying to transfer money to does not have an account.`), config.colors.blue)], ephemeral: true});
                         return;
                     }
                     const destUserWireable = new WireableUser(destUser, target.username, target.avatarURL());
@@ -81,7 +81,7 @@ const command: CommandType = {
                     const entityIdentifier = interaction.options.getString('target', true).toUpperCase();
                     const destEntity = entities.get(entityIdentifier);
                     if (!destEntity) {
-                        await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nThe entity you are trying to transfer money to does not exist.`), config.colors.blue)]});
+                        await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nThe entity you are trying to transfer money to does not exist.`), config.colors.blue)], ephemeral: true});
                         return;
                     }
                     await destEntity.onWire(interaction, user, amountToTransfer);
@@ -89,9 +89,9 @@ const command: CommandType = {
             }
         } catch (error) {
             if (error instanceof InsufficientBalanceError) {
-                await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou do not have enough account balance to transfer this much money.`), config.colors.blue)]});
+                await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou do not have enough account balance to transfer this much money.`), config.colors.blue)], ephemeral: true});
             } else if (error instanceof UserNotFoundError) {
-                await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou or the user you are trying to transfer money to does not have an account.`), config.colors.blue)]});
+                await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou or the user you are trying to transfer money to does not have an account.`), config.colors.blue)], ephemeral: true});
             } else {
                 throw error;
             }
