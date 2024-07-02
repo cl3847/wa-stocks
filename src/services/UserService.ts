@@ -3,6 +3,7 @@ import DAOs from "../models/DAOs";
 import {Pool} from "pg";
 import UserPortfolio from "../models/user/UserPortfolio";
 import UserStock from "../models/user/UserStock";
+import config from "../../config";
 
 class UserService {
     private daos: DAOs;
@@ -11,6 +12,35 @@ class UserService {
     constructor(daos: DAOs, pool: Pool) {
         this.daos = daos;
         this.pool = pool;
+    }
+
+    public async initUser(uid: string): Promise<void> {
+        const pc = await this.pool.connect();
+        try {
+            await pc.query("BEGIN");
+            const newUser: User = {
+                uid,
+                balance: config.game.startingBalance,
+                loan_balance: 0,
+                credit_limit: config.game.startingCreditLimit
+            };
+            await this.daos.users.createUser(pc, newUser);
+            if (config.game.defaultCreditCardItem) {
+                const newUserItem: UserItem = {
+                    uid,
+                    item_id: config.game.defaultCreditCardItem,
+                    quantity: 1
+                }
+                await this.daos.users.createItemHolding(pc, newUserItem);
+            }
+        } catch (err) {
+            await pc.query('ROLLBACK');
+            throw err; // Re-throw to be handled by the caller
+        } finally {
+            pc.release();
+        }
+
+
     }
 
     public async getUser(uid: string): Promise<User | null> {

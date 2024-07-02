@@ -40,6 +40,7 @@ const config: ConfigType = {
         "etcOffset": 4,
         "loanMaxMultiplier": 4,
         "creditDailyInterestPercent": 1,
+        "defaultCreditCardItem": "000"
     },
 };
 

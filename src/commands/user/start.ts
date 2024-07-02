@@ -1,9 +1,8 @@
 import CommandType from "../../types/CommandType";
 import {AttachmentBuilder, CacheType, CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import Service from "../../services/Service";
-import User from "../../models/user/User";
 import config from "../../../config";
-import {dollarize, handleEmbedNavigator} from "../../utils/helpers";
+import {confirmedEmbed, diffBlock, dollarize, handleEmbedNavigator} from "../../utils/helpers";
 
 const command: CommandType = {
     data: new SlashCommandBuilder()
@@ -13,16 +12,14 @@ const command: CommandType = {
         const service = Service.getInstance();
         const user = await service.users.getUser(interaction.user.id);
         if (!user) {
-            const newUser: User = {
-                uid: interaction.user.id,
-                balance: config.game.startingBalance,
-                loan_balance: 0,
-                credit_limit: config.game.startingCreditLimit
-            };
-            await service.users.createUser(newUser);
+            try {
+                await service.users.initUser(interaction.user.id);
+            } catch (err) {
+                await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- SETUP FAILED -\nYour profile could not be set up.`), config.colors.blue)]});
+                return;
+            }
         }
         await handleEmbedNavigator(interaction, tutorialEmbeds, new Map<number, AttachmentBuilder[]>(), 300_000);
-        // TODO start tutorial
     },
 };
 
