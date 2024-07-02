@@ -6,7 +6,7 @@ import {initDb} from "./utils/createDatabase";
 import log from "./utils/logger";
 import config from "../config";
 import Service from "./services/Service";
-import {Client, Collection, Events, GatewayIntentBits, REST, Routes, TextChannel} from "discord.js"
+import {Client, Collection, Events, GatewayIntentBits, REST, Routes} from "discord.js"
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import CommandType from "./types/CommandType";
@@ -124,7 +124,7 @@ require('dotenv').config();
     // initialize cron jobs
 
     try {
-        (client.channels.cache.get("1257801641495625788") as TextChannel).send("Placeholder")
+        //(client.channels.cache.get("1257801641495625788") as TextChannel).send("Placeholder")
         await updatePriceBoard(client);
         initJobs(client);
     } catch (err) {
