@@ -35,7 +35,7 @@ const loanPayEntity = new WireableEntity(
         ), config.colors.blue)
 
         await confirmation.update({
-            embeds: [...(await confirmation.message.fetch()).embeds, successEmbed],
+            embeds: [...confirmation.message.embeds, successEmbed],
             components: [],
             files: []
         });

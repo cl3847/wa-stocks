@@ -29,7 +29,6 @@ abstract class Wireable {
                     await confirmation.update(
                         {
                             embeds: [
-                                ...(await response.fetch()).embeds,
                                 confirmedEmbed(diffBlock(`- WIRE FAILED -\nError fetching user data.`), config.colors.blue)
                             ],
                             components: [],
@@ -44,7 +43,6 @@ abstract class Wireable {
                 await confirmation.update(
                     {
                         embeds: [
-                            ...(await response.fetch()).embeds,
                             confirmedEmbed(diffBlock(`- WIRE CANCELLED -\nOrder to wire **${this.name}** a total of $${dollarize(amount)} cancelled.`), config.colors.blue)
                         ],
                         components: [],
@@ -52,9 +50,8 @@ abstract class Wireable {
                     });
             }
         } catch (e) {
-            console.log(e)
             await response.edit({
-                embeds: [...((await response.fetch()).embeds),
+                embeds: [
                     confirmedEmbed(diffBlock(`- WIRE CANCELLED -\nNo transfer confirmation received.`), config.colors.blue)
                 ], components: [], files: []
             });
