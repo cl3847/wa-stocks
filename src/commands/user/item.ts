@@ -35,7 +35,7 @@ const command: CommandType = {
         }
         const itemHolding = userPortfolio.inventory.find(item => item.item_id === itemId);
         if (!itemHolding) {
-            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- LOOKUP FAILED -\nYou do not have an item with ID ${itemId}.`), config.colors.blue)]});
+            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- LOOKUP FAILED -\nYou do not have an item with this ID.`), config.colors.blue)]});
             return;
         }
 
