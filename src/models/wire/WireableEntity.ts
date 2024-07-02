@@ -75,6 +75,7 @@ class WireableEntity extends Wireable {
         return interaction.reply({
             embeds: [embed],
             files,
+            ephemeral: config.bot.useEphemeralWire,
             components: [confirmComponent('Confirm Wire', ButtonStyle.Danger)]
         });
     }
