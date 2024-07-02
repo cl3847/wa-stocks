@@ -51,6 +51,7 @@ class WireableUser extends Wireable implements User {
             ))
             .setColor(config.colors.red)
             .setTimestamp(new Date())
+            .setImage("https://i.imgur.com/gl6xU0i.png")
             .setThumbnail(this.avatarUrl);
         return interaction.reply({embeds: [embed], components: [confirmComponent('Confirm Wire', ButtonStyle.Danger)], ephemeral: config.bot.useEphemeralWire});
     }
