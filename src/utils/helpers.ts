@@ -298,11 +298,12 @@ function weightedRandom<E>(items: E[], weights: number[]) {
 
     let random = Math.random() * weights[weights.length - 1]!;
 
-    for (let i = 0; i < weights.length; i++)
+    let i;
+    for (i = 0; i < weights.length; i++)
         if (weights[i]! > random)
             break;
 
-    return items[items.length - 1]!;
+    return items[i]!;
 }
 
 
