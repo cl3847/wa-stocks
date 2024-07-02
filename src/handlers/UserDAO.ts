@@ -71,8 +71,8 @@ class UserDAO {
     public async getAllUserPortfolios(pc: PoolClient): Promise<UserPortfolio[]> {
         const query = `
             SELECT row_to_json(u.*) as profile,
-                json_agg(row_to_json(us_s.*)) AS portfolio,
-                json_agg(row_to_json(ui_i.*)) AS inventory
+                json_agg(DISTINCT to_jsonb(us_s.*)) AS portfolio,
+                json_agg(DISTINCT to_jsonb(ui_i.*)) AS inventory
             FROM users u
             LEFT JOIN (
                 SELECT us_temp.*, s.*
@@ -121,8 +121,8 @@ class UserDAO {
     public async getUserPortfolioTimestamp(pc: PoolClient, uid: string, timestamp: number): Promise<UserPortfolio | null> {
         const query = `
             SELECT row_to_json(u.*) as profile, 
-                json_agg(row_to_json(us_s.*)) AS portfolio, 
-                json_agg(row_to_json(ui_i.*)) AS inventory
+                json_agg(DISTINCT to_jsonb(us_s.*)) AS portfolio,
+                json_agg(DISTINCT to_jsonb(ui_i.*)) AS inventory
             FROM users u
             LEFT JOIN (
                 SELECT us_temp.*, s.*
@@ -137,6 +137,7 @@ class UserDAO {
                 WHERE us_temp.quantity > 0
                 ORDER BY us_temp.quantity * s.price DESC
             ) as us_s ON u.uid = us_s.uid
+            
             LEFT JOIN (
                 SELECT ui.*, i.* FROM users_items ui
                 INNER JOIN items i ON ui.item_id = i.item_id
