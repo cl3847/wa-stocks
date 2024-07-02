@@ -40,6 +40,7 @@ class WireableEntity extends Wireable {
             await this.checkAcceptWire(this, fromUser, amount);
             return service.transactions.wireToEntity(fromUser.uid, this.identifier, amount);
         } catch (err) {
+            console.log(err)
             if (err instanceof WireRejectionError) {
                 const embeds = [];
                 const originalEmbed = (await confirmation.message.fetch()).embeds[0];

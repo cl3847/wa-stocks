@@ -50,6 +50,7 @@ abstract class Wireable {
                     });
             }
         } catch (e) {
+            console.log(e)
             await response.edit({
                 embeds: [
                     confirmedEmbed(diffBlock(`- WIRE CANCELLED -\nNo transfer confirmation received.`), config.colors.blue)
