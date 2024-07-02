@@ -254,6 +254,7 @@ async function handleEmbedNavigator(interaction: CommandInteraction<CacheType>, 
     const embedMessage = await interaction.reply({
         embeds: [embeds[currentIndex] || new EmbedBuilder().setDescription('No embeds to display.')],
         components: [row],
+        files: files.get(currentIndex) ? files.get(currentIndex) : [],
         fetchReply: true
     }) as Message;
 
