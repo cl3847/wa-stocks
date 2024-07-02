@@ -69,7 +69,7 @@ const tutorialEmbeds = [
             `You can check your current debt and credit limit using \`/profile\`. Debt increases at a constant interest rate per day, so be sure to pay it off when you can by wiring ${config.theme.financialCompanyName} money:\n\n` +
             `\`/wire entity ${config.theme.financialCompanyTicker} <balance>\`: Pay off your debt to the bank.\n\n` +
             `Taking out debt is optional, but it can greatly increase the speed at which you make profits!`)
-        //.setImage(`https://i.imgur.com/q9dWSyR.png`)
+        .setImage(`https://i.imgur.com/OLp1p3a.png`)
         .setFooter({text: 'Page 5/5'}),
 
 ]

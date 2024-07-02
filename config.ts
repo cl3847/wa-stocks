@@ -32,7 +32,7 @@ const config: ConfigType = {
     },
     "game": {
         "startingBalance": 10000000, // Starting balance in CENTS
-        "startingCreditLimit": 40000000, // Starting credit limit in CENTS
+        "startingCreditLimit": 20000000, // Starting credit limit in CENTS
         "randomWalkVolatility": 0.005,
         "randomWalkInterval": 1, // In minutes
         "randomWalkAmount": 10, // Number of stocks to randomly walk
