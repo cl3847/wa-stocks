@@ -50,7 +50,7 @@ const tutorialEmbeds = [
             `Try viewing your Booster Pack with the \`/item\` command, and open the pack for a Trading Card! Once you have more than one trading card, you can exchange them with other users for money or other cards.\n\n` +
             `\`/profile <user?>\`: Second page displays inventory contents.\n` +
             `\`/item <item_id>\`: Shows information & actions for one of your items.\n\n` +
-            `Be the first to collect every trading card to win! Additional booster packs are distributed by game moderators every Friday at market close to the individuals with the highest net worth.`)
+            `__Be the first to collect every trading card to win!__ Additional booster packs are distributed by game moderators every Friday at market close to the individuals with the highest net worth.`)
         .setImage(`https://i.imgur.com/4bq2R23.png`)
         .setFooter({text: 'Page 3/5'}),
     new EmbedBuilder()
