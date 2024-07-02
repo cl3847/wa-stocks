@@ -284,12 +284,6 @@ async function handleEmbedNavigator(interaction: CommandInteraction<CacheType>, 
             files: files.get(currentIndex) ? files.get(currentIndex) : [],
         });
     });
-
-    collector.on('end', () => {
-        embedMessage.edit({
-            components: [] // Disable buttons after the collector ends
-        });
-    });
 }
 
 function weightedRandom<E>(items: E[], weights: number[]) {
