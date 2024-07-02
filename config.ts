@@ -11,7 +11,7 @@ const config: ConfigType = {
             "log": "1257801711288975380"
         },
         messages: {
-            "priceBoard": null,
+            "priceBoard": "1257804705871167641",
         },
         newsAmountTruncate: 3,
         newsLengthTruncate: 42,
