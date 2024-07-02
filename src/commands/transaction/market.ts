@@ -67,6 +67,11 @@ const command: CommandType = {
         const ticker = interaction.options.getString('ticker', true).toUpperCase();
         const quantity = interaction.options.getInteger('quantity') || 1;
 
+        if (quantity < 1) {
+            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- TRANSACTION FAILED -\nYou cannot purchase this quantity of stock.`), config.colors.blue)], ephemeral: true});
+            return;
+        }
+
         const service = Service.getInstance();
         const gameState = await service.game.getGameState();
 
