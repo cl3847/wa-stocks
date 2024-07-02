@@ -39,7 +39,7 @@ const command: CommandType = {
         const user = interaction.options.getUser('user') || interaction.user;
         const userPortfolio = await service.users.getUserPortfolio(user.id);
         if (!userPortfolio) {
-            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- LOOKUP FAILED -\nUser ${user.username}'s profile does not exist.`), config.colors.blue)]});
+            await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- LOOKUP FAILED -\nUser ${user.username}'s profile does not exist. Use \`/start\` to get started.`), config.colors.blue)]});
             return;
         }
         const yesterdayPrices = await service.stocks.getAllYesterdayPrice();

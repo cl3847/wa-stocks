@@ -28,7 +28,7 @@ const tutorialEmbeds = [
     new EmbedBuilder() // page 1
         .setTitle('Tutorial: Profile and Portfolio')
         .setColor(config.colors.blue)
-        .setDescription(`Welcome to The Wolf of Ayup! If this is the first time you've used \`/stock\`, $${dollarize(config.game.startingBalance)} will have been deposited into your account. You can use this money to buy stocks, send money to other users, and more!\n\n` +
+        .setDescription(`Welcome to The Wolf of Ayup! If this is the first time you've used \`/start\`, $${dollarize(config.game.startingBalance)} will have been deposited into your account. You can use this money to buy stocks, send money to other users, and more!\n\n` +
             `\`/profile <user?>\`: displays you or another user's balance, as well as other information about your account and inventory.`)
         .setImage(`https://i.imgur.com/YE7TRfD.png`)
         .setFooter({text: 'Page 1/5'}),
