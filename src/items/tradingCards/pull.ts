@@ -24,9 +24,11 @@ const pullPair: {itemIds: string[], action: ItemAction} = {
             const service = Service.getInstance();
             const rollResult = weightedRandom<string>(ratesConfig.map(x => x.item), ratesConfig.map(x => x.rate));
             try {
-                console.log(thisItem)
+                console.log("here1")
                 await service.transactions.replaceItemWithNew(user.uid, thisItem.item_id, rollResult);
+                console.log("here2")
                 const item = await service.items.getItem(rollResult);
+                console.log("here3")
                 if (!item) {
                     await confirmation.update({
                         embeds: [...confirmation.message.embeds,
@@ -35,6 +37,7 @@ const pullPair: {itemIds: string[], action: ItemAction} = {
                     });
                     return;
                 }
+                console.log("here4")
 
                 const files: AttachmentBuilder[] = [];
                 const newItemEmbed = new EmbedBuilder()
