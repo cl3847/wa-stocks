@@ -10,7 +10,7 @@ function initJobs(client: Client) {
     infoRefresh('*/1 * * * *', client); // refresh info channel embed
     walkStocks(`*/${config.game.randomWalkInterval} * * * *`); // random walk stocks
     openMarket('31 9 * * *'); // open market (9:31 AM ET) every day
-    closeMarket('01 20 * * *'); // close market (8:01 PM ET) every day
+    closeMarket('01 22 * * *'); // close market (10:01 PM ET) every day
     openPreMarket('00 4 * * *'); // open pre-market (4:00 AM ET) every day
     openAfterMarket('00 16 * * *'); // open after-market (4:00 PM ET) every day
 }
