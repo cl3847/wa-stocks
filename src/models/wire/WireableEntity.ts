@@ -40,10 +40,9 @@ class WireableEntity extends Wireable {
             await this.checkAcceptWire(this, fromUser, amount);
             return service.transactions.wireToEntity(fromUser.uid, this.identifier, amount);
         } catch (err) {
-            console.log(err)
             if (err instanceof WireRejectionError) {
                 const embeds = [];
-                const originalEmbed = (await confirmation.message.fetch()).embeds[0];
+                const originalEmbed = confirmation.message.embeds[0];
                 if (originalEmbed) embeds.push(originalEmbed);
                 embeds.push(confirmedEmbed(diffBlock(`- WIRE REJECTED BY RECIPIENT -\nReason: ${err.message || "No reason provided."}`), config.colors.blue));
                 await confirmation.update({
