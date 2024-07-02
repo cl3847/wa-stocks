@@ -52,10 +52,11 @@ abstract class Wireable {
                     });
             }
         } catch (e) {
+            console.log(e)
             await response.edit({
                 embeds: [...((await response.fetch()).embeds),
                     confirmedEmbed(diffBlock(`- WIRE CANCELLED -\nNo transfer confirmation received.`), config.colors.blue)
-                ], components: []
+                ], components: [], files: []
             });
         }
     }
