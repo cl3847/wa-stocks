@@ -158,6 +158,24 @@ class UserDAO {
         const result = await pc.query(query, params);
         return result.rows.map(row => row as UserStock);
     }
+
+    public async createItemHolding(pc: PoolClient, holding: UserItem): Promise<void> {
+        const keyString = Object.keys(holding).join(", ");
+        const valueString = Object.keys(holding).map((_, index) => `$${index + 1}`).join(", ");
+        const query = `INSERT INTO users_items (${keyString}) VALUES (${valueString})`;
+        const params = Object.values(holding);
+        await pc.query(query, params);
+    }
+
+    public async updateItemHolding(pc: PoolClient, userId: string, itemId: string, holding: Partial<UserItem>): Promise<void> {
+        if (Object.keys(holding).length === 0) {
+            throw new Error("No fields to update");
+        }
+        const fields = Object.keys(holding).map((key, index) => `${key} = $${index + 1}`).join(', ');
+        const query = `UPDATE users_items SET ${fields} WHERE uid = $${Object.keys(holding).length + 1} AND item_id = $${Object.keys(holding).length + 2}`;
+        const params = [...Object.values(holding), userId, itemId];
+        await pc.query(query, params);
+    }
 }
 
 export default UserDAO;

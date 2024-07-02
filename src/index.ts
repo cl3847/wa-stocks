@@ -14,6 +14,7 @@ import TransactionDAO from "./handlers/TransactionDAO";
 import ObjectDAO from "./handlers/ObjectDAO";
 import {initJobs} from "./utils/jobs";
 import {updatePriceBoard} from "./utils/priceBoard";
+import ItemDAO from "./handlers/ItemDAO";
 
 require('dotenv').config();
 
@@ -52,6 +53,7 @@ require('dotenv').config();
         stocks: new StockDAO(),
         transactions: new TransactionDAO(),
         objects: new ObjectDAO(),
+        items: new ItemDAO(),
     };
     await Service.init(daos, pool);
 
