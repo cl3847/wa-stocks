@@ -39,7 +39,7 @@ const tutorialEmbeds = [
             `Shares can be purchased for a given price, which fluctuates over the course of the day **whenever the market is open** (according to <#${config.bot.channels.info}>). Buy shares, and try to sell them for higher than you paid to make a profit!\n\n` +
             `\`/stock <ticker>\`: shows information about a particular company.\n` +
             `\`/market buy <ticker> <quantity?>\`: buy shares of a particular company.\n` +
-            `\`/market sell <ticker> <quantity?>\`: buy shares of a particular company.\n\n` +
+            `\`/market sell <ticker> <quantity?>\`: sell shares of a particular company.\n\n` +
             `After buying a share, it's added to your portfolio, or your collection of shares. You can view your portfolio with \`/profile\`.`)
         .setImage(`https://i.imgur.com/q9dWSyR.png`)
         .setFooter({text: 'Page 2/5'}),
