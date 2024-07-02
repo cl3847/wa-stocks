@@ -22,38 +22,31 @@ class TransactionService {
     public async replaceItemWithNew(uid: string, item1Id: string, item2Id: string): Promise<void> {
         const pc = await this.pool.connect();
         const user = await this.daos.users.getUserPortfolio(pc, uid);
-        console.log("test1")
         if (!user) {
             pc.release();
             throw new UserNotFoundError(uid);
         }
         const item1Holding = user.inventory.find(i => i.item_id === item1Id);
-        console.log("test2")
         if (!item1Holding) {
             pc.release();
-            throw new InsufficientItemQuantityError(uid, 1, 1);
+            throw new InsufficientItemQuantityError(uid, 0, 1);
         }
         const item2 = await this.daos.items.getItem(pc, item2Id);
-        console.log("test3")
         if (!item2) {
             pc.release();
             throw new ItemNotFoundError(item2Id);
         }
         let item2Holding = await this.daos.users.getItemHolding(pc, uid, item2Id);
-        console.log("test4")
         if (!item2Holding) {
             item2Holding = {
                 uid: uid,
                 item_id: item2Id,
                 quantity: 0,
             }
-            console.log("test4.5")
             await this.daos.users.createItemHolding(pc, item2Holding);
-            console.log("test5")
         }
         const newItem1Quantity = item1Holding.quantity - 1;
         const newItem2Quantity = item2Holding.quantity + 1;
-        console.log("test6")
 
         try {
             await pc.query('BEGIN');
