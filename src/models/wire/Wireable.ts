@@ -16,27 +16,47 @@ abstract class Wireable {
 
     async onWire(interaction: CommandInteraction, fromUser: User, amount: number): Promise<void> {
         const response = await this.previewWire(interaction, fromUser, amount);
-        const confirmation = await response.awaitMessageComponent({
-            filter: i => i.user.id === interaction.user.id,
-            time: 60_000
-        });
-        if (confirmation.customId === 'confirm') {
-            const service = Service.getInstance();
-            const updatedFromUser = await service.users.getUser(fromUser.uid);
-            if (!updatedFromUser) throw new Error('Error fetching user data.');
-            const transaction = await this.executeWire(confirmation, updatedFromUser, amount);
-            if (!transaction) return;
-            await this.onSuccess(confirmation, updatedFromUser, transaction);
-        } else if (confirmation.customId === 'cancel') {
-            await confirmation.update(
-                {
-                    embeds: [
-                        ...(await response.fetch()).embeds,
-                        confirmedEmbed(diffBlock(`- WIRE CANCELLED -\nOrder to wire **${this.name}** a total of $${dollarize(amount)} cancelled.`), config.colors.blue)
-                    ],
-                    components: [],
-                    files: []
-                });
+        try {
+            const confirmation = await response.awaitMessageComponent({
+                filter: i => i.user.id === interaction.user.id,
+                time: 60_000
+            });
+
+            if (confirmation.customId === 'confirm') {
+                const service = Service.getInstance();
+                const updatedFromUser = await service.users.getUser(fromUser.uid);
+                if (!updatedFromUser) {
+                    await confirmation.update(
+                        {
+                            embeds: [
+                                ...(await response.fetch()).embeds,
+                                confirmedEmbed(diffBlock(`- WIRE FAILED -\nError fetching user data.`), config.colors.blue)
+                            ],
+                            components: [],
+                            files: []
+                        });
+                    return;
+                }
+                const transaction = await this.executeWire(confirmation, updatedFromUser, amount);
+                if (!transaction) return;
+                await this.onSuccess(confirmation, updatedFromUser, transaction);
+            } else if (confirmation.customId === 'cancel') {
+                await confirmation.update(
+                    {
+                        embeds: [
+                            ...(await response.fetch()).embeds,
+                            confirmedEmbed(diffBlock(`- WIRE CANCELLED -\nOrder to wire **${this.name}** a total of $${dollarize(amount)} cancelled.`), config.colors.blue)
+                        ],
+                        components: [],
+                        files: []
+                    });
+            }
+        } catch (e) {
+            await response.edit({
+                embeds: [...((await response.fetch()).embeds),
+                    confirmedEmbed(diffBlock(`- WIRE CANCELLED -\nNo transfer confirmation received.`), config.colors.blue)
+                ], components: []
+            });
         }
     }
 

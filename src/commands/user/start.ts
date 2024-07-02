@@ -60,7 +60,7 @@ const tutorialEmbeds = [
             `\`/wire user <target> <balance>\`: Transfer money to a user.\n` +
             `\`/wire entity <target> <balance>\`: Transfer money to an entity.\n\n` +
             `**Wire transactions are non-refundable and permanant.**`)
-        //.setImage(`https://i.imgur.com/q9dWSyR.png`)
+        .setImage(`https://i.imgur.com/Gp8NSYy.png`)
         .setFooter({text: 'Page 4/5'}),
     new EmbedBuilder()
         .setTitle('Tutorial: Credit and Paying Debt')
