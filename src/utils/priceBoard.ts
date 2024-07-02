@@ -6,24 +6,36 @@ import Stock from "../models/stock/Stock";
 import Price from "../models/Price";
 import GameState from "../models/GameState";
 import UserPortfolio from "../models/user/UserPortfolio";
+import log from "./logger";
 
 async function updatePriceBoard(client: Client) {
-    const service = Service.getInstance();
-    // TODO create function to create stockboard message if it doesn't exist
-    // TODO add error handling
-    if (!config.bot.channels.info || !config.bot.messages.priceBoard) return;
-    const allStocks = await service.stocks.getAllStocks();
-    const yesterdayPrices = await service.stocks.getAllYesterdayPrice();
-    const allUserPortfolios = await service.users.getAllUserPortfolios();
-    const channel = await client.channels.fetch(config.bot.channels.info) as TextChannel;
-    const message = await channel.messages.fetch(config.bot.messages.priceBoard);
-    const gameState = await service.game.getGameState();
-    await message.edit({
-        content: "", embeds: [
-            await generateLeaderboardEmbed(client, allUserPortfolios),
-            generateStockBoardEmbed(allStocks, yesterdayPrices, gameState)
-        ]
-    });
+    try {
+        const service = Service.getInstance();
+        if (!config.bot.channels.info || !config.bot.messages.priceBoard) return;
+        const allStocks = await service.stocks.getAllStocks();
+        const yesterdayPrices = await service.stocks.getAllYesterdayPrice();
+        const allUserPortfolios = await service.users.getAllUserPortfolios();
+        const channel = await client.channels.fetch(config.bot.channels.info) as TextChannel;
+
+        let message;
+        try {
+            message = await channel.messages.fetch(config.bot.messages.priceBoard);
+        } catch (err) {
+            await channel.send("PRICE BOARD MESSAGE");
+            log.error("Created price board message, copy ID and paste into config.");
+            process.exit(1);
+        }
+
+        const gameState = await service.game.getGameState();
+        await message.edit({
+            content: "", embeds: [
+                await generateLeaderboardEmbed(client, allUserPortfolios),
+                generateStockBoardEmbed(allStocks, yesterdayPrices, gameState)
+            ]
+        });
+    } catch(err) {
+        log.error("Error updating price board message!")
+    }
 }
 
 function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], gameState: GameState) {
