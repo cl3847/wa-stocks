@@ -25,14 +25,17 @@ class UserService {
                 credit_limit: config.game.startingCreditLimit
             };
             await this.daos.users.createUser(pc, newUser);
-            if (config.game.defaultCreditCardItem) {
-                const newUserItem: UserItem = {
-                    uid,
-                    item_id: config.game.defaultCreditCardItem,
-                    quantity: 1
+            if (config.game.defaultItems) {
+                for (const item of config.game.defaultItems) {
+                    const newUserItem: UserItem = {
+                        uid,
+                        item_id: item.item,
+                        quantity: item.quantity
+                    }
+                    await this.daos.users.createItemHolding(pc, newUserItem);
                 }
-                await this.daos.users.createItemHolding(pc, newUserItem);
             }
+            await pc.query("COMMIT");
         } catch (err) {
             await pc.query('ROLLBACK');
             throw err; // Re-throw to be handled by the caller

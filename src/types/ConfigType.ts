@@ -36,7 +36,7 @@ export type ConfigType = {
         etcOffset: number;
         loanMaxMultiplier: number;
         creditDailyInterestPercent: number;
-        defaultCreditCardItem: string;
+        defaultItems: {item: string, quantity: number}[];
     }
 };
 
