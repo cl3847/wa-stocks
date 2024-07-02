@@ -107,6 +107,7 @@ const initDb = async (pc: PoolClient) => {
             item_id TEXT PRIMARY KEY,
             name TEXT NOT NULL,
             tradable BOOLEAN NOT NULL DEFAULT FALSE,
+            type TEXT NOT NULL,
             rarity TEXT
         );`
     );

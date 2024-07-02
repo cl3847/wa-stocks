@@ -7,19 +7,18 @@ const ratesConfig = {
     "104": 15,
     "105": 3,
     "106": 3,
-}
+};
 
 const pullPair: {itemIds: string[], action: ItemAction} = {
     itemIds: ["100"],
     action: {
-        name: "Pull Trading Card",
+        name: "Open Booster Pack",
         order: 1,
-        execute: async (interaction, item, user) => {
-            interaction; item; user;
-        }
+        execute: async (confirmation, item, user) => {
+            confirmation.update("test")
+        },
+        identifier: "open-booster-pack"
     }
-}
+};
 
-ratesConfig;
-
-export default pullPair;
+module.exports = pullPair;

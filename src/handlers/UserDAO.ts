@@ -70,8 +70,8 @@ class UserDAO {
 
     public async getAllUserPortfolios(pc: PoolClient): Promise<UserPortfolio[]> {
         const query = `
-            SELECT row_to_json(u.*) as profile, 
-                json_agg(row_to_json(us_s.*)) AS portfolio, 
+            SELECT row_to_json(u.*) as profile,
+                json_agg(row_to_json(us_s.*)) AS portfolio,
                 json_agg(row_to_json(ui_i.*)) AS inventory
             FROM users u
             LEFT JOIN (
@@ -89,6 +89,8 @@ class UserDAO {
             LEFT JOIN (
                 SELECT ui.*, i.* FROM users_items ui
                 INNER JOIN items i ON ui.item_id = i.item_id
+                WHERE ui.quantity > 0
+                ORDER BY i.item_id
             ) ui_i ON ui_i.uid = u.uid
             GROUP BY u.uid, u.balance, u.loan_balance
             ORDER BY u.balance - u.loan_balance + COALESCE(SUM(us_s.price * us_s.quantity), 0) DESC NULLS LAST
@@ -138,8 +140,10 @@ class UserDAO {
             LEFT JOIN (
                 SELECT ui.*, i.* FROM users_items ui
                 INNER JOIN items i ON ui.item_id = i.item_id
+                WHERE ui.quantity > 0
+                ORDER BY i.item_id
             ) ui_i ON ui_i.uid = u.uid
-            WHERE u.uid = $1
+            WHERE u.uid = $1 
             GROUP BY u.uid;
         `;
         const params = [uid, timestamp];

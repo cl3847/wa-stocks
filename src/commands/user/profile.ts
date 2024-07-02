@@ -99,13 +99,11 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
 
 
 function generateInventoryEmbed(userPortfolio: UserPortfolio, user: User) {
+    const desc = userPortfolio.inventory.map(hi => `${hi.item_id} - ${hi.name} - x${hi.quantity}`).join('\n');
     return new EmbedBuilder()
         .setColor(config.colors.green)
         .setAuthor({name: `${user.displayName}'s Inventory`, iconURL: user.avatarURL() || undefined})
-        .setDescription(diffBlock("ID - ITEM - QUANTITY\n" +
-            userPortfolio.inventory.map(hi => {
-                return `${hi.item_id} - ${hi.name} - x${hi.quantity}`
-            }).join('\n')))
+        .setDescription(diffBlock(desc ? ("ID - ITEM - QUANTITY\n" + desc) : 'No items owned.'))
         .setTimestamp(new Date());
 }
 

@@ -12,6 +12,8 @@ import {
 import config from "../../config";
 import fs from "fs";
 import log from "./logger";
+import Item from "../models/item/Item";
+import {createCanvas, loadImage} from "canvas";
 
 const PADDING = "————————————————————————————————————————————\n";
 const SHORT_PADDING = "———————————————————————————————————\n";
@@ -159,6 +161,34 @@ function getStockLogo(ticker: string, filename: string = "logo.png"): Attachment
     return null;
 }
 
+async function getItemImage(item: Item, username: string | null, filename: string = "item.png"): Promise<AttachmentBuilder | null> {
+    if (fs.existsSync('assets/items/' + item.item_id + '.png')) {
+        if (item.type !== "credit_card" || !username) {
+            return new AttachmentBuilder(`./assets/items/${item.item_id}.png`, {name: filename});
+        } else {
+            const cardTextColor: { [id: string]: string } = {
+                "000": "white",
+                "010": "black",
+                "020": "black",
+                "021": "black",
+                "030": "black",
+                "040": "DarkGoldenRod",
+            };
+
+            const loadedImage = await loadImage(`./assets/items/${item.item_id}.png`);
+            const canvas = createCanvas(loadedImage.width, loadedImage.height);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(loadedImage, 0, 0, loadedImage.width, loadedImage.height);
+            ctx.font = 'bold 40px Arial, sans-serif';
+            ctx.fillStyle = cardTextColor[item.item_id] || "black";
+            ctx.fillText(username.toUpperCase(), 80, loadedImage.height-40);
+            return new AttachmentBuilder(canvas.toBuffer(), {name: filename});
+        }
+    }
+    return null;
+}
+
+
 function confirmedEmbed(text: string, color: `#${string}`) {
     return new EmbedBuilder()
         .setDescription(text)
@@ -259,6 +289,23 @@ async function handleEmbedNavigator(interaction: CommandInteraction<CacheType>, 
     });
 }
 
+function weightedRandom(items: any[], weights: number[]) {
+    if (items.length !== weights.length) throw new Error('Items and weights must have the same length.');
+    if (items.length < 2) throw new Error('Items and weights must have more than 2 elements.');
+
+    for (let i = 1; i < weights.length; i++)
+        weights[i] += weights[i - 1]!;
+
+    let random = Math.random() * weights[weights.length - 1]!;
+
+    for (let i = 0; i < weights.length; i++)
+        if (weights[i]! > random)
+            break;
+
+    return items[items.length - 1];
+}
+
+
 export {
     dollarize,
     logToChannel,
@@ -279,4 +326,6 @@ export {
     confirmedEmbed,
     confirmComponent,
     handleEmbedNavigator,
+    weightedRandom,
+    getItemImage
 };
