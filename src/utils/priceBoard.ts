@@ -14,7 +14,7 @@ async function updatePriceBoard(client: Client) {
         if (!config.bot.channels.info || !config.bot.messages.priceBoard) return;
         const allStocks = await service.stocks.getAllStocks();
         const yesterdayPrices = await service.stocks.getAllYesterdayPrice();
-        const allUserPortfolios = await service.users.getAllUserPortfolios();
+        const allUserPortfolios = (await service.users.getAllUserPortfolios()).sort((a, b) => a.netWorth() - b.netWorth());
         const channel = await client.channels.fetch(config.bot.channels.info) as TextChannel;
 
         let message;
