@@ -66,7 +66,7 @@ const command: CommandType = {
             const firstItemImage = await getItemImage(firstItem, user.username);
             if (firstItemImage) {
                 files2.push(firstItemImage);
-                inventoryEmbed.setThumbnail('attachment://item.png');
+                inventoryEmbed.setImage('attachment://item.png');
             }
         }
         fileMap.set(1, files2);
