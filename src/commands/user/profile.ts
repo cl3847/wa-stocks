@@ -56,17 +56,20 @@ const command: CommandType = {
         } catch (e) {
             log.error('Error creating line image for user ' + user.id);
         }
-        const card = await service.items.getItem("000");
-        if (card) {
-            const cardImage = await getItemImage(card, user.username);
-            if (cardImage) {
-                files.push(cardImage);
-                embed.setThumbnail('attachment://item.png');
-            }
-        }
 
         const fileMap = new Map<number, AttachmentBuilder[]>();
         fileMap.set(0, files);
+
+        const files2: AttachmentBuilder[] = [];
+        const firstItem = userPortfolio.inventory[0];
+        if (firstItem) {
+            const firstItemImage = await getItemImage(firstItem, user.username);
+            if (firstItemImage) {
+                files2.push(firstItemImage);
+                inventoryEmbed.setThumbnail('attachment://item.png');
+            }
+        }
+        fileMap.set(1, files2);
 
         await handleEmbedNavigator(interaction, [embed, inventoryEmbed], fileMap, 300_000);
     },
