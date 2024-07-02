@@ -19,10 +19,10 @@ const config: ConfigType = {
         useEphemeralPurchase: false,
     },
     "theme": {
-        financialCompanyName: "Mickital One",
-        financialCompanyTicker: "MOF",
-        financialCompanyLogo: "MOF",
-        financialCompanyColor: `#00558e`
+        financialCompanyName: "Ayup Express",
+        financialCompanyTicker: "AYXP",
+        financialCompanyLogo: "AYXP",
+        financialCompanyColor: `#016FD0`
     },
     "colors": {
         "green": `#00c805`,

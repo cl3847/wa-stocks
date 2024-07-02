@@ -19,7 +19,7 @@ const command: CommandType = {
                 return;
             }
         }
-        await handleEmbedNavigator(interaction, tutorialEmbeds, new Map<number, AttachmentBuilder[]>(), 300_000);
+        await handleEmbedNavigator(interaction, tutorialEmbeds, new Map<number, AttachmentBuilder[]>(), 300_000, true);
     },
 };
 
@@ -35,13 +35,42 @@ const tutorialEmbeds = [
         .setTitle('Tutorial: Buying & Selling Shares')
         .setColor(config.colors.blue)
         .setDescription(`The aim of the game is to grow your net worth. This requires investing in companies. Each company has a unique ticker (a 3-5 letter code) used to identify it, which you can find in <#${config.bot.channels.info}>.\n\n` +
-            `Shares can be purchased for a given price, which fluctuates over the course of the day whenever the market is open (according to <#${config.bot.channels.info}>). Buy shares, and try to sell them for higher than you paid to make a profit!\n\n` +
+            `Shares can be purchased for a given price, which fluctuates over the course of the day **whenever the market is open** (according to <#${config.bot.channels.info}>). Buy shares, and try to sell them for higher than you paid to make a profit!\n\n` +
             `\`/stock <ticker>\`: shows information about a particular company.\n` +
             `\`/market buy <ticker> <quantity?>\`: buy shares of a particular company.\n` +
             `\`/market sell <ticker> <quantity?>\`: buy shares of a particular company.\n\n` +
             `After buying a share, it's added to your portfolio, or your collection of shares. You can view your portfolio with \`/profile\`.`)
         .setImage(`https://i.imgur.com/q9dWSyR.png`)
         .setFooter({text: 'Page 2/5'}),
+    new EmbedBuilder()
+        .setTitle('Tutorial: Items and Trading Cards')
+        .setColor(config.colors.blue)
+        .setDescription(`You can find your inventory in the second page of \`/profile\`. Some items, like the \`Booster Pack (ID 900)\`, which you start off with, can be used for actions as well.\n\n` +
+            `Try viewing your Booster Pack with the \`/item\` command, and open the pack for a Trading Card! Once you have more than one trading card, you can exchange them with other users for money or other cards.\n\n` +
+            `\`/profile <user?>\`: Second page displays inventory contents.\n` +
+            `\`/item <item_id>\`: Shows information & actions for one of your items.\n\n` +
+            `Be the first to collect every trading card to win! Additional booster packs are distributed by game moderators every Friday at market close to the individuals with the highest net worth.`)
+        //.setImage(`https://i.imgur.com/q9dWSyR.png`)
+        .setFooter({text: 'Page 3/5'}),
+    new EmbedBuilder()
+        .setTitle('Tutorial: Wire Transactions')
+        .setColor(config.colors.blue)
+        .setDescription(`Sending money to other users is easy with the \`/wire\` command! There are two variants, \`user\` and \`entity\`. Use the former for transferring money to other players, and the latter to transfer money to entities like your bank (more on that later).\n\n` +
+            `\`/wire user <target> <balance>\`: Transfer money to a user.\n` +
+            `\`/wire entity <target> <balance>\`: Transfer money to an entity.\n\n` +
+            `**Wire transactions are non-refundable and permanant.**`)
+        //.setImage(`https://i.imgur.com/q9dWSyR.png`)
+        .setFooter({text: 'Page 4/5'}),
+    new EmbedBuilder()
+        .setTitle('Tutorial: Credit and Paying Debt')
+        .setColor(config.colors.blue)
+        .setDescription(`Trying to buy a stock but don't have enough money? ${config.theme.financialCompanyName} will automatically suggest taking out some debt to cover the difference, as long as you have enough unused credit remaining in your account.\n\n` +
+            `You can check your current debt and credit limit using \`/profile\`. Debt increases at a constant interest rate per day, so be sure to pay it off when you can by wiring ${config.theme.financialCompanyName} money:\n\n` +
+            `\`/wire entity ${config.theme.financialCompanyTicker} <balance>\`: Pay off your debt to the bank.\n\n` +
+            `Taking out debt is optional, but it can greatly increase the speed at which you make profits!`)
+        //.setImage(`https://i.imgur.com/q9dWSyR.png`)
+        .setFooter({text: 'Page 5/5'}),
+
 ]
 
 module.exports = command;

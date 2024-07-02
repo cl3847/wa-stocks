@@ -225,8 +225,9 @@ function confirmComponent(text: string, style: ButtonStyle): ActionRowBuilder<Bu
  * @param embeds - List of EmbedBuilder objects to navigate through.
  * @param files - List of AttachmentBuilder objects to attach to the message.
  * @param time - Time in milliseconds before the navigator expires.
+ * @param ephemeral Whether to show the message or not
  */
-async function handleEmbedNavigator(interaction: CommandInteraction<CacheType>, embeds: EmbedBuilder[], files: Map<number, AttachmentBuilder[]>, time: number): Promise<void> {
+async function handleEmbedNavigator(interaction: CommandInteraction<CacheType>, embeds: EmbedBuilder[], files: Map<number, AttachmentBuilder[]>, time: number, ephemeral: boolean = false): Promise<void> {
     if (embeds.length === 0) return; // If there are no embeds, do nothing.
 
     let currentIndex = 0; // Track the current embed index.
@@ -255,7 +256,8 @@ async function handleEmbedNavigator(interaction: CommandInteraction<CacheType>, 
         embeds: [embeds[currentIndex] || new EmbedBuilder().setDescription('No embeds to display.')],
         components: [row],
         files: files.get(currentIndex) ? files.get(currentIndex) : [],
-        fetchReply: true
+        fetchReply: true,
+        ephemeral
     }) as Message;
 
     const collector = embedMessage.createMessageComponentCollector({ time: time }); // Adjust time as needed.
@@ -279,7 +281,7 @@ async function handleEmbedNavigator(interaction: CommandInteraction<CacheType>, 
         await buttonInteraction.update({
             embeds: [embeds[currentIndex] || new EmbedBuilder().setDescription('No embeds to display.')],
             components: [row],
-            files: files.get(currentIndex) ? files.get(currentIndex) : []
+            files: files.get(currentIndex) ? files.get(currentIndex) : [],
         });
     });
 
