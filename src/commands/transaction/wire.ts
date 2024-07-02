@@ -69,6 +69,10 @@ const command: CommandType = {
             switch (destinationType) {
                 case 'user':
                     const target = interaction.options.getUser('target', true);
+                    if (target.id === interaction.user.id) {
+                        await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nYou can't wire money to yourself.`), config.colors.blue)], ephemeral: true});
+                        return;
+                    }
                     const destUser = await service.users.getUser(target.id);
                     if (!destUser) {
                         await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- WIRE FAILED -\nThe user you are trying to transfer money to does not have an account.`), config.colors.blue)], ephemeral: true});
