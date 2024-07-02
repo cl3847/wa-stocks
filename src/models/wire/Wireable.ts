@@ -43,7 +43,7 @@ abstract class Wireable {
                 await confirmation.update(
                     {
                         embeds: [
-                            confirmedEmbed(diffBlock(`- WIRE CANCELLED -\nOrder to wire **${this.name}** a total of $${dollarize(amount)} cancelled.`), config.colors.blue)
+                            confirmedEmbed(diffBlock(`- WIRE CANCELLED -\nOrder to wire ${this.name} a total of $${dollarize(amount)} cancelled.`), config.colors.blue)
                         ],
                         components: [],
                         files: []
