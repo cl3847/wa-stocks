@@ -289,12 +289,12 @@ async function handleEmbedNavigator(interaction: CommandInteraction<CacheType>, 
     });
 }
 
-function weightedRandom(items: any[], weights: number[]) {
+function weightedRandom<E>(items: E[], weights: number[]) {
     if (items.length !== weights.length) throw new Error('Items and weights must have the same length.');
     if (items.length < 2) throw new Error('Items and weights must have more than 2 elements.');
 
     for (let i = 1; i < weights.length; i++)
-        weights[i] += weights[i - 1]!;
+        weights[i]! += weights[i - 1]!;
 
     let random = Math.random() * weights[weights.length - 1]!;
 
@@ -302,7 +302,7 @@ function weightedRandom(items: any[], weights: number[]) {
         if (weights[i]! > random)
             break;
 
-    return items[items.length - 1];
+    return items[items.length - 1]!;
 }
 
 

@@ -7,6 +7,8 @@ import InsufficientBalanceError from "../models/error/InsufficientBalanceError";
 import InsufficientStockQuantityError from "../models/error/InsufficientStockQuantityError";
 import StockTransaction from "../models/transaction/StockTransaction";
 import WireTransaction from "../models/transaction/WireTransaction";
+import InsufficientItemQuantityError from "../models/error/InsufficientItemQuantityError";
+import ItemNotFoundError from "../models/error/ItemNotFoundError";
 
 class TransactionService {
     private daos: DAOs;
@@ -15,6 +17,50 @@ class TransactionService {
     constructor(daos: DAOs, pool: Pool) {
         this.daos = daos;
         this.pool = pool;
+    }
+
+    public async replaceItemWithNew(uid: string, item1Id: string, item2Id: string): Promise<void> {
+        const pc = await this.pool.connect();
+        const user = await this.daos.users.getUserPortfolio(pc, uid);
+        if (!user) {
+            pc.release();
+            throw new UserNotFoundError(uid);
+        }
+        const item1Holding = user.inventory.find(i => i.item_id === item1Id);
+        if (!item1Holding) {
+            pc.release();
+            throw new InsufficientItemQuantityError(uid, 1, 1);
+        }
+        const item2 = await this.daos.items.getItem(pc, item2Id);
+        if (!item2) {
+            pc.release();
+            throw new ItemNotFoundError(item2Id);
+        }
+
+        let item2Holding = await this.daos.users.getItemHolding(pc, uid, item2Id);
+        if (!item2Holding) {
+            item2Holding = {
+                uid: uid,
+                item_id: item2Id,
+                quantity: 0,
+            }
+            await this.daos.users.createItemHolding(pc, item2Holding);
+        }
+        const newItem1Quantity = item1Holding.quantity - 1;
+        const newItem2Quantity = item2Holding.quantity + 1;
+
+        try {
+            await pc.query('BEGIN');
+            await this.daos.users.updateItemHolding(pc, uid, item1Holding.item_id, {quantity: newItem1Quantity});
+            await this.daos.users.updateItemHolding(pc, uid, item2Holding.item_id, {quantity: newItem2Quantity});
+            await pc.query('COMMIT');
+            return;
+        } catch (err) {
+            await pc.query('ROLLBACK');
+            throw err; // Re-throw to be handled by the caller
+        } finally {
+            pc.release();
+        }
     }
 
     /**

@@ -176,6 +176,13 @@ class UserDAO {
         const params = [...Object.values(holding), userId, itemId];
         await pc.query(query, params);
     }
+
+    public async getItemHolding(pc: PoolClient, uid: string, itemId: string): Promise<UserItem | null> {
+        const query = "SELECT * FROM users_items WHERE uid = $1 AND item_id = $2";
+        const params = [uid, itemId];
+        const result = await pc.query(query, params);
+        return result.rows[0] || null;
+    }
 }
 
 export default UserDAO;
