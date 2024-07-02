@@ -28,9 +28,6 @@ const loanPayEntity = new WireableEntity(
 
         await service.users.updateUser(fromUser.uid, {loan_balance: fromUser.loan_balance + transaction.balance_change});
 
-        console.log(confirmation.message.embeds)
-        console.log((await confirmation.message.fetch()).attachments)
-
         const successEmbed = confirmedEmbed(diffBlock(`+ WIRE SUCCESSFUL +\n${config.theme.financialCompanyName} accepted your payment of $${dollarize(-transaction.balance_change)}.`) + diffBlock(
             `  $${dollarize(fromUser.loan_balance)} previous debt\n` +
             `- $${dollarize(-transaction.balance_change)} wire amount\n` +
