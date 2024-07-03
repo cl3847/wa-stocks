@@ -21,6 +21,7 @@ import {
 import Price from "../../models/Price";
 import {createLinePortfolioImage} from "../../utils/graphing";
 import log from "../../utils/logger";
+import HeldItem from "../../types/HeldItem";
 
 //
 
@@ -42,10 +43,11 @@ const command: CommandType = {
             await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- LOOKUP FAILED -\nUser ${user.username}'s profile does not exist. Use \`/start\` to get started.`), config.colors.blue)]});
             return;
         }
+        const inventory = await service.users.getUserInventory(user.id);
         const yesterdayPrices = await service.stocks.getAllYesterdayPrice();
 
         let embed = await generateProfileEmbed(userPortfolio, yesterdayPrices, user);
-        let inventoryEmbed = generateInventoryEmbed(userPortfolio, user);
+        let inventoryEmbed = generateInventoryEmbed(inventory, user);
 
         const files: AttachmentBuilder[] = [];
         try {
@@ -61,7 +63,7 @@ const command: CommandType = {
         fileMap.set(0, files);
 
         const files2: AttachmentBuilder[] = [];
-        const firstItem = userPortfolio.inventory[0];
+        const firstItem = inventory[0];
         if (firstItem) {
             const firstItemImage = await getItemImage(firstItem, user.username);
             if (firstItemImage) {
@@ -116,8 +118,8 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
 };
 
 
-function generateInventoryEmbed(userPortfolio: UserPortfolio, user: User) {
-    const desc = userPortfolio.inventory.map(hi => `${hi.item_id} - ${hi.name} - x${hi.quantity}`).join('\n');
+function generateInventoryEmbed(inventory: HeldItem[], user: User) {
+    const desc = inventory.map(hi => `${hi.item_id} - ${hi.name} - x${hi.quantity}`).join('\n');
     return new EmbedBuilder()
         .setColor(config.colors.green)
         .setAuthor({name: `${user.displayName}'s Inventory`, iconURL: user.avatarURL() || undefined})

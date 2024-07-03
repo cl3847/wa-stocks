@@ -4,9 +4,12 @@ import {
     ActionRowBuilder,
     AttachmentBuilder,
     ButtonBuilder,
-    ButtonStyle, CacheType,
-    Client, CommandInteraction,
-    EmbedBuilder, Message,
+    ButtonStyle,
+    CacheType,
+    Client,
+    CommandInteraction,
+    EmbedBuilder,
+    Message,
     TextChannel
 } from "discord.js"
 import config from "../../config";

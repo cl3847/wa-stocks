@@ -1,4 +1,4 @@
-import { MessageComponentInteraction} from "discord.js";
+import {MessageComponentInteraction} from "discord.js";
 import Item from "./Item";
 import User from "../user/User";
 

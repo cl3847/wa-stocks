@@ -1,7 +1,8 @@
 import CommandType from "../../types/CommandType";
 import {
     ActionRowBuilder,
-    ButtonBuilder, ButtonStyle,
+    ButtonBuilder,
+    ButtonStyle,
     CacheType,
     ChatInputCommandInteraction,
     EmbedBuilder,
@@ -33,7 +34,8 @@ const command: CommandType = {
             await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- LOOKUP FAILED -\nUser ${interaction.user.username}'s profile does not exist.`), config.colors.blue)]});
             return;
         }
-        const itemHolding = userPortfolio.inventory.find(item => item.item_id === itemId);
+        const inventory = await service.users.getUserInventory(interaction.user.id);
+        const itemHolding = inventory.find(item => item.item_id === itemId);
         if (!itemHolding) {
             await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- LOOKUP FAILED -\nYou do not have an item with this ID.`), config.colors.blue)]});
             return;

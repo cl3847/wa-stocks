@@ -4,6 +4,7 @@ import {Pool} from "pg";
 import UserPortfolio from "../models/user/UserPortfolio";
 import UserStock from "../models/user/UserStock";
 import config from "../../config";
+import HeldItem from "../types/HeldItem";
 
 class UserService {
     private daos: DAOs;
@@ -31,7 +32,7 @@ class UserService {
                         uid,
                         item_id: item.item,
                         quantity: item.quantity
-                    }
+                    };
                     await this.daos.users.createItemHolding(pc, newUserItem);
                 }
             }
@@ -70,6 +71,13 @@ class UserService {
     public async getUserPortfolio(uid: string): Promise<UserPortfolio | null> {
         const pc = await this.pool.connect();
         const res = await this.daos.users.getUserPortfolio(pc, uid);
+        pc.release();
+        return res;
+    }
+
+    public async getUserInventory(uid: string): Promise<HeldItem[]> {
+        const pc = await this.pool.connect();
+        const res = await this.daos.users.getInventory(pc, uid);
         pc.release();
         return res;
     }

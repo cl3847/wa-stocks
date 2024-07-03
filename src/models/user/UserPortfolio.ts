@@ -2,7 +2,6 @@ import User from "./User";
 import HeldStock from "../../types/HeldStock";
 import Service from "../../services/Service";
 import {getETCComponentsPreviousDay, getNextMidnightTimestampET} from "../../utils/helpers";
-import HeldItem from "../../types/HeldItem";
 
 /**
  * A class containing all the information in a User and a listing of all the stock holdings they have
@@ -13,12 +12,10 @@ class UserPortfolio implements User {
     loan_balance: number;
     credit_limit: number;
     portfolio: HeldStock[];
-    inventory: HeldItem[];
 
-    constructor(user: User, portfolio: HeldStock[], inventory: HeldItem[]) {
+    constructor(user: User, portfolio: HeldStock[]) {
         Object.assign(this, user);
         this.portfolio = portfolio;
-        this.inventory = inventory;
     }
 
     /**

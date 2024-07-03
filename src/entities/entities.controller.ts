@@ -1,6 +1,6 @@
- import fs from "node:fs";
+import fs from "node:fs";
 import WireableEntity from "../models/wire/WireableEntity";
- import log from "../utils/logger";
+import log from "../utils/logger";
 
 const entities: Map<string, WireableEntity> = new Map();
 const entityFiles = fs.readdirSync(__dirname).filter(file => file.endsWith('.ts') && file !== 'entities.controller.ts');
