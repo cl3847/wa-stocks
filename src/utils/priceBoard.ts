@@ -96,7 +96,7 @@ async function generateLeaderboardEmbed(client: Client, allUserPortfolios: UserP
         i++;
         if (i > start.length && !shifted) {
             desc += "\n...\n\n"
-            i = joined.length - end.length + 1;
+            i = allUserPortfolios.length - end.length + 1;
             shifted = true;
         }
         upDownAmount += totalPriceDiff >= 0 ? 1 : -1;
