@@ -15,7 +15,7 @@ const config: ConfigType = {
         },
         newsAmountTruncate: 3,
         newsLengthTruncate: 42,
-        leaderboardSize: 10,
+        leaderboardSize: 15,
         useEphemeralPurchase: true,
         useEphemeralWire: true,
     },
