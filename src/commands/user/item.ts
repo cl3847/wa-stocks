@@ -65,6 +65,7 @@ const command: CommandType = {
         }
 
         const response = await interaction.reply({embeds: [embed], files, components});
+        if (components.length === 0) return;
         try {
             const confirmation = await response.awaitMessageComponent({
                 filter: i => i.user.id === interaction.user.id,
