@@ -94,7 +94,7 @@ async function generateLeaderboardEmbed(client: Client, allUserPortfolios: UserP
         const percentDisplay = totalPriceDiffPercent !== null ? (totalPriceDiffPercent * 100).toFixed(2) : "N/A";
         desc += `${i}: ${username} - $${dollarize(user.netWorth())} ($${dollarize(user.portfolioValue())})\n${totalPriceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(totalPriceDiff))} (${percentDisplay}%)\n`;
         i++;
-        if (i > start.length && !shifted) {
+        if (i > start.length && !shifted && end.length > 0) {
             desc += "\n...\n\n"
             i = allUserPortfolios.length - end.length + 1;
             shifted = true;
