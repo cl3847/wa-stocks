@@ -11,7 +11,8 @@ export type ConfigType = {
         };
         newsAmountTruncate: number;
         newsLengthTruncate: number;
-        leaderboardSize: number;
+        leaderboardSizeTop: number;
+        leaderboardSizeBottom: number;
         useEphemeralPurchase: boolean;
         useEphemeralWire: boolean;
     };

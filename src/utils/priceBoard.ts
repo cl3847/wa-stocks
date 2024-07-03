@@ -76,9 +76,15 @@ function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], g
 async function generateLeaderboardEmbed(client: Client, allUserPortfolios: UserPortfolio[]) {
     let upDownAmount = 0;
     let desc = ``;
-    let i = 1;
 
-    for (let user of allUserPortfolios.slice(0, config.bot.leaderboardSize)) {
+    const start = allUserPortfolios.slice(0, config.bot.leaderboardSizeTop);
+    const end = allUserPortfolios.slice(-config.bot.leaderboardSizeBottom);
+    end.filter(u => !start.map(x => x.uid).includes(u.uid));
+    const joined = start.concat(end)
+
+    let i = 1;
+    let shifted = false;
+    for (let user of joined) {
         let username = "N/A";
         client.users.fetch(user.uid)
             .then(user => username = user.username)
@@ -88,6 +94,11 @@ async function generateLeaderboardEmbed(client: Client, allUserPortfolios: UserP
         const percentDisplay = totalPriceDiffPercent !== null ? (totalPriceDiffPercent * 100).toFixed(2) : "N/A";
         desc += `${i}: ${username} - $${dollarize(user.netWorth())} ($${dollarize(user.portfolioValue())})\n${totalPriceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(totalPriceDiff))} (${percentDisplay}%)\n`;
         i++;
+        if (i > start.length && !shifted) {
+            desc += "\n...\n\n"
+            i = joined.length - end.length + 1;
+            shifted = true;
+        }
         upDownAmount += totalPriceDiff >= 0 ? 1 : -1;
     }
     desc = diffBlock(`RANK: Username - Net Worth (Portfolio Value)\n+$0.00 (0.00%) today's portfolio value change`) + PADDING + diffBlock(desc);
