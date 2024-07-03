@@ -125,6 +125,7 @@ require('dotenv').config();
 
     try {
         //(client.channels.cache.get("1257801641495625788") as TextChannel).send("Placeholder")
+        await Service.getInstance().stocks.synchronizeAllStockPrices();
         await updatePriceBoard(client);
         initJobs(client);
     } catch (err) {

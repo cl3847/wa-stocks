@@ -49,6 +49,7 @@ function openPreMarket(expression: string) {
         }
 
         await Service.getInstance().game.updateGameState({isMarketOpen: true, marketState: "pre"});
+        await Service.getInstance().stocks.synchronizeAllStockPrices();
         log.info(`Pre-market opened at ${new Date().toLocaleString()} ET`);
     }, {timezone: "America/New_York"});
 }
