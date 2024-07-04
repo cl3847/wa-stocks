@@ -81,7 +81,10 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
     let totalPriceDiff = 0;
     let totalYesterdayPrice = 0;
 
-    let displayPortfolio = userPortfolio.portfolio.slice(config.bot.maxProfileHoldingsDisplay).map(hs => {
+    console.log(userPortfolio.portfolio.length)
+
+    let displayPortfolio = userPortfolio.portfolio.slice(0, config.bot.maxProfileHoldingsDisplay).map(hs => {
+        console.log(hs.ticker)
         const yesterdayPrice = yesterdayPrices.find(p => p.ticker === hs.ticker);
         const priceDiff = (hs.price * hs.quantity - (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 0));
         const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 1);
