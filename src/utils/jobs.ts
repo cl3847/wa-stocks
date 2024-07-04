@@ -35,8 +35,13 @@ async function walkStocks(expression: string) {
 
 function openMarket(expression: string) {
     cron.schedule(expression, async () => { // open market
-        await Service.getInstance().game.updateGameState({isMarketOpen: true, marketState: "open"});
+        const randomStocks = await chooseRandomStocks(Service.stockTickerList.length);
         await Service.getInstance().stocks.synchronizeAllStockPrices();
+        for (const stock of randomStocks) {
+            await stockPriceRandomWalk(stock.ticker, 10 * config.game.randomWalkVolatility);
+        }
+
+        await Service.getInstance().game.updateGameState({isMarketOpen: true, marketState: "open"});
         log.info(`Market opened at ${new Date().toLocaleString()} ET`);
     }, {timezone: "America/New_York"});
 }
@@ -47,9 +52,9 @@ function openPreMarket(expression: string) {
         for (const stock of randomStocks) {
             await stockPriceRandomWalk(stock.ticker, 20 * config.game.randomWalkVolatility);
         }
+        await Service.getInstance().stocks.synchronizeAllStockPrices();
 
         await Service.getInstance().game.updateGameState({isMarketOpen: true, marketState: "pre"});
-        await Service.getInstance().stocks.synchronizeAllStockPrices();
         log.info(`Pre-market opened at ${new Date().toLocaleString()} ET`);
     }, {timezone: "America/New_York"});
 }

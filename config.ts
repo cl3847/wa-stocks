@@ -34,9 +34,9 @@ const config: ConfigType = {
     "game": {
         "startingBalance": 10000000, // Starting balance in CENTS
         "startingCreditLimit": 20000000, // Starting credit limit in CENTS
-        "randomWalkVolatility": 0.005,
+        "randomWalkVolatility": 0.0025,
         "randomWalkInterval": 1, // In minutes
-        "randomWalkAmount": 10, // Number of stocks to randomly walk
+        "randomWalkAmount": 15, // Number of stocks to randomly walk
         "minimumStockPrice": 1,
         "chartsDaysBack": 15, // Number of days to show in the price chart
         "etcOffset": 4,
