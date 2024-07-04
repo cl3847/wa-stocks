@@ -81,7 +81,7 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
     let totalPriceDiff = 0;
     let totalYesterdayPrice = 0;
 
-    let displayPortfolio = userPortfolio.portfolio.slice(10).map(hs => {
+    let displayPortfolio = userPortfolio.portfolio.slice(config.bot.maxProfileHoldingsDisplay).map(hs => {
         const yesterdayPrice = yesterdayPrices.find(p => p.ticker === hs.ticker);
         const priceDiff = (hs.price * hs.quantity - (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 0));
         const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 1);
@@ -93,8 +93,8 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
         return `${hs.ticker} - ${hs.quantity} share(s) - $${dollarize(hs.price * hs.quantity)}\n${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${percentDisplay}%)`;
     }).join('\n') || 'No stocks owned.';
 
-    if (userPortfolio.portfolio.length > 10) {
-        displayPortfolio += `\n... (${userPortfolio.portfolio.length - 10} more holdings)`;
+    if (userPortfolio.portfolio.length > config.bot.maxProfileHoldingsDisplay) {
+        displayPortfolio += `\n... (${userPortfolio.portfolio.length - config.bot.maxProfileHoldingsDisplay} more holdings)`;
     }
 
     const {diff: valueDiff, percent: valueDiffPercent} = await userPortfolio.getDayPortfolioChange();

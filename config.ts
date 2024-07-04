@@ -19,6 +19,7 @@ const config: ConfigType = {
         leaderboardSizeBottom: 10,
         useEphemeralPurchase: true,
         useEphemeralWire: true,
+        maxProfileHoldingsDisplay: 20
     },
     "theme": {
         financialCompanyName: "Ayup Express",

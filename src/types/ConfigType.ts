@@ -15,6 +15,7 @@ export type ConfigType = {
         leaderboardSizeBottom: number;
         useEphemeralPurchase: boolean;
         useEphemeralWire: boolean;
+        maxProfileHoldingsDisplay: number;
     };
     theme: {
         financialCompanyName: string;
