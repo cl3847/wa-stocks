@@ -81,8 +81,7 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
     let totalPriceDiff = 0;
     let totalYesterdayPrice = 0;
 
-    let i = 1;
-    let displayPortfolio = userPortfolio.portfolio.map(hs => {
+    let displayPortfolio = userPortfolio.portfolio.slice(10).map(hs => {
         const yesterdayPrice = yesterdayPrices.find(p => p.ticker === hs.ticker);
         const priceDiff = (hs.price * hs.quantity - (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 0));
         const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 1);
@@ -91,14 +90,12 @@ const generateProfileEmbed = async (userPortfolio: UserPortfolio, yesterdayPrice
         totalPriceDiff += priceDiff;
         totalYesterdayPrice += (yesterdayPrice ? yesterdayPrice.close_price * hs.quantity : 0);
 
-        if (i < 11) {
-            i++;
-            return `${hs.ticker} - ${hs.quantity} share(s) - $${dollarize(hs.price * hs.quantity)}\n${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${percentDisplay}%)`;
-        } else {
-            return `... (${userPortfolio.portfolio.length - 10} more holdings)`;
-        }
-
+        return `${hs.ticker} - ${hs.quantity} share(s) - $${dollarize(hs.price * hs.quantity)}\n${priceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(priceDiff))} (${percentDisplay}%)`;
     }).join('\n') || 'No stocks owned.';
+
+    if (userPortfolio.portfolio.length > 10) {
+        displayPortfolio += `\n... (${userPortfolio.portfolio.length - 10} more holdings)`;
+    }
 
     const {diff: valueDiff, percent: valueDiffPercent} = await userPortfolio.getDayPortfolioChange();
     const percentDisplay = valueDiffPercent !== null ? (valueDiffPercent * 100).toFixed(2) : "N/A";
