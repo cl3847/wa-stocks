@@ -5,6 +5,10 @@ import UserPortfolio from "../models/user/UserPortfolio";
 import UserStock from "../models/user/UserStock";
 import config from "../../config";
 import HeldItem from "../types/HeldItem";
+import Item from "../models/item/Item";
+import MissingCreditCardError from "../models/error/MissingCreditCardError";
+import ItemNotFoundError from "../models/error/ItemNotFoundError";
+import log from "../utils/logger";
 
 class UserService {
     private daos: DAOs;
@@ -99,6 +103,52 @@ class UserService {
     public async getUserStockHistoryAfterTimestamp(uid: string, timestamp: number): Promise<UserStock[]> {
         const pc = await this.pool.connect();
         const res = await this.daos.users.getUserStockHistoryAfterTimestamp(pc, uid, timestamp);
+        pc.release();
+        return res;
+    }
+
+    public async updateCreditCard(uid: string, newCardId: string): Promise<boolean> {
+        const pc = await this.pool.connect();
+        const userInventory = await this.daos.users.getInventory(pc, uid);
+        const newItem = await this.daos.items.getItem(pc, newCardId);
+        if (!newItem) throw new ItemNotFoundError(newCardId);
+        const currentCard = userInventory.find((x: Item) => x.type === "credit_card");
+        if (!currentCard) throw new MissingCreditCardError(uid);
+
+        if (currentCard.item_id === newCardId) {
+            pc.release();
+            return false;
+        }
+
+        try {
+            await this.daos.users.updateItemHolding(pc, uid, currentCard.item_id, {item_id: newItem.item_id});
+            log.success(`Updated ${uid}'s credit card from ${currentCard.item_id} to ${newCardId}`);
+            return true;
+        } catch (err) {
+            log.error("Error updating credit card: " + err);
+            throw err;
+        } finally {
+            pc.release();
+        }
+    }
+
+    public async updateItemHolding(uid: string, itemId: string, holding: Partial<UserItem>): Promise<void> {
+        const pc = await this.pool.connect();
+        const res = await this.daos.users.updateItemHolding(pc, uid, itemId, holding);
+        pc.release();
+        return res;
+    }
+
+    public async createItemHolding(holding: UserItem): Promise<void> {
+        const pc = await this.pool.connect();
+        const res = await this.daos.users.createItemHolding(pc, holding);
+        pc.release();
+        return res;
+    }
+
+    public async getItemHolding(uid: string, itemId: string): Promise<UserItem | null> {
+        const pc = await this.pool.connect();
+        const res = await this.daos.users.getItemHolding(pc, uid, itemId);
         pc.release();
         return res;
     }

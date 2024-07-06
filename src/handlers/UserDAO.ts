@@ -169,6 +169,13 @@ class UserDAO {
         return result.rows[0] || null;
     }
 
+    public async deleteItemHolding(pc: PoolClient, uid: string, itemId: string): Promise<void> {
+        const query = "DELETE FROM users_items WHERE uid = $1 AND item_id = $2";
+        const params = [uid, itemId];
+        const result = await pc.query(query, params);
+        return result.rows[0] || null;
+    }
+
     public async getInventory(pc: PoolClient, uid: string): Promise<HeldItem[]> {
         const query = "SELECT * FROM users_items ui INNER JOIN items i ON ui.item_id = i.item_id WHERE uid = $1 AND quantity > 0 ORDER BY i.item_id;";
         const params = [uid];
