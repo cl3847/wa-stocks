@@ -173,9 +173,9 @@ async function getItemImage(item: Item, username: string | null, filename: strin
                 "000": "white",
                 "010": "black",
                 "020": "black",
-                "021": "black",
                 "030": "black",
-                "040": "DarkGoldenRod",
+                "040": "black",
+                "050": "DarkGoldenRod",
             };
 
             const loadedImage = await loadImage(`./assets/items/${item.item_id}.png`);
