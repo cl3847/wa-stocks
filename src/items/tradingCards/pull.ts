@@ -10,10 +10,13 @@ const ratesConfig = [
     {item: '400', rate: 35},
     {item: '401', rate: 35},
     {item: '300', rate: 15},
+    {item: '301', rate: 15},
     {item: '200', rate: 9},
+    {item: '201', rate: 9},
     {item: '100', rate: 3},
     {item: '101', rate: 3},
-]
+    {item: '102', rate: 3}
+];
 
 const pullPair: {itemIds: string[], action: ItemAction} = {
     itemIds: ["900"],
