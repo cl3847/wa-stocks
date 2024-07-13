@@ -55,7 +55,7 @@ const pullPair: {itemIds: string[], action: ItemAction} = {
                     components: [],
                     files
                 })
-                await logToChannel(confirmation.client, `✨ **${(await confirmation.client.users.fetch(user.uid)).username}** just obtained *${item.name}* from a Booster Pack!`)
+                await logToChannel(confirmation.client, `✨ **${(await confirmation.client.users.fetch(user.uid)).username}** just obtained *${item.name}* (${item.rarity}) from a Booster Pack!`);
                 return;
             } catch (error) {
                 if (error instanceof ItemNotFoundError) {
