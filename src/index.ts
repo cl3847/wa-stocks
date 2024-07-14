@@ -85,7 +85,18 @@ require('dotenv').config();
     }
 
     client.on(Events.InteractionCreate, async (interaction) => {
-        if (!interaction.isChatInputCommand()) return;
+
+        // autocomplete
+        if (interaction.isAutocomplete()) {
+            const autocompleteCommand = commands.get(interaction.commandName);
+            try { await autocompleteCommand?.autocomplete(interaction) }
+            catch(e) { console.error(e) }
+            return;
+        }
+
+        else if (!interaction.isChatInputCommand()) return;
+
+        // slash commands
         const command = commands.get(interaction.commandName);
         if (!command) {
             log.error(`No command matching ${interaction.commandName} was found.`);
