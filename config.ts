@@ -46,7 +46,8 @@ const config: ConfigType = {
         "defaultItems": [
             {item: "000", quantity: 1},
             {item: "900", quantity: 1},
-        ]
+        ],
+        "randomWalkBias": 1.01
     },
 };
 

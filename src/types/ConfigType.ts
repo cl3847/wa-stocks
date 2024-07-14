@@ -40,6 +40,7 @@ export type ConfigType = {
         loanMaxMultiplier: number;
         creditDailyInterestPercent: number;
         defaultItems: {item: string, quantity: number}[];
+        randomWalkBias: number;
     }
 };
 

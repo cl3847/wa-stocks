@@ -147,6 +147,7 @@ async function stockPriceRandomWalk(ticker: string, volatility: number) {
     const rnd = Math.random();
     let change_percent = 2 * volatility * rnd;
     if (change_percent > volatility) change_percent -= (2 * volatility);
+    change_percent *= config.game.randomWalkBias;
     const change_amount = stock.price * change_percent;
     let new_price = Math.floor(stock.price + change_amount);
     if (new_price < config.game.minimumStockPrice) new_price = config.game.minimumStockPrice;
