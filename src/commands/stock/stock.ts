@@ -7,6 +7,7 @@ import Price from "../../models/Price";
 import {createCandlestickStockImage} from "../../utils/graphing";
 import log from "../../utils/logger";
 import NewsPopulatedStock from "../../models/stock/NewsPopulatedStock";
+import autocompleteStock from "../../autocomplete/autocomplete_stock";
 
 const command: CommandType = {
     data: new SlashCommandBuilder()
@@ -16,9 +17,14 @@ const command: CommandType = {
                 option
                     .setName('ticker')
                     .setDescription('The ticker of the stock')
+                    .setAutocomplete(true)
                     .setRequired(true),
-            //.addChoices(Service.stockTickerList.map(ticker => ({ name: ticker, value: ticker })))
         ),
+    
+    async autocomplete(int: AutocompleteInteraction) {
+        autocompleteStock(int)
+    },
+
     async execute(interaction: ChatInputCommandInteraction<CacheType>) {
         const ticker = interaction.options.getString('ticker', true).toUpperCase();
 

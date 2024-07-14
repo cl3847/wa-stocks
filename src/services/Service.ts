@@ -15,7 +15,7 @@ class Service {
     game: GameService;
     pool: Pool;
 
-    private static _stockTickerList: string[];
+    private static _stockTickerList: Stock[];
     private static instance: Service;
 
     constructor(daos: DAOs, pool: Pool) {
@@ -32,7 +32,7 @@ class Service {
             throw new Error("Services already initialized");
         }
         this.instance = new Service(DAOs, pool);
-        this._stockTickerList = (await this.instance.stocks.getAllStocks()).map((stock: Stock) => stock.ticker);
+        this._stockTickerList = await this.instance.stocks.getAllStocks();
     }
 
     public static getInstance() {
@@ -42,7 +42,7 @@ class Service {
         return this.instance;
     }
 
-    static get stockTickerList(): string[] {
+    static get stockTickerList(): Stock[] {
         if (!this.instance) {
             throw new Error("Services not initialized");
         }
