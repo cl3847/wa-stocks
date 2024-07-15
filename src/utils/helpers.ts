@@ -150,7 +150,6 @@ async function stockPriceRandomWalk(ticker: string, volatility: number) {
     let change_amount = stock.price * change_percent;
 
     if (stock.ticker === "DMT" || stock.ticker === "VNVDA") {
-        if (change_amount < 0) change_amount *= config.game.randomWalkBias;
     } else {
         if (change_amount > 0) change_amount *= config.game.randomWalkBias;
     }
