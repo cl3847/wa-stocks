@@ -36,7 +36,7 @@ async function walkStocks(expression: string) {
 function openMarket(expression: string) {
     cron.schedule(expression, async () => { // open market
         const randomStocks = await chooseRandomStocks(Service.stockTickerList.length);
-        await Service.getInstance().stocks.synchronizeAllStockPrices();
+        // await Service.getInstance().stocks.synchronizeAllStockPrices();
         for (const stock of randomStocks) {
             await stockPriceRandomWalk(stock.ticker, 10 * config.game.randomWalkVolatility);
         }
