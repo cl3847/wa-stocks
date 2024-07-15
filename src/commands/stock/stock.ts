@@ -7,7 +7,7 @@ import Price from "../../models/Price";
 import {createCandlestickStockImage} from "../../utils/graphing";
 import log from "../../utils/logger";
 import NewsPopulatedStock from "../../models/stock/NewsPopulatedStock";
-import autocompleteStock from "../../autocomplete/autocomplete_stock";
+import autocompleteStock from "../../autocomplete/autocompleteStock";
 
 const command: CommandType = {
     data: new SlashCommandBuilder()
