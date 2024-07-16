@@ -14,7 +14,7 @@ const config: ConfigType = {
             "priceBoard": "1257804705871167641",
         },
         newsAmountTruncate: 6,
-        newsLengthTruncate: 42,
+        newsLengthTruncate: 40,
         leaderboardSizeTop: 10,
         leaderboardSizeBottom: 10,
         useEphemeralPurchase: true,
