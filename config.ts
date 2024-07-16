@@ -13,7 +13,7 @@ const config: ConfigType = {
         messages: {
             "priceBoard": "1257804705871167641",
         },
-        newsAmountTruncate: 8,
+        newsAmountTruncate: 6,
         newsLengthTruncate: 42,
         leaderboardSizeTop: 10,
         leaderboardSizeBottom: 10,
