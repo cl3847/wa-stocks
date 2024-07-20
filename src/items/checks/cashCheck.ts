@@ -1,9 +1,10 @@
 import ItemAction from "../../models/item/ItemAction";
-import {confirmedEmbed, diffBlock, dollarize, logToChannel} from "../../utils/helpers";
+import {confirmedEmbed, diffBlock, dollarize, getItemImage, logToChannel} from "../../utils/helpers";
 import Service from "../../services/Service";
 import config from "../../../config";
 import ItemNotFoundError from "../../models/error/ItemNotFoundError";
 import InsufficientItemQuantityError from "../../models/error/InsufficientItemQuantityError";
+import {AttachmentBuilder, EmbedBuilder} from "discord.js";
 
 const valueConfig = [
     {item: '911', value: 100000000},
@@ -27,6 +28,25 @@ const pullPair: {itemIds: string[], action: ItemAction} = {
             try {
                 const itemValue = valueConfig.find(x => x.item === thisItem.item_id)!.value; // error thrown if it doesn't exist
                 await service.transactions.cashItem(user.uid, thisItem.item_id, itemValue);
+
+                const files: AttachmentBuilder[] = [];
+                const newItemEmbed = new EmbedBuilder()
+                    .setTitle(`Cashed Check Successfully!`)
+                    .setColor(config.colors.blue)
+                    .setDescription(diffBlock(`${thisItem.name} successfully cashed for $${dollarize(itemValue)}!`))
+                    .setTimestamp(new Date());
+                const itemImage = await getItemImage(thisItem, null);
+                if (itemImage) {
+                    files.push(itemImage);
+                    newItemEmbed.setImage(`attachment://item.png`);
+                }
+
+                await confirmation.update({
+                    embeds: [newItemEmbed],
+                    components: [],
+                    files
+                });
+
                 await logToChannel(confirmation.client, `🪙 **${(await confirmation.client.users.fetch(user.uid)).username}** just cashed a *${thisItem.name}*, gaining $${dollarize(itemValue)}!`);
                 return;
             } catch (error) {
