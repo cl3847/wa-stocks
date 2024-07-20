@@ -1,24 +1,19 @@
 import Service from "../services/Service";
-import {Pool, types} from "pg";
 import log from "./logger";
-import {initDb} from "./createDatabase";
-import DAOs from "../models/DAOs";
-import UserDAO from "../handlers/UserDAO";
-import StockDAO from "../handlers/StockDAO";
-import TransactionDAO from "../handlers/TransactionDAO";
-import ObjectDAO from "../handlers/ObjectDAO";
-import ItemDAO from "../handlers/ItemDAO";
 import Item from "../models/item/Item";
 import MissingCreditCardError from "../models/error/MissingCreditCardError";
 import config from "../../config";
+import {Client} from "discord.js"
 
 const rewardConfig = {
     cardDistribution: [
-        {group: 0.25, item: "020", limitBump: 10000000, weeklyRewards: [{item: "900", quantity: 2}]},
-        {group: 0.5, item: "010", limitBump: 5000000, weeklyRewards: [{item: "900", quantity: 1}]},
-        {group: 1,   item: "000", limitBump: 0, weeklyRewards: []},
+        {group: 0.0625, item: "040", limitBump: 30000000, weeklyRewards: [{item: "900", quantity: 5}], role: "1258800184176017499"}, // rose gold
+        {group: 0.125, item: "030", limitBump: 15000000, weeklyRewards: [{item: "900", quantity: 3}], role: "1258800827879915531"}, // rose gold
+        {group: 0.25, item: "020", limitBump: 10000000, weeklyRewards: [{item: "900", quantity: 2}], role: "1258800072578301952"}, // gold
+        {group: 0.5, item: "010", limitBump: 5000000, weeklyRewards: [{item: "900", quantity: 1}], role: "1258799929036378194"}, // green
+        {group: 1,   item: "000", limitBump: 0, weeklyRewards: [], roleId: "1257800796624523345"} // blue
     ]
-}
+};
 
 async function assignCreditCards() {
     const service = Service.getInstance();
@@ -73,44 +68,39 @@ async function assignRewards() {
 
     }
 }
-/*
-async function updateRole() {
 
-}*/
+async function updateRoles(client: Client) {
+    const service = Service.getInstance();
+    const users = await service.users.getAllUserPortfolios();
+    const guild = await client.guilds.fetch(config.bot.guildID);
+    const rolesSet = new Set(rewardConfig.cardDistribution.map(x => x.role));
+    for (let user of users) {
+        try {
+            const discordUser = await guild.members.fetch(user.uid);
+            const inventory = await service.users.getUserInventory(user.uid);
+            const currentCard = inventory.find((x: Item) => x.type === "credit_card");
+            if (!currentCard) throw new MissingCreditCardError(user.uid);
+            const currentCardRoleId = rewardConfig.cardDistribution.find(x => x.item === currentCard.item_id)?.role;
+            if (!currentCardRoleId) continue;
+            for (let role of discordUser.roles.cache) {
+                if (rolesSet.has(role[0]) && role[0] !== currentCardRoleId) {
+                    await discordUser.roles.remove(role[0]);
+                    log.success("Removed role " + role[0] + " from " + user.uid)
+                }
+            }
+            if (!discordUser.roles.cache.has(currentCardRoleId)) {
+                await discordUser.roles.add(currentCardRoleId);
+                log.success("Added role " + currentCardRoleId + " to " + user.uid)
+            }
+        } catch (err) {
+            log.error(err);
 
-(async () => {
-
-// create database connection pool
-    const pool = new Pool({
-        connectionString: process.env.DATABASE_URL,
-        max: 20,
-        idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 2000,
-        ssl: {
-            rejectUnauthorized: false
         }
-    });
-
-    types.setTypeParser(20, (val) => parseInt(val, 10)); // parse int8 as number
-
-// test connection to database, and initialize tables if not created
-    try {
-        const pc = await pool.connect();
-        log.success("Connected to Postgres database.");
-        await initDb(pc);
-        pc.release();
-    } catch (err) {
-        log.error(err.message);
-        process.exit(1);
     }
+}
 
-    // initialize DAOs and Services
-    const daos: DAOs = {
-        users: new UserDAO(),
-        stocks: new StockDAO(),
-        transactions: new TransactionDAO(),
-        objects: new ObjectDAO(),
-        items: new ItemDAO(),
-    };
-    await Service.init(daos, pool);
-})();
+export {
+    assignCreditCards,
+    assignRewards,
+    updateRoles
+}

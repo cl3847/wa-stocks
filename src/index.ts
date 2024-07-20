@@ -58,7 +58,7 @@ require('dotenv').config();
     await Service.init(daos, pool);
 
     // initialize Discord client
-    const client = new Client({intents: [GatewayIntentBits.Guilds]});
+    const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildPresences]});
 
     client.once(Events.ClientReady, readyClient => {
         log.success(`Logged into Discord as ${readyClient.user.tag}.`);
@@ -88,9 +88,11 @@ require('dotenv').config();
 
         // autocomplete
         if (interaction.isAutocomplete()) {
-            const autocompleteCommand = commands.get(interaction.commandName);
-            try { await autocompleteCommand?.autocomplete(interaction) }
-            catch(e) { console.error(e) }
+            const autocompleteCommand = commands.get(interaction.commandName)!;
+            try {
+                await autocompleteCommand.autocomplete!(interaction);
+            }
+            catch(e) { log.error(e) }
             return;
         }
 
@@ -137,6 +139,8 @@ require('dotenv').config();
     try {
         //(client.channels.cache.get("1257801641495625788") as TextChannel).send("Placeholder")
         // await Service.getInstance().stocks.synchronizeAllStockPrices();
+        //await updateRoles(client);
+        // await Service.getInstance().stocks.synchronizeStockPrice("VNVDA");
         await updatePriceBoard(client);
         initJobs(client);
     } catch (err) {
