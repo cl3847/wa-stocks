@@ -268,6 +268,36 @@ class TransactionService {
             pc.release();
         }
     }
+
+    public async cashItem(uid: string, itemId: string, itemValue: number): Promise<void> {
+        const pc = await this.pool.connect();
+        const userPortfolio = await this.daos.users.getUserPortfolio(pc, uid);
+        if (!userPortfolio) {
+            pc.release();
+            throw new UserNotFoundError(uid);
+        }
+        const inventory = await this.daos.users.getInventory(pc, uid);
+        const itemHolding = inventory.find(i => i.item_id === itemId);
+        if (!itemHolding) {
+            pc.release();
+            throw new InsufficientItemQuantityError(uid, 0, 1);
+        }
+        const newItemQuantity = itemHolding.quantity - 1;
+        const newUserBalance = userPortfolio.balance + itemValue;
+
+        try {
+            await pc.query('BEGIN');
+            await this.daos.users.updateItemHolding(pc, uid, itemHolding.item_id, {quantity: newItemQuantity});
+            await this.daos.users.updateUser(pc, uid, {balance: newUserBalance});
+            await pc.query('COMMIT');
+            return;
+        } catch (err) {
+            await pc.query('ROLLBACK');
+            throw err; // Re-throw to be handled by the caller
+        } finally {
+            pc.release();
+        }
+    }
 }
 
 export default TransactionService;
