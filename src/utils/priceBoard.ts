@@ -11,15 +11,17 @@ import log from "./logger";
 async function updatePriceBoard(client: Client) {
     try {
         const service = Service.getInstance();
-        if (!config.bot.channels.info || !config.bot.messages.priceBoard) return;
+        if (!config.bot.channels.info || !config.bot.messages.priceBoard || !config.bot.messages.leaderboard) return;
         const allStocks = await service.stocks.getAllStocks();
         const yesterdayPrices = await service.stocks.getAllYesterdayPrice();
         const allUserPortfolios = (await service.users.getAllUserPortfolios()).sort((a, b) => b.netWorth() - a.netWorth());
         const channel = await client.channels.fetch(config.bot.channels.info) as TextChannel;
 
-        let message;
+        let messageLeaderboard;
+        let messagePriceBoard;
         try {
-            message = await channel.messages.fetch(config.bot.messages.priceBoard);
+            messagePriceBoard = await channel.messages.fetch(config.bot.messages.priceBoard);
+            messageLeaderboard = await channel.messages.fetch(config.bot.messages.leaderboard);
         } catch (err) {
             await channel.send("PRICE BOARD MESSAGE");
             log.error("Created price board message, copy ID and paste into config.");
@@ -27,10 +29,14 @@ async function updatePriceBoard(client: Client) {
         }
 
         const gameState = await service.game.getGameState();
-        await message.edit({
+        await messagePriceBoard.edit({
             content: "", embeds: [
-                await generateLeaderboardEmbed(client, allUserPortfolios),
                 generateStockBoardEmbed(allStocks, yesterdayPrices, gameState)
+            ]
+        });
+        await messageLeaderboard.edit({
+            content: "", embeds: [
+                await generateLeaderboardEmbed(client, allUserPortfolios)
             ]
         });
     } catch(err) {
@@ -80,7 +86,7 @@ async function generateLeaderboardEmbed(client: Client, allUserPortfolios: UserP
     const start = allUserPortfolios.slice(0, config.bot.leaderboardSizeTop);
     const end = allUserPortfolios.slice(-config.bot.leaderboardSizeBottom);
     end.filter(u => !start.map(x => x.uid).includes(u.uid));
-    const joined = start.concat(end)
+    const joined = start.concat(end);
 
     let i = 1;
     let shifted = false;
@@ -95,7 +101,7 @@ async function generateLeaderboardEmbed(client: Client, allUserPortfolios: UserP
         desc += `${i}: ${username} - $${dollarize(user.netWorth())} ($${dollarize(user.portfolioValue())})\n${totalPriceDiff >= 0 ? '+' : '-'}$${dollarize(Math.abs(totalPriceDiff))} (${percentDisplay}%)\n`;
         i++;
         if (i > start.length && !shifted && end.length > 0) {
-            desc += "\n...\n\n"
+            desc += "\n...\n\n";
             i = allUserPortfolios.length - end.length + 1;
             shifted = true;
         }

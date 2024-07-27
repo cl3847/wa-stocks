@@ -8,6 +8,7 @@ export type ConfigType = {
         };
         messages: {
             priceBoard: string | null;
+            leaderboard: string | null;
         };
         newsAmountTruncate: number;
         newsLengthTruncate: number;
