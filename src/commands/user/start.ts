@@ -33,7 +33,7 @@ const tutorialEmbeds = [
         .setDescription(`Welcome to The Wolf of Ayup! If this is the first time you've used \`/start\`, $${dollarize(config.game.startingBalance)} will have been deposited into your account. You can use this money to buy stocks, send money to other users, and more!\n\n` +
             `\`/profile <user?>\`: displays you or another user's balance, as well as other information about your account and inventory.`)
         .setImage(`https://i.imgur.com/YE7TRfD.png`)
-        .setFooter({text: 'Page 1/5'}),
+        .setFooter({text: 'Page 1/6'}),
     new EmbedBuilder()
         .setTitle('Tutorial: Buying & Selling Shares')
         .setColor(config.colors.blue)
@@ -44,7 +44,7 @@ const tutorialEmbeds = [
             `\`/market sell <ticker> <quantity?>\`: sell shares of a particular company.\n\n` +
             `After buying a share, it's added to your portfolio, or your collection of shares. You can view your portfolio with \`/profile\`.`)
         .setImage(`https://i.imgur.com/q9dWSyR.png`)
-        .setFooter({text: 'Page 2/5'}),
+        .setFooter({text: 'Page 2/6'}),
     new EmbedBuilder()
         .setTitle('Tutorial: Items and Trading Cards')
         .setColor(config.colors.blue)
@@ -54,7 +54,7 @@ const tutorialEmbeds = [
             `\`/item <item_id>\`: Shows information & actions for one of your items.\n\n` +
             `__Be the first to collect every trading card to win!__ Additional booster packs are distributed by game moderators every Friday at market close to the individuals with the highest net worth.`)
         .setImage(`https://i.imgur.com/4bq2R23.png`)
-        .setFooter({text: 'Page 3/5'}),
+        .setFooter({text: 'Page 3/6'}),
     new EmbedBuilder()
         .setTitle('Tutorial: Wire Transactions')
         .setColor(config.colors.blue)
@@ -63,7 +63,7 @@ const tutorialEmbeds = [
             `\`/wire entity <target> <balance>\`: Transfer money to an entity.\n\n` +
             `**Wire transactions are non-refundable and permanant.**`)
         .setImage(`https://i.imgur.com/Gp8NSYy.png`)
-        .setFooter({text: 'Page 4/5'}),
+        .setFooter({text: 'Page 4/6'}),
     new EmbedBuilder()
         .setTitle('Tutorial: Credit and Paying Debt')
         .setColor(config.colors.blue)
@@ -72,8 +72,16 @@ const tutorialEmbeds = [
             `\`/wire entity ${config.theme.financialCompanyTicker} <balance>\`: Pay off your debt to the bank.\n\n` +
             `Taking out debt is optional, but it can greatly increase the speed at which you make profits!`)
         .setImage(`https://i.imgur.com/OLp1p3a.png`)
-        .setFooter({text: 'Page 5/5'}),
-
+        .setFooter({text: 'Page 5/6'}),
+    new EmbedBuilder()
+        .setTitle('Tutorial: Level Requests and Bounties')
+        .setColor(config.colors.blue)
+        .setDescription(`Level requests work on a bounty system, where mods can earn money for taking level requests. Users can add money to a level's bounty to make it more likely that a moderator accepts it.\n\n` +
+            `You can wire money to the \`REQ\` (Level Request Tool) entity to add money to a level's bounty. Put your level ID in the optional \`memo\` field, so we know which bounty we should add the balance to.\n\n` +
+            `\`/wire entity REQ <balance> <memo>\`: Increase the bounty on the id in the \`memo\` field.\n\n` +
+            `Make sure you entered your level's ID correctly, as this is irreversible!`)
+        .setImage(`https://i.imgur.com/HMU5VWM.png`)
+        .setFooter({text: 'Page 6/6'}),
 ];
 
 module.exports = command;
