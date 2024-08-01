@@ -15,6 +15,8 @@ const command: CommandType = {
             try {
                 await service.users.initUser(interaction.user.id);
                 await logToChannel(interaction.client, `🎉 **${interaction.user.username}** registered an account with ${config.theme.financialCompanyName}!`);
+                const discordUser = await interaction.guild!.members.fetch(interaction.user.id);
+                await discordUser.roles.add(config.bot.baseRoleId);
             } catch (err) {
                 await interaction.reply({embeds: [confirmedEmbed(diffBlock(`- SETUP FAILED -\nYour profile could not be set up.`), config.colors.blue)]});
                 return;

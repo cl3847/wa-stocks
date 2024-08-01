@@ -20,7 +20,8 @@ const config: ConfigType = {
         leaderboardSizeBottom: 10,
         useEphemeralPurchase: true,
         useEphemeralWire: true,
-        maxProfileHoldingsDisplay: 15
+        maxProfileHoldingsDisplay: 15,
+        baseRoleId: "1267307202927132794"
     },
     "theme": {
         financialCompanyName: "Ayup Express",
@@ -44,14 +45,14 @@ const config: ConfigType = {
         "chartsDaysBack": 15, // Number of days to show in the price chart
         "etcOffset": 4,
         "loanMaxMultiplier": 4,
-        "creditDailyInterestPercent": 1,
+        "creditDailyInterestPercent": 4,
         "maxRequestId": 120000000,
         "defaultItems": [
             {item: "000", quantity: 1},
             {item: "900", quantity: 1},
         ],
         "randomWalkBias":  1,
-        "minimumLevelRequestAmount": 2500000
+        "minimumLevelRequestAmount": 2000000,
     },
 };
 

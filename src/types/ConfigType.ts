@@ -17,6 +17,7 @@ export type ConfigType = {
         useEphemeralPurchase: boolean;
         useEphemeralWire: boolean;
         maxProfileHoldingsDisplay: number;
+        baseRoleId: string;
     };
     theme: {
         financialCompanyName: string;
