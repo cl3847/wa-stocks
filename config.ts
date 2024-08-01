@@ -45,11 +45,13 @@ const config: ConfigType = {
         "etcOffset": 4,
         "loanMaxMultiplier": 4,
         "creditDailyInterestPercent": 1,
+        "maxRequestId": 120000000,
         "defaultItems": [
             {item: "000", quantity: 1},
             {item: "900", quantity: 1},
         ],
-        "randomWalkBias":  1
+        "randomWalkBias":  1,
+        "minimumLevelRequestAmount": 2500000
     },
 };
 

@@ -9,6 +9,7 @@ import StockTransaction from "../models/transaction/StockTransaction";
 import WireTransaction from "../models/transaction/WireTransaction";
 import InsufficientItemQuantityError from "../models/error/InsufficientItemQuantityError";
 import ItemNotFoundError from "../models/error/ItemNotFoundError";
+import Request from "../models/request/Request";
 
 class TransactionService {
     private daos: DAOs;
@@ -296,6 +297,27 @@ class TransactionService {
         } catch (err) {
             await pc.query('ROLLBACK');
             throw err; // Re-throw to be handled by the caller
+        } finally {
+            pc.release();
+        }
+    }
+
+    public async contributeToPool(levelId: string, amount: number): Promise<Request> {
+        const pc = await this.pool.connect();
+        try {
+            await pc.query('BEGIN');
+            let levelReq = await this.daos.requests.getRequest(pc, levelId);
+            if (!levelReq) {
+                levelReq = {level_id: levelId, bounty: 0};
+                await this.daos.requests.createRequest(pc, levelReq);
+            }
+            levelReq.bounty += amount;
+            await this.daos.requests.updateRequest(pc, levelId, levelReq);
+            await pc.query('COMMIT');
+            return levelReq;
+        } catch (err) {
+            await pc.query('ROLLBACK');
+            throw err;
         } finally {
             pc.release();
         }

@@ -39,10 +39,12 @@ export type ConfigType = {
         minimumStockPrice: number;
         chartsDaysBack: number;
         etcOffset: number;
+        maxRequestId: number;
         loanMaxMultiplier: number;
         creditDailyInterestPercent: number;
         defaultItems: {item: string, quantity: number}[];
         randomWalkBias: number;
+        minimumLevelRequestAmount: number;
     }
 };
 
