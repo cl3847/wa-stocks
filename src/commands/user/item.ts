@@ -69,7 +69,7 @@ const command: CommandType = {
         try {
             const confirmation = await response.awaitMessageComponent({
                 filter: i => i.user.id === interaction.user.id,
-                time: 60_000
+                time: 20_000
             });
             actions.get(itemId)!.find(a => a.identifier === confirmation.customId)?.execute(confirmation, itemHolding, userPortfolio);
         } catch (e) {

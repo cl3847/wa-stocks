@@ -156,7 +156,7 @@ const command: CommandType = {
             try {
                 const confirmation = await response.awaitMessageComponent({
                     filter: i => i.user.id === interaction.user.id,
-                    time: 60_000
+                    time: 20_000
                 });
                 if (confirmation.customId === 'confirm') {
                     try {
@@ -229,7 +229,7 @@ const command: CommandType = {
             try {
                 const confirmation = await response.awaitMessageComponent({
                     filter: i => i.user.id === interaction.user.id,
-                    time: 60_000
+                    time: 20_000
                 });
                 if (confirmation.customId === 'confirm') {
                     try {
