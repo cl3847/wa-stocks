@@ -73,7 +73,7 @@ const command: CommandType = {
         }
         fileMap.set(1, files2);
 
-        await handleEmbedNavigator(interaction, [embed, inventoryEmbed], fileMap, 300_000);
+        await handleEmbedNavigator(interaction, [embed, inventoryEmbed], fileMap, 60000);
     },
 };
 
