@@ -137,10 +137,11 @@ require('dotenv').config();
     // initialize cron jobs
 
     try {
-        //(client.channels.cache.get("1257801641495625788") as TextChannel).send("Placeholder")
+        // (client.channels.cache.get("1263909750278586511") as TextChannel).send("Placeholder2")
         // await Service.getInstance().stocks.synchronizeAllStockPrices();
         //await updateRoles(client);
         // await Service.getInstance().stocks.synchronizeStockPrice("VNVDA");
+        // await updateRoles(client);
         await updatePriceBoard(client);
         initJobs(client);
     } catch (err) {

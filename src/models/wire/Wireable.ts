@@ -14,8 +14,8 @@ abstract class Wireable {
         this.identifier = identifier;
     }
 
-    async onWire(interaction: CommandInteraction, fromUser: User, amount: number): Promise<void> {
-        const response = await this.previewWire(interaction, fromUser, amount);
+    async onWire(interaction: CommandInteraction, fromUser: User, amount: number, memo: string | null): Promise<void> {
+        const response = await this.previewWire(interaction, fromUser, amount, memo);
         try {
             const confirmation = await response.awaitMessageComponent({
                 filter: i => i.user.id === interaction.user.id,
@@ -36,7 +36,7 @@ abstract class Wireable {
                         });
                     return;
                 }
-                const transaction = await this.executeWire(confirmation, updatedFromUser, amount);
+                const transaction = await this.executeWire(confirmation, updatedFromUser, amount, memo);
                 if (!transaction) return;
                 await this.onSuccess(confirmation, updatedFromUser, transaction);
             } else if (confirmation.customId === 'cancel') {
@@ -58,9 +58,9 @@ abstract class Wireable {
         }
     }
 
-    protected abstract previewWire(interaction: CommandInteraction, fromUid: User, amount: number): Promise<InteractionResponse<boolean>>;
+    protected abstract previewWire(interaction: CommandInteraction, fromUid: User, amount: number, memo: string | null): Promise<InteractionResponse<boolean>>;
 
-    protected abstract executeWire(confirmation: MessageComponentInteraction, fromUser: User, amount: number): Promise<WireTransaction | null>;
+    protected abstract executeWire(confirmation: MessageComponentInteraction, fromUser: User, amount: number, memo: string | null): Promise<WireTransaction | null>;
 
     protected abstract onSuccess(confirmation: MessageComponentInteraction, fromUser: User, transaction: WireTransaction): Promise<void>;
 }

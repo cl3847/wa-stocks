@@ -195,7 +195,7 @@ class TransactionService {
         }
     }
 
-    public async wireToUser(fromUid: string, destUid: string, amount: number): Promise<WireTransaction> {
+    public async wireToUser(fromUid: string, destUid: string, amount: number, memo: string | null): Promise<WireTransaction> {
         const pc = await this.pool.connect();
         const fromUser = await this.daos.users.getUser(pc, fromUid);
         if (!fromUser) {
@@ -223,6 +223,7 @@ class TransactionService {
                 destination: destUid,
                 is_destination_user: true,
                 timestamp: Date.now(),
+                memo: memo,
             };
             await this.daos.transactions.createTransaction(pc, transactionRecord);
             await pc.query('COMMIT');
@@ -235,7 +236,7 @@ class TransactionService {
         }
     }
 
-    public async wireToEntity(fromUid: string, destIdentifier: string, amount: number): Promise<WireTransaction> {
+    public async wireToEntity(fromUid: string, destIdentifier: string, amount: number, memo: string | null): Promise<WireTransaction> {
         const pc = await this.pool.connect();
         const fromUser = await this.daos.users.getUser(pc, fromUid);
         if (!fromUser) {
@@ -257,6 +258,7 @@ class TransactionService {
                 destination: destIdentifier,
                 is_destination_user: false,
                 timestamp: Date.now(),
+                memo: memo,
             };
             await this.daos.transactions.createTransaction(pc, transactionRecord);
             await pc.query('COMMIT');

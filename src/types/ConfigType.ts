@@ -31,6 +31,7 @@ export type ConfigType = {
     };
     game: {
         startingBalance: number;
+        minHeldWire: number;
         startingCreditLimit: number;
         randomWalkVolatility: number;
         randomWalkInterval: number;

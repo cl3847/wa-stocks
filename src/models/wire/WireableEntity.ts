@@ -17,7 +17,7 @@ import WireRejectionError from "../error/WireRejectionError";
 
 class WireableEntity extends Wireable {
     protected onSuccess: (confirmation: MessageComponentInteraction, fromUser: User, transaction: WireTransaction) => Promise<void>;
-    protected checkAcceptWire: (instance: WireableEntity, fromUser: User, amount: number) => Promise<void>;
+    protected checkAcceptWire: (instance: WireableEntity, fromUser: User, amount: number, memo: string | null) => Promise<void>;
 
     thumbnail: LocalThumbnail | null;
 
@@ -25,7 +25,7 @@ class WireableEntity extends Wireable {
         name: string,
         identifier: string,
         thumbnail: LocalThumbnail | null,
-        checkAcceptWire: (instance: WireableEntity, fromUser: User, amount: number) => Promise<void>,
+        checkAcceptWire: (instance: WireableEntity, fromUser: User, amount: number, memo: string | null) => Promise<void>,
         onSuccess: (confirmation: MessageComponentInteraction, fromUser: User, transaction: WireTransaction) => Promise<void>
     ) {
         super(name, identifier);
@@ -34,11 +34,11 @@ class WireableEntity extends Wireable {
         this.thumbnail = thumbnail;
     }
 
-    protected async executeWire(confirmation: MessageComponentInteraction, fromUser: User, amount: number): Promise<WireTransaction | null> {
+    protected async executeWire(confirmation: MessageComponentInteraction, fromUser: User, amount: number, memo: string | null): Promise<WireTransaction | null> {
         const service = Service.getInstance();
         try {
-            await this.checkAcceptWire(this, fromUser, amount);
-            return service.transactions.wireToEntity(fromUser.uid, this.identifier, amount);
+            await this.checkAcceptWire(this, fromUser, amount, memo);
+            return service.transactions.wireToEntity(fromUser.uid, this.identifier, amount, memo);
         } catch (err) {
             if (err instanceof WireRejectionError) {
                 const embeds = [];
@@ -55,7 +55,7 @@ class WireableEntity extends Wireable {
         return null;
     }
 
-    protected async previewWire(interaction: CommandInteraction, fromUser: User, amount: number): Promise<InteractionResponse<boolean>> {
+    protected async previewWire(interaction: CommandInteraction, fromUser: User, amount: number, _: string | null): Promise<InteractionResponse<boolean>> {
         const embed = new EmbedBuilder()
             .setTitle('Confirm Wire Transfer')
             .setDescription(diffBlock(

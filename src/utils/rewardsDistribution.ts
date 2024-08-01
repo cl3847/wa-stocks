@@ -7,11 +7,18 @@ import {Client} from "discord.js"
 
 const rewardConfig = {
     cardDistribution: [
-        {group: 0.0625, item: "040", limitBump: 30000000, weeklyRewards: [{item: "900", quantity: 5}], role: "1258800184176017499"}, // rose gold
-        {group: 0.125, item: "030", limitBump: 15000000, weeklyRewards: [{item: "900", quantity: 3}], role: "1258800827879915531"}, // rose gold
-        {group: 0.25, item: "020", limitBump: 10000000, weeklyRewards: [{item: "900", quantity: 2}], role: "1258800072578301952"}, // gold
-        {group: 0.5, item: "010", limitBump: 5000000, weeklyRewards: [{item: "900", quantity: 1}], role: "1258799929036378194"}, // green
-        {group: 1,   item: "000", limitBump: 0, weeklyRewards: [], roleId: "1257800796624523345"} // blue
+        {group: 0.03125, item: "050", limitBump: 50000000, weeklyRewards: [{item: "900", quantity: 10},
+                {item: "919", quantity: 1}, {item: "918", quantity: 1}], role: "1258800359342870528"}, // centurion
+        {group: 0.0625, item: "040", limitBump: 30000000, weeklyRewards: [{item: "900", quantity: 5},
+                {item: "917", quantity: 1}], role: "1258800184176017499"}, // rose gold
+        {group: 0.125, item: "030", limitBump: 15000000, weeklyRewards: [{item: "900", quantity: 3},
+                {item: "916", quantity: 1}], role: "1258800827879915531"}, // rose gold
+        {group: 0.25, item: "020", limitBump: 10000000, weeklyRewards: [{item: "900", quantity: 2},
+                {item: "915", quantity: 1}], role: "1258800072578301952"}, // gold
+        {group: 0.5, item: "010", limitBump: 5000000, weeklyRewards: [{item: "900", quantity: 1},
+                {item: "914", quantity: 1}], role: "1258799929036378194"}, // green
+        {group: 1, item: "000", limitBump: 0, weeklyRewards: [
+            {item: "913", quantity: 1}], role: "1257800796624523345"} // blue
     ]
 };
 
@@ -76,7 +83,7 @@ async function updateRoles(client: Client) {
     const rolesSet = new Set(rewardConfig.cardDistribution.map(x => x.role));
     for (let user of users) {
         try {
-            const discordUser = await guild.members.fetch(user.uid);
+            const discordUser = await guild.members.fetch({user: user.uid, force: true});
             const inventory = await service.users.getUserInventory(user.uid);
             const currentCard = inventory.find((x: Item) => x.type === "credit_card");
             if (!currentCard) throw new MissingCreditCardError(user.uid);

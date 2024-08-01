@@ -16,7 +16,7 @@ const loanPayEntity = new WireableEntity(
         url: `attachment://logo.png`,
         file: thumbnailAttachment
     } : null,
-    async (instance: WireableEntity, fromUser: User, amount: number): Promise<void> => {
+    async (instance: WireableEntity, fromUser: User, amount: number, _: string | null): Promise<void> => {
         if (fromUser.loan_balance < amount) {
             throw new WireRejectionError(fromUser, instance,`You only owe $${dollarize(fromUser.loan_balance)}, but sent more than what you owe.`);
         }
@@ -32,7 +32,7 @@ const loanPayEntity = new WireableEntity(
             `  $${dollarize(fromUser.loan_balance)} previous debt\n` +
             `- $${dollarize(-transaction.balance_change)} wire amount\n` +
             `= $${dollarize(fromUser.loan_balance + transaction.balance_change)} current debt\n`
-        ), config.colors.blue)
+        ), config.colors.blue);
 
         await confirmation.update({
             embeds: [...confirmation.message.embeds, successEmbed],

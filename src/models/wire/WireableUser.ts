@@ -26,9 +26,9 @@ class WireableUser extends Wireable implements User {
         this.avatarUrl = avatarUrl || null;
     }
 
-    protected async executeWire(_: MessageComponentInteraction, fromUser: User, amount: number): Promise<WireTransaction> {
+    protected async executeWire(_: MessageComponentInteraction, fromUser: User, amount: number, memo: string | null): Promise<WireTransaction> {
         const service = Service.getInstance();
-        return service.transactions.wireToUser(fromUser.uid, this.uid, amount);
+        return service.transactions.wireToUser(fromUser.uid, this.uid, amount, memo);
     }
 
     protected async onSuccess(confirmation: MessageComponentInteraction, _: User, transaction: WireTransaction): Promise<void> {
@@ -40,7 +40,7 @@ class WireableUser extends Wireable implements User {
         await logToChannel(confirmation.client, `🌐 **${confirmation.user.username}** wired **${this.name}** a total of $${dollarize(-transaction.balance_change)}.`);
     }
 
-    protected async previewWire(interaction: CommandInteraction, fromUser: User, amount: number): Promise<InteractionResponse<boolean>> {
+    protected async previewWire(interaction: CommandInteraction, fromUser: User, amount: number, _: string | null): Promise<InteractionResponse<boolean>> {
         const embed = new EmbedBuilder()
             .setTitle('Confirm Wire Transfer')
             .setDescription(diffBlock(

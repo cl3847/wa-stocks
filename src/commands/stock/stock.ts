@@ -1,5 +1,12 @@
 import CommandType from "../../types/CommandType";
-import {AttachmentBuilder, CacheType, ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
+import {
+    AttachmentBuilder,
+    AutocompleteInteraction,
+    CacheType,
+    ChatInputCommandInteraction,
+    EmbedBuilder,
+    SlashCommandBuilder
+} from "discord.js";
 import Service from "../../services/Service";
 import {confirmedEmbed, diffBlock, dollarize, getStockLogo} from "../../utils/helpers";
 import config from "config";
@@ -22,7 +29,7 @@ const command: CommandType = {
         ),
     
     async autocomplete(int: AutocompleteInteraction) {
-        autocompleteStock(int)
+        await autocompleteStock(int)
     },
 
     async execute(interaction: ChatInputCommandInteraction<CacheType>) {

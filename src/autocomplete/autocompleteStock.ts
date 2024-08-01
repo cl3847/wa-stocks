@@ -5,7 +5,7 @@ import Stock from "../models/stock/Stock";
 // this is what appears in the autocomplete options
 // regardless of what it says (full name, etc), selecting the option will only fill in the ticker
 function formatName(stock: Stock) {
-    return `${stock.ticker} (${stock.name})`
+    return `${stock.ticker} / ${stock.name}`
 }
 
 async function autocompleteStock(int: AutocompleteInteraction) {
@@ -31,4 +31,4 @@ async function autocompleteStock(int: AutocompleteInteraction) {
     return int.respond(exactMatches.concat(closeMatches).slice(0, 25))
 }
 
-module.exports = autocompleteStock;
+export default autocompleteStock;

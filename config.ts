@@ -16,7 +16,7 @@ const config: ConfigType = {
         },
         newsAmountTruncate: 6,
         newsLengthTruncate: 40,
-        leaderboardSizeTop: 10,
+        leaderboardSizeTop: 20,
         leaderboardSizeBottom: 10,
         useEphemeralPurchase: true,
         useEphemeralWire: true,
@@ -35,6 +35,7 @@ const config: ConfigType = {
     },
     "game": {
         "startingBalance": 10000000, // Starting balance in CENTS
+        "minHeldWire": 10000000,
         "startingCreditLimit": 20000000, // Starting credit limit in CENTS
         "randomWalkVolatility": 0.0025,
         "randomWalkInterval": 1, // In minutes

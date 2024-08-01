@@ -61,6 +61,7 @@ const initDb = async (pc: PoolClient) => {
             credit_change BIGINT,
             destination TEXT,
             is_destination_user BOOLEAN,
+            memo TEXT,
             FOREIGN KEY(uid) REFERENCES users(uid) ON UPDATE CASCADE ON DELETE CASCADE,
             FOREIGN KEY(ticker) REFERENCES stocks(ticker) ON UPDATE CASCADE ON DELETE CASCADE
         );`
@@ -119,6 +120,12 @@ const initDb = async (pc: PoolClient) => {
             PRIMARY KEY (uid, item_id),
             FOREIGN KEY(uid) REFERENCES users(uid) ON UPDATE CASCADE ON DELETE CASCADE,
             FOREIGN KEY(item_id) REFERENCES items(item_id) ON UPDATE CASCADE ON DELETE CASCADE
+        );`
+    );
+    await createTable('requests', `
+            CREATE TABLE requests (
+            level_id TEXT PRIMARY KEY,
+            bounty INT NOT NULL
         );`
     );
     // check if gameState exists in objects
