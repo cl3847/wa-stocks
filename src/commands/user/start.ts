@@ -74,6 +74,6 @@ const tutorialEmbeds = [
         .setImage(`https://i.imgur.com/OLp1p3a.png`)
         .setFooter({text: 'Page 5/5'}),
 
-]
+];
 
 module.exports = command;

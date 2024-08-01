@@ -6,6 +6,7 @@ import WireTransaction from "../models/transaction/WireTransaction";
 import User from "../models/user/User";
 import WireRejectionError from "../models/error/WireRejectionError";
 import Service from "../services/Service";
+import Item from "../models/item/Item";
 
 function parseLid(memo: string | null): string | null {
     if (!memo) return null;
@@ -34,16 +35,51 @@ null,
         }
         return;
     },
-    async (confirmation: MessageComponentInteraction, _: User, transaction: WireTransaction) => {
+    async (confirmation: MessageComponentInteraction, fromUser: User, transaction: WireTransaction) => {
         const service = Service.getInstance();
 
         const levelId = parseLid(transaction.memo!)!;
         const lvlReq = await service.transactions.contributeToPool(levelId, -transaction.balance_change);
 
+        // cashback
+        const inventory = await service.users.getUserInventory(fromUser.uid);
+        const currentCard = inventory.find((x: Item) => x.type === "credit_card");
+
+        let cashbackAmount = 0;
+        if (currentCard) {
+            let cashback = 0;
+            switch (currentCard.item_id) {
+                case '010': // green
+                    cashback = 0.01;
+                    break;
+                case '020': // gold
+                    cashback = 0.02;
+                    break;
+                case '030': // rose gold
+                    cashback = 0.03;
+                    break;
+                case '040': // white gold
+                    cashback = 0.04;
+                    break;
+                case '050': // platinum
+                    cashback = 0.05;
+                    break;
+                case '060': // centurion
+                    cashback = 0.1;
+                    break;
+                default:
+                    cashback = 0;
+            }
+            cashbackAmount = Math.floor(-transaction.balance_change * cashback);
+            fromUser = (await service.users.getUser(fromUser.uid))!;
+            await service.users.updateUser(fromUser.uid, {balance: fromUser.balance + cashbackAmount});
+        }
+
         const successEmbed = confirmedEmbed(diffBlock(`+ WIRE SUCCESSFUL +\n$${dollarize(-transaction.balance_change)} contributed to the request bounty for the level with ID ${levelId}.`) + diffBlock(
             `  $${dollarize(lvlReq.bounty - (-transaction.balance_change))} previous bounty\n` +
             `+ $${dollarize(-transaction.balance_change)} wire amount\n` +
-            `= $${dollarize(lvlReq.bounty)} current bounty\n`
+            `= $${dollarize(lvlReq.bounty)} current bounty\n` +
+            (cashbackAmount > 0 ? `\nYou received $${dollarize(cashbackAmount)} cashback!` : "")
         ), config.colors.blue);
 
         await confirmation.update({
