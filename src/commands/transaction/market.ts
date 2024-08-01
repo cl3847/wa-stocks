@@ -1,6 +1,6 @@
 import CommandType from "../../types/CommandType";
 import {
-    AttachmentBuilder,
+    AttachmentBuilder, AutocompleteInteraction,
     ButtonStyle,
     CacheType,
     ChatInputCommandInteraction,
@@ -24,6 +24,7 @@ import {
 import Price from "../../models/Price";
 import UserPortfolio from "../../models/user/UserPortfolio";
 import InsufficientStockQuantityError from "../../models/error/InsufficientStockQuantityError";
+import autocompleteStock from "../../autocomplete/autocompleteStock";
 
 const command: CommandType = {
     data: new SlashCommandBuilder()
@@ -37,6 +38,7 @@ const command: CommandType = {
                         option
                             .setName('ticker')
                             .setDescription('The ticker of the stock you want to sell')
+                            .setAutocomplete(true)
                             .setRequired(true),
                     //.addChoices(Service.stockTickerList.map(ticker => ({ name: ticker, value: ticker })))
                 )
@@ -53,6 +55,7 @@ const command: CommandType = {
                         option
                             .setName('ticker')
                             .setDescription('The ticker of the stock you want to buy')
+                            .setAutocomplete(true)
                             .setRequired(true),
                     //.addChoices(Service.stockTickerList.map(ticker => ({ name: ticker, value: ticker })))
                 )
@@ -61,6 +64,11 @@ const command: CommandType = {
                         .setName('quantity')
                         .setDescription('The quantity of the stock you want to buy')),
         ),
+
+    async autocomplete(int: AutocompleteInteraction) {
+        await autocompleteStock(int)
+    },
+
     async execute(interaction: ChatInputCommandInteraction<CacheType>) {
         if (!interaction.isCommand()) return;
         const transactionType = interaction.options.getSubcommand() as "buy" | "sell";
