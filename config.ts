@@ -46,7 +46,7 @@ const config: ConfigType = {
         "chartsDaysBack": 15, // Number of days to show in the price chart
         "etcOffset": 4,
         "loanMaxMultiplier": 4,
-        "creditDailyInterestPercent": 4,
+        "creditDailyInterestPercent": 3,
         "maxRequestId": 120000000,
         "defaultItems": [
             {item: "000", quantity: 1},
