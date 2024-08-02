@@ -15,6 +15,7 @@ import {createCandlestickStockImage} from "../../utils/graphing";
 import log from "../../utils/logger";
 import NewsPopulatedStock from "../../models/stock/NewsPopulatedStock";
 import autocompleteStock from "../../autocomplete/autocompleteStock";
+import UserStock from "../../models/user/UserStock";
 
 const command: CommandType = {
     data: new SlashCommandBuilder()
@@ -42,8 +43,9 @@ const command: CommandType = {
             return;
         }
         const yesterdayPrice = await service.stocks.getYesterdayPrice(ticker);
+        const topShareholders = await service.stocks.getTopShareholders(ticker, config.bot.topShareholdersAmount);
 
-        const embed = generateStockEmbed(stock, yesterdayPrice);
+        const embed = generateStockEmbed(stock, yesterdayPrice, topShareholders);
 
         const files: AttachmentBuilder[] = [];
         try {
@@ -65,7 +67,7 @@ const command: CommandType = {
     },
 };
 
-const generateStockEmbed = (stock: NewsPopulatedStock, yesterdayPrice: Price | null): EmbedBuilder => {
+const generateStockEmbed = (stock: NewsPopulatedStock, yesterdayPrice: Price | null, topShareholders: UserStock[]): EmbedBuilder => {
     const priceDiff = stock.price - (yesterdayPrice ? yesterdayPrice.close_price : 0);
     const priceDiffPercent = priceDiff / (yesterdayPrice ? yesterdayPrice.close_price : 1);
 
@@ -85,6 +87,15 @@ const generateStockEmbed = (stock: NewsPopulatedStock, yesterdayPrice: Price | n
             value: stock.news.slice(0, config.bot.newsAmountTruncate).map(article => {
                 //return `${article.message_link} - ${article.body.substring(0, 30)}...`;
                 return `🔗 [${article.body.substring(0, config.bot.newsLengthTruncate)}${article.body.length > config.bot.newsLengthTruncate ? "..." : ""}](${article.message_link})`;
+            }).join("\n")
+        });
+    }
+
+    if (topShareholders.length > 0) {
+        embed.addFields({
+            name: "Top Shareholders",
+                value: topShareholders.map((us, _) => {
+                return `<@${us.uid}> - \`${us.quantity} share(s)\``;
             }).join("\n")
         });
     }

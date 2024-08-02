@@ -18,6 +18,7 @@ export type ConfigType = {
         useEphemeralWire: boolean;
         maxProfileHoldingsDisplay: number;
         baseRoleId: string;
+        topShareholdersAmount: number;
     };
     theme: {
         financialCompanyName: string;

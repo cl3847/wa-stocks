@@ -21,7 +21,8 @@ const config: ConfigType = {
         useEphemeralPurchase: true,
         useEphemeralWire: true,
         maxProfileHoldingsDisplay: 15,
-        baseRoleId: "1267307202927132794"
+        baseRoleId: "1267307202927132794",
+        topShareholdersAmount: 3
     },
     "theme": {
         financialCompanyName: "Ayup Express",

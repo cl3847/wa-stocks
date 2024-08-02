@@ -129,7 +129,7 @@ class StockDAO {
     }
 
     public async getTopShareholders(pc: PoolClient, ticker: string, limit: number): Promise<UserStock[]> {
-        const query = "SELECT us.* FROM users_stocks us WHERE us.ticker = $1 ORDER BY us.quantity DESC LIMIT $2";
+        const query = "SELECT us.* FROM current_users_stocks us WHERE us.ticker = $1 ORDER BY us.quantity DESC LIMIT $2";
         const params = [ticker, limit];
         const result = await pc.query(query, params);
         return result.rows;
