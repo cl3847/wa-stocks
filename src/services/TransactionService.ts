@@ -14,6 +14,7 @@ import RequestNotFoundError from "../models/error/RequestNotFoundError";
 import RequestTransaction from "../models/transaction/RequestTransaction";
 import config from "../../config";
 import InsufficentNetWorthError from "../models/error/InsufficientNetWorthError";
+import Item from "../models/item/Item";
 
 class TransactionService {
     private daos: DAOs;
@@ -310,7 +311,7 @@ class TransactionService {
         }
     }
 
-    public async contributeBounty(uid: string, levelId: string, amount: number): Promise<Request> {
+    public async contributeBounty(uid: string, levelId: string, amount: number): Promise<RequestTransaction> {
         const pc = await this.pool.connect();
         const user = await this.daos.users.getUserPortfolio(pc, uid);
         if (!user) {
@@ -325,10 +326,41 @@ class TransactionService {
             pc.release();
             throw new InsufficentNetWorthError(uid, user.netWorth(), amount);
         }
+        const inventory = await this.daos.users.getInventory(pc, uid);
+        const currentCard = inventory.find((x: Item) => x.type === "credit_card");
 
         try {
             await pc.query('BEGIN');
-            await this.daos.users.updateUser(pc, uid, {balance: user.balance - amount});
+
+            let cashbackAmount = 0;
+            if (currentCard) {
+                let cashback = 0;
+                switch (currentCard.item_id) {
+                    case '010': // green
+                        cashback = 0.01;
+                        break;
+                    case '020': // gold
+                        cashback = 0.02;
+                        break;
+                    case '030': // rose gold
+                        cashback = 0.03;
+                        break;
+                    case '040': // white gold
+                        cashback = 0.04;
+                        break;
+                    case '050': // platinum
+                        cashback = 0.05;
+                        break;
+                    case '060': // centurion
+                        cashback = 0.1;
+                        break;
+                    default:
+                        cashback = 0;
+                }
+                cashbackAmount = Math.floor(amount * cashback);
+            }
+
+            await this.daos.users.updateUser(pc, uid, {balance: (user.balance - amount) + cashbackAmount});
             let levelReq = await this.daos.requests.getRequest(pc, levelId);
             if (!levelReq) {
                 levelReq = {level_id: levelId, bounty: 0};
@@ -341,14 +373,14 @@ class TransactionService {
                 destination: levelId,
                 uid: uid,
                 type: 'request_add',
-                balance_change: -amount,
+                balance_change: -amount + cashbackAmount,
                 price: amount,
                 timestamp: Date.now()
             };
             await this.daos.transactions.createTransaction(pc, transactionRecord);
 
             await pc.query('COMMIT');
-            return levelReq;
+            return transactionRecord;
         } catch (err) {
             await pc.query('ROLLBACK');
             throw err;

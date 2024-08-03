@@ -103,10 +103,13 @@ const command: CommandType = {
                         });
                         if (confirmation.customId === 'confirm') {
                             try {
-                                await service.transactions.contributeBounty(user.uid, parsedId, addBalance);
+                                const transactionRecord = await service.transactions.contributeBounty(user.uid, parsedId, addBalance);
+                                const cashbackAmount = transactionRecord.price + transactionRecord.balance_change;
                                 await confirmation.update({
                                     embeds: [...embeds,
-                                        confirmedEmbed(diffBlock(`+ CONTRIBUTION SUCCESSFUL +\n$${dollarize(addBalance)} has been added to the bounty for level ${parsedId}.`), config.colors.blue)
+                                        confirmedEmbed(diffBlock(`+ CONTRIBUTION SUCCESSFUL +\n$${dollarize(addBalance)} has been added to the bounty for level ${parsedId}.` +
+                                            (cashbackAmount > 0 ? `\nYou received $${dollarize(cashbackAmount)} cashback!` : "")
+                                        ), config.colors.blue)
                                     ], components: [],
                                 });
                                 await logToChannel(interaction.client, `👇 **${interaction.user.username}** added $${dollarize(addBalance)} to the bounty for level \`${parsedId}\`.`);
