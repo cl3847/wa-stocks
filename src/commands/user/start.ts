@@ -76,11 +76,12 @@ const tutorialEmbeds = [
     new EmbedBuilder()
         .setTitle('Tutorial: Level Requests and Bounties')
         .setColor(config.colors.blue)
-        .setDescription(`Level requests work on a bounty system, where mods can earn money for taking level requests. Users can add money to a level's bounty to make it more likely that a moderator accepts it.\n\n` +
-            `You can wire money to the \`REQ\` (Level Request Tool) entity to add money to a level's bounty. Put your level ID in the optional \`memo\` field, so we know which bounty we should add the balance to.\n\n` +
-            `\`/wire entity REQ <balance> <memo>\`: Increase the bounty on the id in the \`memo\` field.\n\n` +
-            `Make sure you entered your level's ID correctly, as this is irreversible!`)
-        .setImage(`https://i.imgur.com/HMU5VWM.png`)
+        .setDescription(`Level requests work on a bounty system, where mods can earn money for taking level requests. Users can add money to a level's bounty to make it more likely that a moderator accepts it. Requests with a low bounty are unlikely to be seen by a moderator.\n\n` +
+            `You can use the \`/request\` command to add money to a level's bounty. A list of requests can be found with \`/request list\`, or at the top of <#${config.bot.channels.info}>. Try to make your request competitive!\n\n` +
+            `\`/request level <level-id> <balance?>\`: Increase the bounty on a level request or view the status of the request.\n\n` +
+            `\`/request list\`: See a list of open requests sorted by bounty amount.\n\n` +
+            `You can view the status of a request by using \`/request level\` without providing a balance. Feel free to add more money to a bounty if your request is going unnoticed.`)
+        .setImage(`https://i.imgur.com/dQnOyRQ.png`)
         .setFooter({text: 'Page 6/6'}),
 ];
 

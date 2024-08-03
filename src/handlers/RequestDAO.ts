@@ -26,6 +26,19 @@ class RequestDAO {
         const params = [...Object.values(request), levelId];
         await pc.query(query, params);
     }
+
+    public async deleteRequest(pc: PoolClient, levelId: string): Promise<void> {
+        const query = `DELETE FROM requests WHERE level_id = $1`;
+        const params = [levelId];
+        await pc.query(query, params);
+    }
+
+    public async getAllRequests(pc: PoolClient, limit: number): Promise<Request[]> {
+        const query = `SELECT * FROM requests WHERE bounty > 0 ORDER BY bounty DESC LIMIT $1`;
+        const params = [limit];
+        const result = await pc.query(query, params);
+        return result.rows;
+    }
 }
 
 export default RequestDAO;

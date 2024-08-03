@@ -10,6 +10,10 @@ import WireTransaction from "../models/transaction/WireTransaction";
 import InsufficientItemQuantityError from "../models/error/InsufficientItemQuantityError";
 import ItemNotFoundError from "../models/error/ItemNotFoundError";
 import Request from "../models/request/Request";
+import RequestNotFoundError from "../models/error/RequestNotFoundError";
+import RequestTransaction from "../models/transaction/RequestTransaction";
+import config from "../../config";
+import InsufficentNetWorthError from "../models/error/InsufficientNetWorthError";
 
 class TransactionService {
     private daos: DAOs;
@@ -198,7 +202,7 @@ class TransactionService {
 
     public async wireToUser(fromUid: string, destUid: string, amount: number, memo: string | null): Promise<WireTransaction> {
         const pc = await this.pool.connect();
-        const fromUser = await this.daos.users.getUser(pc, fromUid);
+        const fromUser = await this.daos.users.getUserPortfolio(pc, fromUid);
         if (!fromUser) {
             pc.release();
             throw new UserNotFoundError(fromUid);
@@ -211,6 +215,10 @@ class TransactionService {
         if (fromUser.balance < amount) {
             pc.release();
             throw new InsufficientBalanceError(fromUid, fromUser.balance, amount);
+        }
+        if (fromUser.netWorth() - amount < config.game.minHeldWire) {
+            pc.release();
+            throw new InsufficentNetWorthError(fromUid, fromUser.netWorth(), amount);
         }
 
         try {
@@ -239,7 +247,7 @@ class TransactionService {
 
     public async wireToEntity(fromUid: string, destIdentifier: string, amount: number, memo: string | null): Promise<WireTransaction> {
         const pc = await this.pool.connect();
-        const fromUser = await this.daos.users.getUser(pc, fromUid);
+        const fromUser = await this.daos.users.getUserPortfolio(pc, fromUid);
         if (!fromUser) {
             pc.release();
             throw new UserNotFoundError(fromUid);
@@ -302,10 +310,25 @@ class TransactionService {
         }
     }
 
-    public async contributeToPool(levelId: string, amount: number): Promise<Request> {
+    public async contributeBounty(uid: string, levelId: string, amount: number): Promise<Request> {
         const pc = await this.pool.connect();
+        const user = await this.daos.users.getUserPortfolio(pc, uid);
+        if (!user) {
+            pc.release();
+            throw new UserNotFoundError(uid);
+        }
+        if (user.balance < amount) {
+            pc.release();
+            throw new InsufficientBalanceError(uid, user.balance, amount);
+        }
+        if (user.netWorth() - amount < config.game.minHeldWire) {
+            pc.release();
+            throw new InsufficentNetWorthError(uid, user.netWorth(), amount);
+        }
+
         try {
             await pc.query('BEGIN');
+            await this.daos.users.updateUser(pc, uid, {balance: user.balance - amount});
             let levelReq = await this.daos.requests.getRequest(pc, levelId);
             if (!levelReq) {
                 levelReq = {level_id: levelId, bounty: 0};
@@ -313,8 +336,77 @@ class TransactionService {
             }
             levelReq.bounty += amount;
             await this.daos.requests.updateRequest(pc, levelId, levelReq);
+
+            const transactionRecord: RequestTransaction = {
+                destination: levelId,
+                uid: uid,
+                type: 'request_add',
+                balance_change: -amount,
+                price: amount,
+                timestamp: Date.now()
+            };
+            await this.daos.transactions.createTransaction(pc, transactionRecord);
+
             await pc.query('COMMIT');
             return levelReq;
+        } catch (err) {
+            await pc.query('ROLLBACK');
+            throw err;
+        } finally {
+            pc.release();
+        }
+    }
+
+    public async viewRequestPool(limit: number): Promise<Request[]> {
+        const pc = await this.pool.connect();
+        try {
+            return this.daos.requests.getAllRequests(pc, limit);
+        } finally {
+            pc.release();
+        }
+    }
+
+    public async getRequest(levelId: string): Promise<Request | null> {
+        const pc = await this.pool.connect();
+        try {
+            return this.daos.requests.getRequest(pc, levelId);
+        } finally {
+            pc.release();
+        }
+    }
+
+    public async acceptBounty(uid: string, levelId: string): Promise<RequestTransaction> {
+        const pc = await this.pool.connect();
+        const user = await this.daos.users.getUser(pc, uid);
+        if (!user) {
+            pc.release();
+            throw new UserNotFoundError(uid);
+        }
+        const request = await this.daos.requests.getRequest(pc, levelId);
+        if (!request || request.bounty === 0) {
+            pc.release();
+            throw new RequestNotFoundError(levelId);
+        }
+        const commissionAmount = Math.ceil(request.bounty * config.game.modCommission);
+
+        const newBalance = user.balance + commissionAmount;
+        try {
+            await pc.query('BEGIN');
+            await this.daos.users.updateUser(pc, uid, {balance: newBalance});
+            request.bounty = 0;
+            await this.daos.requests.updateRequest(pc, levelId, request);
+
+            const transactionRecord: RequestTransaction = {
+                destination: levelId,
+                uid: uid,
+                type: 'request_add',
+                price: request.bounty,
+                balance_change: commissionAmount,
+                timestamp: Date.now()
+            };
+            await this.daos.transactions.createTransaction(pc, transactionRecord);
+            await pc.query('COMMIT');
+            return transactionRecord;
         } catch (err) {
             await pc.query('ROLLBACK');
             throw err;

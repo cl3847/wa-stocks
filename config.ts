@@ -22,6 +22,7 @@ const config: ConfigType = {
         useEphemeralWire: true,
         maxProfileHoldingsDisplay: 15,
         baseRoleId: "1267307202927132794",
+        modRoleId: "1268324135768166433",
         topShareholdersAmount: 3
     },
     "theme": {
@@ -37,7 +38,7 @@ const config: ConfigType = {
     },
     "game": {
         "startingBalance": 10000000, // Starting balance in CENTS
-        "minHeldWire": 10000000,
+        "minHeldWire": 10000001,
         "startingCreditLimit": 20000000, // Starting credit limit in CENTS
         "randomWalkVolatility": 0.0025,
         "randomWalkInterval": 1, // In minutes
@@ -53,7 +54,8 @@ const config: ConfigType = {
             {item: "900", quantity: 1},
         ],
         "randomWalkBias":  1,
-        "minimumLevelRequestAmount": 2000000,
+        "minimumLevelRequestAmount": 1,
+        "modCommission": 0.50
     },
 };
 

@@ -18,6 +18,7 @@ export type ConfigType = {
         useEphemeralWire: boolean;
         maxProfileHoldingsDisplay: number;
         baseRoleId: string;
+        modRoleId: string;
         topShareholdersAmount: number;
     };
     theme: {
@@ -47,6 +48,7 @@ export type ConfigType = {
         defaultItems: {item: string, quantity: number}[];
         randomWalkBias: number;
         minimumLevelRequestAmount: number;
+        modCommission: number;
     }
 };
 

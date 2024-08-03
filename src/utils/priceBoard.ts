@@ -7,6 +7,7 @@ import Price from "../models/Price";
 import GameState from "../models/GameState";
 import UserPortfolio from "../models/user/UserPortfolio";
 import log from "./logger";
+import Request from "../models/request/Request";
 
 async function updatePriceBoard(client: Client) {
     try {
@@ -29,6 +30,7 @@ async function updatePriceBoard(client: Client) {
         }
 
         const gameState = await service.game.getGameState();
+        const bounties = await service.transactions.viewRequestPool(10);
         await messagePriceBoard.edit({
             content: "", embeds: [
                 generateStockBoardEmbed(allStocks, yesterdayPrices, gameState)
@@ -36,12 +38,23 @@ async function updatePriceBoard(client: Client) {
         });
         await messageLeaderboard.edit({
             content: "", embeds: [
+                generateTopBountiesEmbed(bounties),
                 await generateLeaderboardEmbed(client, allUserPortfolios)
             ]
         });
     } catch(err) {
         log.error("Error updating price board message!")
     }
+}
+
+function generateTopBountiesEmbed(bounties: Request[]) {
+    const desc = `Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` +
+        diffBlock(`LEVEL ID - Bounty Amount`) + PADDING +
+        diffBlock(bounties.map((r, i) => `${i+1}: ${r.level_id} - $${dollarize(r.bounty)}`).join('\n') || "All requests cleared.");
+    return new EmbedBuilder()
+        .setTitle('Top Level Request Bounties')
+        .setDescription(desc)
+        .setColor(config.colors.blue);
 }
 
 function generateStockBoardEmbed(allStocks: Stock[], yesterdayPrices: Price[], gameState: GameState) {

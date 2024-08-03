@@ -7,30 +7,28 @@ import {Client} from "discord.js"
 
 const rewardConfig = {
     cardDistribution: [
-        {group: 0.03125, item: "050", limitBump: 50000000, weeklyRewards: [{item: "900", quantity: 10},
-                {item: "919", quantity: 1}, {item: "918", quantity: 1}], role: "1258800359342870528"}, // centurion
-        {group: 0.0625, item: "040", limitBump: 30000000, weeklyRewards: [{item: "900", quantity: 5},
-                {item: "917", quantity: 1}], role: "1258800184176017499"}, // rose gold
-        {group: 0.125, item: "030", limitBump: 15000000, weeklyRewards: [{item: "900", quantity: 3},
-                {item: "916", quantity: 1}], role: "1258800827879915531"}, // rose gold
-        {group: 0.25, item: "020", limitBump: 10000000, weeklyRewards: [{item: "900", quantity: 2},
-                {item: "915", quantity: 1}], role: "1258800072578301952"}, // gold
-        {group: 0.5, item: "010", limitBump: 5000000, weeklyRewards: [{item: "900", quantity: 1},
-                {item: "914", quantity: 1}], role: "1258799929036378194"}, // green
-        {group: 1, item: "000", limitBump: 0, weeklyRewards: [
-            {item: "913", quantity: 1}], role: "1257800796624523345"} // blue
+        //{group: 0.015625, item: "060", limitBump: 100000000, weeklyRewards: [{item: "900", quantity: 15}], role: "1268354078816211065"}, // centurion
+        //{group: 0.03125, item: "050", limitBump: 50000000, weeklyRewards: [{item: "900", quantity: 10}], role: "1268354002471489546"}, // platinum
+        //{group: 0.0625, item: "040", limitBump: 30000000, weeklyRewards: [{item: "900", quantity: 5}], role: "1268353922129596467"}, // white gold
+        //{group: 0.125, item: "030", limitBump: 15000000, weeklyRewards: [{item: "900", quantity: 3}], role: "1268353735390662687"}, // rose gold
+        {group: 0.25, item: "020", limitBump: 10000000, weeklyRewards: [{item: "900", quantity: 2}], role: "1268348633624084632"}, // gold
+        {group: 0.5, item: "010", limitBump: 5000000, weeklyRewards: [{item: "900", quantity: 1}], role: "1268348167456428043"}, // green
+        {group: 1, item: "000", limitBump: 0, weeklyRewards: [], role: "1267307202927132794"} // blue
     ]
 };
+
 
 async function assignCreditCards() {
     const service = Service.getInstance();
     const users = await service.users.getAllUserPortfolios();
+    const usersAboveStartingBalance = users.filter(x => x.netWorth() > config.game.startingBalance);
+    const usersBelowStartingBalance = users.filter(x => x.netWorth() <= config.game.startingBalance);
     const updated= [];
-    for (let i = 0; i < users.length; i++) {
-        const user = users[i]!;
+    for (let i = 0; i < usersAboveStartingBalance.length; i++) {
+        const user = usersAboveStartingBalance[i]!;
         let newCardId = rewardConfig.cardDistribution[rewardConfig.cardDistribution.length - 1]!.item;
         for (let j = 0; j < rewardConfig.cardDistribution.length; j++) {
-            if (i < users.length * rewardConfig.cardDistribution[j]!.group && user.netWorth() > config.game.startingBalance) {
+            if (i < usersAboveStartingBalance.length * rewardConfig.cardDistribution[j]!.group && user.netWorth() > config.game.startingBalance) {
                 newCardId = rewardConfig.cardDistribution[j]!.item;
                 break;
             }
@@ -40,6 +38,15 @@ async function assignCreditCards() {
             if (isUpdated) updated.push(user.uid);
         } catch (err) {
             log.error(`Could not update ${user.uid}'s credit card to ${newCardId}`);
+        }
+    }
+    for (let i = 0; i < usersBelowStartingBalance.length; i++) {
+        const user = usersBelowStartingBalance[i]!;
+        try {
+            const isUpdated = await service.users.updateCreditCard(user.uid, "000");
+            if (isUpdated) updated.push(user.uid);
+        } catch (err) {
+            log.error(`Could not update ${user.uid}'s credit card to 000`);
         }
     }
     return updated;

@@ -6,14 +6,13 @@ import {initDb} from "./utils/createDatabase";
 import log from "./utils/logger";
 import config from "../config";
 import Service from "./services/Service";
-import {Client, Collection, Events, GatewayIntentBits, REST, Routes} from "discord.js"
+import {Client, Collection, Events, GatewayIntentBits, Options, REST, Routes} from "discord.js"
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import CommandType from "./types/CommandType";
 import TransactionDAO from "./handlers/TransactionDAO";
 import ObjectDAO from "./handlers/ObjectDAO";
 import {initJobs} from "./utils/jobs";
-import {updatePriceBoard} from "./utils/priceBoard";
 import ItemDAO from "./handlers/ItemDAO";
 import RequestDAO from "./handlers/RequestDAO";
 
@@ -60,7 +59,12 @@ require('dotenv').config();
     await Service.init(daos, pool);
 
     // initialize Discord client
-    const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildPresences]});
+    const client = new Client({
+        intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildPresences],
+        makeCache: Options.cacheWithLimits({
+            MessageManager: 0
+        }),
+    });
 
     client.once(Events.ClientReady, readyClient => {
         log.success(`Logged into Discord as ${readyClient.user.tag}.`);
@@ -108,17 +112,24 @@ require('dotenv').config();
         }
 
         try {
-            await command.execute(interaction);
-        } catch (error) {
-            log.error(error);
-            if (interaction.replied || interaction.deferred) {
-                await interaction.followUp({
-                    content: 'There was an error while executing this command!',
-                    ephemeral: true
-                });
-            } else {
-                await interaction.reply({content: 'There was an error while executing this command!', ephemeral: true});
+            try {
+                await command.execute(interaction);
+            } catch (error) {
+                log.error(error);
+                if (interaction.replied || interaction.deferred) {
+                    await interaction.followUp({
+                        content: 'There was an error while executing this command!',
+                        ephemeral: true
+                    });
+                } else {
+                    await interaction.reply({
+                        content: 'There was an error while executing this command!',
+                        ephemeral: true
+                    });
+                }
             }
+        } catch (err) {
+            log.error(err.stack);
         }
     });
 
@@ -141,10 +152,12 @@ require('dotenv').config();
     try {
         // (client.channels.cache.get("1263909750278586511") as TextChannel).send("Placeholder2")
         // await Service.getInstance().stocks.synchronizeAllStockPrices();
-        //await updateRoles(client);
         // await Service.getInstance().stocks.synchronizeStockPrice("VNVDA");
+
+        // await assignCreditCards();
         // await updateRoles(client);
-        await updatePriceBoard(client);
+
+        //await updatePriceBoard(client);
         initJobs(client);
     } catch (err) {
         log.error(err.stack);
