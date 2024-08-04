@@ -52,7 +52,9 @@ const command: CommandType = {
                 const requestListEmbed = new EmbedBuilder()
                     .setTitle('Top Level Request Bounties')
                     .setDescription(
-                        diffBlock(requests.map((r, i) => `${i+1}: ${r.level_id} - $${dollarize(r.bounty)}`).join('\n') || "All requests cleared.")
+                        diffBlock(requests.map((r, i) => {
+                            return `${i+1}: $${dollarize(r.bounty)} - ${r.name} (${r.level_id}) `
+                        }).join('\n') || "All requests cleared.")
                     )
                     .setColor(config.colors.blue);
                 await interaction.reply({embeds: [requestListEmbed]});
@@ -136,16 +138,17 @@ const command: CommandType = {
                         return;
                     }
 
-                    let desc = `Bounty: $${dollarize(request.bounty)}`;
+                    let desc = `Bounty: $${dollarize(request.bounty)}\nLevel: ${request.name || "N/A"} by ${request.creator || "N/A"}`;
                     desc += (request.bounty === 0) ? `\n- This request has been processed by a moderator.` : `\n+ This request is still pending a review.`;
                     const discordUser = await interaction.guild.members.fetch({user: interaction.user.id, force: true});
                     const isMod = discordUser.roles.cache.has(config.bot.modRoleId);
                     const modCommissionAmount = Math.ceil(request.bounty * config.game.modCommission);
                     if (isMod) desc += `\n\nCurrent Mod Commission: ${Math.floor(config.game.modCommission * 100)}%\nYou earn $${dollarize(modCommissionAmount)} for processing this request.`;
+                    let requesterStr = request.requester_uid ? `<@${request.requester_uid}>` : "**Unknown user, check logs.**";
 
                     const requestEmbed = new EmbedBuilder()
                         .setTitle(`Request for Level ${request.level_id}`)
-                        .setDescription(diffBlock(desc))
+                        .setDescription(`Requester: ${requesterStr}` + diffBlock(desc))
                         .setColor(config.colors.blue);
 
                     if (isMod && request.bounty > 0) {

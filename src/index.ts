@@ -15,6 +15,7 @@ import ObjectDAO from "./handlers/ObjectDAO";
 import {initJobs} from "./utils/jobs";
 import ItemDAO from "./handlers/ItemDAO";
 import RequestDAO from "./handlers/RequestDAO";
+import {updatePriceBoard} from "./utils/priceBoard";
 
 require('dotenv').config();
 
@@ -161,7 +162,7 @@ require('dotenv').config();
         //await updateRoles(client);
         //console.log("done assigning roles");
 
-        //await updatePriceBoard(client);
+        await updatePriceBoard(client);
         initJobs(client);
     } catch (err) {
         log.error(err.stack);

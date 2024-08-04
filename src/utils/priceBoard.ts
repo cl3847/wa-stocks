@@ -50,7 +50,9 @@ async function updatePriceBoard(client: Client) {
 function generateTopBountiesEmbed(bounties: Request[]) {
     const desc = `Last Updated: <t:${Math.floor(Date.now() / 1000)}>\n` +
         diffBlock(`LEVEL ID - Bounty Amount`) + PADDING +
-        diffBlock(bounties.map((r, i) => `${i+1}: ${r.level_id} - $${dollarize(r.bounty)}`).join('\n') || "All requests cleared.");
+        diffBlock(bounties.map((r, i) => {
+           return `${i+1}: $${dollarize(r.bounty)} - ${r.name} (${r.level_id}) `
+        }).join('\n') || "All requests cleared.");
     return new EmbedBuilder()
         .setTitle('Top Level Request Bounties')
         .setDescription(desc)

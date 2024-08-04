@@ -15,6 +15,7 @@ import RequestTransaction from "../models/transaction/RequestTransaction";
 import config from "../../config";
 import InsufficentNetWorthError from "../models/error/InsufficientNetWorthError";
 import Item from "../models/item/Item";
+import {getLevel} from "../utils/GDUtils";
 
 class TransactionService {
     private daos: DAOs;
@@ -363,7 +364,14 @@ class TransactionService {
             await this.daos.users.updateUser(pc, uid, {balance: (user.balance - amount) + cashbackAmount});
             let levelReq = await this.daos.requests.getRequest(pc, levelId);
             if (!levelReq) {
-                levelReq = {level_id: levelId, bounty: 0};
+                const level = await getLevel(levelId);
+                levelReq = {
+                    level_id: levelId,
+                    bounty: 0,
+                    name: level?.name,
+                    creator: level?.creator,
+                    requester_uid: uid
+                };
                 await this.daos.requests.createRequest(pc, levelReq);
             }
             levelReq.bounty += amount;
@@ -442,6 +450,15 @@ class TransactionService {
         } catch (err) {
             await pc.query('ROLLBACK');
             throw err;
+        } finally {
+            pc.release();
+        }
+    }
+
+    public async updateRequest(levelId: string, request: Partial<Request>): Promise<void> {
+        const pc = await this.pool.connect();
+        try {
+            await this.daos.requests.updateRequest(pc, levelId, request);
         } finally {
             pc.release();
         }

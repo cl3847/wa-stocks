@@ -125,7 +125,11 @@ const initDb = async (pc: PoolClient) => {
     await createTable('requests', `
             CREATE TABLE requests (
             level_id TEXT PRIMARY KEY,
-            bounty INT NOT NULL
+            bounty INT NOT NULL,
+            name TEXT,
+            creator TEXT,
+            requester_uid TEXT,
+            FOREIGN KEY(requester_uid) REFERENCES users(uid)
         );`
     );
     // check if gameState exists in objects
