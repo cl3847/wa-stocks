@@ -154,8 +154,12 @@ require('dotenv').config();
         // await Service.getInstance().stocks.synchronizeAllStockPrices();
         // await Service.getInstance().stocks.synchronizeStockPrice("VNVDA");
 
-        // await assignCreditCards();
-        // await updateRoles(client);
+        //console.log("assigning cards");
+        //await assignCreditCards();
+        //console.log("done assigning cards");
+        //console.log("assigning roles");
+        //await updateRoles(client);
+        //console.log("done assigning roles");
 
         //await updatePriceBoard(client);
         initJobs(client);
