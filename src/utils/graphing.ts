@@ -7,9 +7,8 @@ import {
     getNextMidnightTimestampET,
     timestampToETCComponents
 } from "./helpers";
-import {ChartJSNodeCanvas} from "chartjs-node-canvas";
-import {freshRequire} from "chartjs-node-canvas/src/freshRequire";
 import {Chart} from "chart.js";
+import {renderPortfolio, renderStockChart} from "./canvasses";
 
 Chart.defaults.color = '#fff';
 
@@ -35,19 +34,6 @@ async function createCandlestickStockImage(ticker: string): Promise<Buffer> {
             c: dollarize(price.close_price)
         }
     });
-
-    const width = 600;
-    const height = 300;
-    const chartJSNodeCanvas = new ChartJSNodeCanvas({
-        width, height, plugins: {
-            modern: ['chartjs-chart-financial'],
-            globalVariableLegacy: ['chartjs-adapter-luxon']
-        }
-    });
-
-    // Needs to run after the constructor but before any render function
-    (global as any).window = (global as any).window || {};
-    (global as any).window.luxon = freshRequire('luxon'); // Can just use normal require();
 
     const configuration: any = {
         type: 'candlestick',
@@ -87,7 +73,7 @@ async function createCandlestickStockImage(ticker: string): Promise<Buffer> {
         }
     };
 
-    return await chartJSNodeCanvas.renderToBuffer(configuration);
+    return await renderStockChart(configuration);
 }
 
 async function createLinePortfolioImage(uid: string) {
@@ -106,10 +92,6 @@ async function createLinePortfolioImage(uid: string) {
         labels.unshift(formatDate(y, m, d - 1));
         dataPoints.unshift(Math.round((await portfolio?.portfolioValueOn(y, m, d - 1) || 0) / 100));
     }
-
-    const width = 600;
-    const height = 300;
-    const chartJSNodeCanvas = new ChartJSNodeCanvas({width, height});
 
     let borderColor = config.colors.green; // Default to red
     if (dataPoints.length >= 2) {
@@ -151,7 +133,7 @@ async function createLinePortfolioImage(uid: string) {
         }
     };
 
-    return await chartJSNodeCanvas.renderToBuffer(configuration);
+    return await renderPortfolio(configuration);
 }
 
 export {createCandlestickStockImage, createLinePortfolioImage};

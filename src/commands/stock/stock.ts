@@ -63,7 +63,7 @@ const command: CommandType = {
             embed.setThumbnail(`attachment://logo.png`);
         }
 
-        await interaction.reply({embeds: [embed], files})
+        await interaction.reply({embeds: [embed], files});
     },
 };
 
