@@ -74,9 +74,7 @@ const command: CommandType = {
             actions.get(itemId)!.find(a => a.identifier === confirmation.customId)?.execute(confirmation, itemHolding, userPortfolio);
         } catch (e) {
             await response.edit({
-                embeds: [embed,
-                    confirmedEmbed(diffBlock(`- PURCHASE CANCELLED -\nNo trade confirmation received.`), config.colors.blue)
-                ], files, components: []
+                embeds: [embed], files, components: []
             });
         }
     },
