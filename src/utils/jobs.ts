@@ -11,7 +11,7 @@ function initJobs(client: Client) {
     walkStocks(`*/${config.game.randomWalkInterval} * * * *`); // random walk stocks
     openMarket('31 9 * * *'); // open market (9:31 AM ET) every day
     closeMarket('01 22 * * *'); // close market (10:01 PM ET) every day
-    openPreMarket('00 4 * * *'); // open pre-market (4:00 AM ET) every day
+    openPreMarket('00 2 * * *'); // open pre-market (2:00 AM ET) every day
     openAfterMarket('00 16 * * *'); // open after-market (4:00 PM ET) every day
 }
 
