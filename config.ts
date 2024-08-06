@@ -40,9 +40,9 @@ const config: ConfigType = {
         "startingBalance": 10000000, // Starting balance in CENTS
         "minHeldWire": 10000001,
         "startingCreditLimit": 20000000, // Starting credit limit in CENTS
-        "randomWalkVolatility": 0.0025,
+        "randomWalkVolatility": 0.0010,
         "randomWalkInterval": 1, // In minutes
-        "randomWalkAmount": 15, // Number of stocks to randomly walk
+        "randomWalkAmount": 35, // Number of stocks to randomly walk
         "minimumStockPrice": 1,
         "chartsDaysBack": 15, // Number of days to show in the price chart
         "etcOffset": 4,
