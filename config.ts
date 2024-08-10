@@ -48,6 +48,7 @@ const config: ConfigType = {
         "etcOffset": 4,
         "loanMaxMultiplier": 4,
         "creditDailyInterestPercent": 3,
+        "creditDailyInterestMultiplier": 1.03,
         "maxRequestId": 120000000,
         "defaultItems": [
             {item: "000", quantity: 1},

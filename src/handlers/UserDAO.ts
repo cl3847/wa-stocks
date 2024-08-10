@@ -182,6 +182,12 @@ class UserDAO {
         const result = await pc.query(query, params);
         return result.rows;
     }
+
+    public async applyInterest(pc: PoolClient, interest: number): Promise<void> {
+        const query = "CALL add_debt_interest($1)";
+        const params = [interest];
+        await pc.query(query, params);
+    }
 }
 
 export default UserDAO;

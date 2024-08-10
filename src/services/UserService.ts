@@ -152,6 +152,15 @@ class UserService {
         pc.release();
         return res;
     }
+
+    public async applyInterest(): Promise<void> {
+        const pc = await this.pool.connect();
+        try {
+            return await this.daos.users.applyInterest(pc, config.game.creditDailyInterestMultiplier);
+        } finally {
+            pc.release();
+        }
+    }
 }
 
 export default UserService;

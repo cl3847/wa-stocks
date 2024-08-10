@@ -45,6 +45,7 @@ export type ConfigType = {
         maxRequestId: number;
         loanMaxMultiplier: number;
         creditDailyInterestPercent: number;
+        creditDailyInterestMultiplier: number;
         defaultItems: {item: string, quantity: number}[];
         randomWalkBias: number;
         minimumLevelRequestAmount: number;

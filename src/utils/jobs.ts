@@ -5,12 +5,13 @@ import {chooseRandomStocks, stockPriceRandomWalk} from "./helpers";
 import Service from "../services/Service";
 import log from "./logger";
 import {Client} from "discord.js"
+import {assignCreditCards, assignRewards, updateRoles} from "./rewardsDistribution";
 
 function initJobs(client: Client) {
     infoRefresh('*/1 * * * *', client); // refresh info channel embed
     walkStocks(`*/${config.game.randomWalkInterval} * * * *`); // random walk stocks
-    openMarket('31 9 * * *'); // open market (9:31 AM ET) every day
-    closeMarket('01 22 * * *'); // close market (10:01 PM ET) every day
+    openMarket('30 9 * * *', client); // open market (9:31 AM ET) every day
+    closeMarket('00 22 * * *', client); // close market (10:01 PM ET) every day
     openPreMarket('00 2 * * *'); // open pre-market (2:00 AM ET) every day
     openAfterMarket('00 16 * * *'); // open after-market (4:00 PM ET) every day
 }
@@ -33,7 +34,7 @@ async function walkStocks(expression: string) {
     });
 }
 
-function openMarket(expression: string) {
+function openMarket(expression: string, client: Client) {
     cron.schedule(expression, async () => { // open market
         const randomStocks = await chooseRandomStocks(Service.stockTickerList.length);
         // await Service.getInstance().stocks.synchronizeAllStockPrices();
@@ -42,7 +43,40 @@ function openMarket(expression: string) {
         }
 
         await Service.getInstance().game.updateGameState({isMarketOpen: true, marketState: "open"});
+        await updatePriceBoard(client);
         log.info(`Market opened at ${new Date().toLocaleString()} ET`);
+    }, {timezone: "America/New_York"});
+}
+
+function closeMarket(expression: string, client: Client) {
+    cron.schedule(expression, async () => { // close market
+        const randomStocks = await chooseRandomStocks(Service.stockTickerList.length);
+        for (const stock of randomStocks) {
+            await stockPriceRandomWalk(stock.ticker, config.game.randomWalkVolatility);
+        }
+
+        const service = Service.getInstance();
+        await service.game.updateGameState({isMarketOpen: false, marketState: "closed"});
+        await updatePriceBoard(client);
+        log.info(`Market closed at ${new Date().toLocaleString()} ET`);
+
+        // market close operations
+        log.info(`Starting to apply interest...`);
+        await service.users.applyInterest();
+        log.success(`Completed applying interest.`);
+
+        log.info(`Starting to assign credit cards...`);
+        await assignCreditCards();
+        log.success(`Completed assigning cards.`);
+
+        log.info(`Starting to update roles...`);
+        await updateRoles(client);
+        log.success(`Completed updating roles.`);
+
+        log.info(`Starting to assign rewards...`);
+        await assignRewards();
+        log.success(`Completed assigning rewards.`);
+
     }, {timezone: "America/New_York"});
 }
 
@@ -65,17 +99,4 @@ function openAfterMarket(expression: string) {
         log.info(`After-market opened at ${new Date().toLocaleString()} ET`);
     }, {timezone: "America/New_York"});
 }
-
-function closeMarket(expression: string) {
-    cron.schedule(expression, async () => { // close market
-        const randomStocks = await chooseRandomStocks(Service.stockTickerList.length);
-        for (const stock of randomStocks) {
-            await stockPriceRandomWalk(stock.ticker, config.game.randomWalkVolatility);
-        }
-
-        await Service.getInstance().game.updateGameState({isMarketOpen: false, marketState: "closed"});
-        log.info(`Market closed at ${new Date().toLocaleString()} ET`);
-    }, {timezone: "America/New_York"});
-}
-
 export {initJobs}
