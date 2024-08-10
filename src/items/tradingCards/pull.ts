@@ -7,15 +7,23 @@ import ItemNotFoundError from "../../models/error/ItemNotFoundError";
 import InsufficientItemQuantityError from "../../models/error/InsufficientItemQuantityError";
 
 const ratesConfig = [
-    {item: '400', rate: 35},
-    {item: '401', rate: 35},
+    {item: '400', rate: 25},
+    {item: '401', rate: 25},
     {item: '300', rate: 15},
     {item: '301', rate: 15},
+    {item: '302', rate: 15},
     {item: '200', rate: 9},
     {item: '201', rate: 9},
+    {item: '202', rate: 9},
+    {item: '203', rate: 9},
     {item: '100', rate: 3},
     {item: '101', rate: 3},
-    {item: '102', rate: 3}
+    {item: '102', rate: 3},
+    {item: '103', rate: 3},
+    {item: '104', rate: 3},
+    {item: '105', rate: 3},
+    {item: '106', rate: 3},
+    {item: '107', rate: 3},
 ];
 
 const pullPair: {itemIds: string[], action: ItemAction} = {

@@ -9,10 +9,10 @@ const rewardConfig = {
     cardDistribution: [
         //{group: 0.015625, item: "060", limitBump: 100000000, weeklyRewards: [{item: "900", quantity: 15}], role: "1268354078816211065"}, // centurion
         //{group: 0.03125, item: "050", limitBump: 50000000, weeklyRewards: [{item: "900", quantity: 10}], role: "1268354002471489546"}, // platinum
-        //{group: 0.0625, item: "040", limitBump: 30000000, weeklyRewards: [{item: "900", quantity: 5}], role: "1268353922129596467"}, // white gold
-        {group: 0.125, item: "030", limitBump: 15000000, weeklyRewards: [{item: "900", quantity: 3}], role: "1268353735390662687"}, // rose gold
-        {group: 0.25, item: "020", limitBump: 10000000, weeklyRewards: [{item: "900", quantity: 2}], role: "1268348633624084632"}, // gold
-        {group: 0.5, item: "010", limitBump: 5000000, weeklyRewards: [{item: "900", quantity: 1}], role: "1268348167456428043"}, // green
+        {group: 0.0625, item: "040", limitBump: 40000000, weeklyRewards: [{item: "900", quantity: 4}], role: "1268353922129596467"}, // white gold
+        {group: 0.125, item: "030", limitBump: 30000000, weeklyRewards: [{item: "900", quantity: 3}], role: "1268353735390662687"}, // rose gold {item: "900", quantity: 3}
+        {group: 0.25, item: "020", limitBump: 20000000, weeklyRewards: [{item: "900", quantity: 2}], role: "1268348633624084632"}, // gold {item: "900", quantity: 2}
+        {group: 0.5, item: "010", limitBump: 10000000, weeklyRewards: [{item: "900", quantity: 1}], role: "1268348167456428043"}, // green {item: "900", quantity: 1}
         {group: 1, item: "000", limitBump: 0, weeklyRewards: [], role: "1267307202927132794"} // blue
     ]
 };

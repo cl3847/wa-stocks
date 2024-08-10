@@ -162,6 +162,9 @@ require('dotenv').config();
         //await updateRoles(client);
         //console.log("done assigning roles");
 
+        //await assignRewards();
+        //console.log("done assigning rewards");
+
         await updatePriceBoard(client);
         initJobs(client);
     } catch (err) {
