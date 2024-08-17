@@ -56,7 +56,7 @@ const config: ConfigType = {
         ],
         "randomWalkBias":  1,
         "minimumLevelRequestAmount": 1,
-        "modCommission": 0.50
+        "modCommission": 0.75
     },
 };
 
