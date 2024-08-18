@@ -7,7 +7,7 @@ import {Client} from "discord.js"
 
 const rewardConfig = {
     cardDistribution: [
-        //{group: 0.015625, item: "060", limitBump: 125000_00, weeklyRewards: [{item: "900", quantity: 4}], role: "1268354078816211065"}, // centurion
+        {group: 0.015625, item: "060", limitBump: 125000_00, weeklyRewards: [{item: "900", quantity: 4}], role: "1268354078816211065"}, // centurion
         {group: 0.03125, item: "050", limitBump: 75000_00, weeklyRewards: [{item: "900", quantity: 3}], role: "1268354002471489546"}, // platinum
         {group: 0.0625, item: "040", limitBump: 60000_00, weeklyRewards: [{item: "900", quantity: 2}], role: "1268353922129596467"}, // white gold
         {group: 0.125, item: "030", limitBump: 45000_00, weeklyRewards: [{item: "900", quantity: 2}], role: "1268353735390662687"}, // rose gold {item: "900", quantity: 3}
