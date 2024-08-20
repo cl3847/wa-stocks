@@ -54,7 +54,7 @@ const config: ConfigType = {
             {item: "000", quantity: 1},
             {item: "900", quantity: 1},
         ],
-        "randomWalkBias":  0.98,
+        "randomWalkBias":  0.75,
         "minimumLevelRequestAmount": 1,
         "modCommission": 0.75
     },
