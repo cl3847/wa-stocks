@@ -53,9 +53,8 @@ A collectible card system with weighted random pulls (booster packs), cashable c
 | Charting | Chart.js, `chartjs-node-canvas`, `chartjs-chart-financial` |
 | Image Processing | node-canvas |
 | Scheduling | node-cron (timezone-aware) |
-| Date/Time | Luxon |
 
-## Key Technical Details
+## Features
 
 - **49 parody stock tickers** with custom logos, each mapped to a real Yahoo Finance symbol
 - Prices stored in cents (integer arithmetic) to avoid floating-point errors
