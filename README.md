@@ -40,4 +40,14 @@ A collectible card system with weighted random pulls, cashable checks of varying
 | Charting | Chart.js, `chartjs-node-canvas`, `chartjs-chart-financial` |
 | Image Processing | node-canvas |
 | Scheduling | node-cron (timezone-aware) |
-| Date/Time | Luxon |
+
+## Features
+
+- **49 parody stock tickers** with custom logos, each mapped to a real Yahoo Finance symbol
+- Prices stored in cents (integer arithmetic) to avoid floating-point errors
+- PostgreSQL connection pooling (max 20) with idle timeout management
+- Timestamped stock holdings enabling historical portfolio reconstruction
+- Paginated embed navigation with interactive Discord buttons and 20-second confirmation timeouts
+- Transaction logging to a dedicated Discord channel for audit visibility
+- Automatic database schema initialization on first run
+
